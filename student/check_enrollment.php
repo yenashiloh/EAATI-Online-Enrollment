@@ -1,34 +1,39 @@
 <?php
-// Include database connection logic
-include 'config.php';
+include "config1.php";
 
-// Check if the grade level is provided in the request
-if(isset($_POST['grade_level'])) {
-    // Retrieve grade level from the request
-    $selectedGradeLevel = $_POST['grade_level'];
+header('Content-Type: application/json');
+
+if (isset($_POST['grade_level'])) {
+    $gradeLevelId = $_POST['grade_level'];
+    $currentDate = date('Y-m-d');
+
+    // Check if there's an active enrollment schedule for the selected grade level
+    $sql = "SELECT * FROM enrollmentschedule 
+            WHERE gradelevel_id = ? 
+            AND ? BETWEEN start_date AND end_date";
     
-    // Get today's date
-    $todayDate = date("Y-m-d");
+    $stmt = mysqli_prepare($link, $sql);
+    mysqli_stmt_bind_param($stmt, "is", $gradeLevelId, $currentDate);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     
-    // Query to check if there's an enrollment schedule for today and the selected grade level
-    $query = $conn->prepare("SELECT * FROM enrollmentschedule WHERE gradelevel_id = :gradelevel_id AND start_date <= :today_date AND end_date >= :today_date");
-    $query->bindParam(':gradelevel_id', $selectedGradeLevel, PDO::PARAM_INT);
-    $query->bindParam(':today_date', $todayDate, PDO::PARAM_STR);
-    $query->execute();
-    
-    // Check if there's a row returned (enrollment schedule exists for today and the selected grade level)
-    if($query->rowCount() > 0) {
-        // Enrollment schedule exists for today and the selected grade level
-        // Send a JSON response indicating success
-        echo json_encode(array('enrollmentExists' => true));
+    if ($row = mysqli_fetch_assoc($result)) {
+        // Return both enrollment existence and status
+        echo json_encode([
+            'enrollmentExists' => true,
+            'status' => $row['status']
+        ]);
     } else {
-        // No enrollment schedule exists for today and the selected grade level
-        // Send a JSON response indicating failure
-        echo json_encode(array('enrollmentExists' => false));
+        echo json_encode([
+            'enrollmentExists' => false,
+            'status' => null
+        ]);
     }
 } else {
-    // Grade level parameter is not provided in the request
-    // Send a JSON response with an error message
-    echo json_encode(array('error' => 'Grade level parameter is missing.'));
+    echo json_encode([
+        'enrollmentExists' => false,
+        'status' => null,
+        'error' => 'Grade level not provided'
+    ]);
 }
 ?>

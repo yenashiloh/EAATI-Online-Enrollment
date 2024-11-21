@@ -66,38 +66,42 @@ if(!isset($student_id)){
   <div class="row">
     <div class="col-md-12 ">
       <?php
-      
-      // Fetch the PDF content from the database
-      $query = "SELECT * FROM generatedcor WHERE userId = :user_id";
-      $stmt = $conn->prepare($query);
-      $stmt->bindParam(':user_id', $student_id, PDO::PARAM_INT);
-      $stmt->execute();
-      
-      // Check for errors during the execution of the SQL query
-      if ($stmt->errorCode() !== '00000') {
-          $errors = $stmt->errorInfo();
-          echo "Error fetching PDF: {$errors[2]}";
-      } else {
-          $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $query_transactions = "SELECT * FROM transactions WHERE user_id = :student_id";
+      $stmt_transactions = $conn->prepare($query_transactions);
+      $stmt_transactions->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+      $stmt_transactions->execute();
 
-          if ($rows) {
-              // Display a list of download buttons for each PDF
-              echo "<ul>";
-              foreach ($rows as $row) {
-                  if (isset($row['cor_content'])) {
-                      echo "<li><a href='cor_template.php?id={$row['id']}'>Download Certificate of Registration</a></li>";
-                  }
-              }
-              echo "</ul>";
+      if ($stmt_transactions->rowCount() > 0) {
+          $query = "SELECT * FROM generatedcor WHERE userId = :user_id";
+          $stmt = $conn->prepare($query);
+          $stmt->bindParam(':user_id', $student_id, PDO::PARAM_INT);
+          $stmt->execute();
+
+          if ($stmt->errorCode() !== '00000') {
+              $errors = $stmt->errorInfo();
+              echo "Error fetching PDF: {$errors[2]}";
           } else {
-            echo "We couldn't find your Certificate of Registration. Please proceed with payment. If you've already paid and the COR is still not showing, please reach out to the administrator for assistance.";
+              $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+              if ($rows) {
+                  echo "<ul>";
+                  foreach ($rows as $row) {
+                      if (isset($row['cor_content'])) {
+                          echo "<li><a href='cor_template.php?id={$row['id']}'>Download Certificate of Registration</a></li>";
+                      }
+                  }
+                  echo "</ul>";
+              } else {
+                  echo "We couldn't find your Certificate of Registration. Please proceed with payment. If you've already paid and the COR is still not showing, please reach out to the administrator for assistance.";
+              }
           }
+      } else {
+          echo "We couldn't find your Certificate of Registration. Please proceed with payment. If you've already paid and the COR is still not showing, please reach out to the administrator for assistance.";
       }
       ?>
     </div>
   </div>
 </section>
-
 
 
 </main><!-- End #main -->

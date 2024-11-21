@@ -65,7 +65,7 @@ if(!isset($registrar_id)){
                     require_once "config1.php";
 
                     // Attempt select query execution
-                    $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id WHERE student.isVerified = 2";
+                    $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id";
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
                             echo '<table class="table datatable">';
@@ -87,9 +87,7 @@ if(!isset($registrar_id)){
                                         
                                         echo "<td>";
                                         
-                        echo '<a href="view_record.php?id='.$row['student_id'].'" class="btn btn-info" title="View Record"><span class="bi bi-eye-fill"></span></a>';
-
-                                        
+                                        echo '<a href="view_record.php?id='.$row['student_id'].'" class="btn btn-info" title="View Record"><span class="bi bi-eye-fill"></span></a>';    
                                             echo '  ';
                                             echo '<a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal'.$row['id'].'" title="Delete Record" data-toggle="tooltip"><span class="bi bi-trash-fill"></span></a>';
 

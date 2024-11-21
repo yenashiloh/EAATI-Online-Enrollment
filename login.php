@@ -6,74 +6,71 @@ $password = ""; // Replace with your MySQL password
 $database = "enrollment"; // Replace with your database name
 
 try {
-    // Create connection
-    $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
-    // Set the PDO error mode to exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
+  // Create connection
+  $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+  // Set the PDO error mode to exception
+  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+  echo "Connection failed: " . $e->getMessage();
 }
 
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["username"];
-    $password = $_POST["password"];
+  $username = $_POST["username"];
+  $password = $_POST["password"];
 
-    try {
-        // Prepare SQL statement to retrieve user data
-        $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
-        $stmt->execute([$username]);
-        $row = $stmt->fetch();
+  try {
+    // Prepare SQL statement to retrieve user data
+    $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    $row = $stmt->fetch();
 
-        // Check if user exists
-        if ($row) {
-            $hashed_password = $row["password"];
+    // Check if user exists
+    if ($row) {
+      $hashed_password = $row["password"];
 
-            // Verify password
-            if (password_verify($password, $hashed_password)) {
-                // Password is correct, start a new session
-                session_start();
-                $_SESSION["username"] = $row["username"];
-                $_SESSION["role"] = $row["role"];
-                // Redirect based on user role
-                if ($row["role"] == "superadmin") {
-                  $_SESSION['superadmin_id'] = $row['id'];
-                    header("Location:superadmin/superadmin_dashboard.php");
-                    exit;
-                } elseif ($row["role"] == "registrar") {
-                  $_SESSION['registrar_id'] = $row['id'];
-                    header("Location:registrar/registrar_dashboard.php");
-                    exit;
-                } elseif ($row["role"] == "accounting") {
-                  $_SESSION['accounting_id'] = $row['id'];
-                    header("Location:accounting/accounting_dashboard.php");
-                    exit;
-                } elseif ($row["role"] == "teacher") {
-                  $_SESSION['teacher_id'] = $row['id'];
-                    header("Location:teacher/teacher_dashboard.php");
-                    exit;
-                    
-                }
-                  elseif ($row["role"] == "parent") {
-                    $_SESSION['parent_id'] = $row['id'];
-                      header("Location:parent/parent_dashboard.php");
-                      exit;
-                    
-                } else {
-                  $_SESSION['student_id'] = $row['id'];
-                    header("Location:student/student_dashboard.php");
-                    exit;
-                }
-                exit();
-            } else {
-                $error_message = "Invalid Learner Reference Number (LRN) or password";
-            }
+      // Verify password
+      if (password_verify($password, $hashed_password)) {
+        // Password is correct, start a new session
+        session_start();
+        $_SESSION["username"] = $row["username"];
+        $_SESSION["role"] = $row["role"];
+        // Redirect based on user role
+        if ($row["role"] == "superadmin") {
+          $_SESSION['superadmin_id'] = $row['id'];
+          header("Location:superadmin/superadmin_dashboard.php");
+          exit;
+        } elseif ($row["role"] == "registrar") {
+          $_SESSION['registrar_id'] = $row['id'];
+          header("Location:registrar/registrar_dashboard.php");
+          exit;
+        } elseif ($row["role"] == "accounting") {
+          $_SESSION['accounting_id'] = $row['id'];
+          header("Location:accounting/accounting_dashboard.php");
+          exit;
+        } elseif ($row["role"] == "teacher") {
+          $_SESSION['teacher_id'] = $row['id'];
+          header("Location:teacher/teacher_dashboard.php");
+          exit;
+        } elseif ($row["role"] == "parent") {
+          $_SESSION['parent_id'] = $row['id'];
+          header("Location:parent/parent_dashboard.php");
+          exit;
         } else {
-            $error_message = "Invalid Learner Reference Number (LRN) or password";
+          $_SESSION['student_id'] = $row['id'];
+          header("Location:student/student_dashboard.php");
+          exit;
         }
-    } catch(PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        exit();
+      } else {
+        $error_message = "Invalid Learner Reference Number (LRN) or password";
+      }
+    } else {
+      $error_message = "Invalid Learner Reference Number (LRN) or password";
     }
+  } catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+  }
 }
 
 $conn = null; // Close connection
@@ -113,32 +110,36 @@ $conn = null; // Close connection
 <body>
 
   <main>
- 
+
     <div class="container">
 
       <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-            <div >
-              <a href="index.html">
-                <img src="assets/img/logo.png" alt="" height="100px" width="100px">
-              </a>
-            </div>
-              
+              <div>
+
+              </div>
+
               <div class="card mb-3">
 
                 <div class="card-body">
 
                   <div class="pt-4 pb-2">
+                    <div class="d-flex justify-content-center align-items-center">
+                      <a href="index.html">
+                        <img src="assets/img/logo.png" alt="" height="100px" width="100px">
+                      </a>
+                    </div>
+
                     <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
                     <p class="text-center small">Enter your LRN/username & password to login</p>
                   </div>
 
                   <form class="row g-3 needs-validation" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" novalidate>
-                  <?php if (isset($error_message)) { ?>
-        <div class="alert alert-danger"><?php echo $error_message; ?></div>
-    <?php } ?>
+                    <?php if (isset($error_message)) { ?>
+                      <div class="alert alert-danger"><?php echo $error_message; ?></div>
+                    <?php } ?>
                     <div class="col-12">
                       <label for="yourUsername" class="form-label">Learner Reference Number (LRN) or Username</label>
                       <div class="input-group has-validation">
@@ -155,7 +156,7 @@ $conn = null; // Close connection
                     <div class="col-12">
                       <button class="btn btn-primary w-100" type="submit">Login</button>
                     </div>
-                    
+
                   </form>
 
                 </div>

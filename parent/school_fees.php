@@ -6,9 +6,9 @@ session_start();
 
 $parent_id = $_SESSION['parent_id'];
 
-if(!isset($parent_id)){
-   header('location:login.php');
-   exit; // Add exit to stop further execution
+if (!isset($parent_id)) {
+    header('location:login.php');
+    exit; // Add exit to stop further execution
 }
 
 ?>
@@ -40,18 +40,18 @@ if ($installment_count > 0) {
     <meta content="" name="description">
     <meta content="" name="keywords">
 
-    <?php include 'asset.php';?>
+    <?php include 'asset.php'; ?>
 
-    
+
 
 </head>
 
 <body>
 
-    <?php 
+    <?php
     include 'header.php';
     include 'sidebar.php';
-?>
+    ?>
 
     <main id="main" class="main">
 
@@ -75,60 +75,60 @@ if ($installment_count > 0) {
                             <h5 class="card-title"></h5>
                         </div>
                         <?php
-                    // Include config file
-                    require_once "config1.php";
-                    
-                    // Attempt select query execution
-                    $sql = "SELECT *
+                        // Include config file
+                        require_once "config1.php";
+
+                        // Attempt select query execution
+                        $sql = "SELECT *
                     FROM transactions
                     WHERE user_id = $parent_id;";
-                    if($result = mysqli_query($link, $sql)){
-                        if(mysqli_num_rows($result) > 0){
-                            echo '<table class="table datatable">';
+                        if ($result = mysqli_query($link, $sql)) {
+                            if (mysqli_num_rows($result) > 0) {
+                                echo '<table class="table datatable">';
                                 echo "<thead>";
-                                    echo "<tr>";
-                                        echo "<th>Reference No.</th>";
-                                        echo "<th>Payment Method</th>";
-                                        echo "<th>Payment Amount</th>";
-                                        echo "<th>Payment Date</th>";
-                                        echo "<th>Status</th>";
-                                    echo "</tr>";
+                                echo "<tr>";
+                                echo "<th>Reference No.</th>";
+                                echo "<th>Payment Method</th>";
+                                echo "<th>Payment Amount</th>";
+                                echo "<th>Payment Date</th>";
+                                echo "<th>Status</th>";
+                                echo "</tr>";
                                 echo "</thead>";
                                 echo "<tbody>";
-                                while($row = mysqli_fetch_array($result)){
+                                while ($row = mysqli_fetch_array($result)) {
                                     echo "<tr>";
-                                       
-                                        echo "<td>" .$row['reference_number']."</td>";
-                                        echo "<td>" . $row['payment_method'] . "</td>";
-                            
-                                        echo "<td>" .'₱'.''. $row["payment_amount"] . "</td>";
-                                        echo "<td>". $row["created_at"] . "</td>";
-                                        echo "<td>";
-                                            if ($row["status"] == 1) {
-                                                echo '<span class="badge bg-success text-dark">Verified</span>';
-                                            } else if( $row['status'] == 2) {
-                                                echo '<span class="badge bg-warning text-dark">Paid</span>';
-                                            } else if( $row['status'] == 3) {
-                                                echo '<span class="badge bg-danger text-dark">Rejected</span>';
-                                            } else{
-                                                echo '<span class="badge bg-warning text-dark">Not yet verified</span>';
-                                            }
-                                        echo "</td>";
+
+                                    echo "<td>" . $row['reference_number'] . "</td>";
+                                    echo "<td>" . $row['payment_method'] . "</td>";
+
+                                    echo "<td>" . '₱' . '' . $row["payment_amount"] . "</td>";
+                                    echo "<td>" . $row["created_at"] . "</td>";
+                                    echo "<td>";
+                                    if ($row["status"] == 1) {
+                                        echo '<span class="badge bg-success text-dark">Verified</span>';
+                                    } else if ($row['status'] == 2) {
+                                        echo '<span class="badge bg-warning text-dark">Paid</span>';
+                                    } else if ($row['status'] == 3) {
+                                        echo '<span class="badge bg-danger text-dark">Rejected</span>';
+                                    } else {
+                                        echo '<span class="badge bg-warning text-dark">Not yet verified</span>';
+                                    }
+                                    echo "</td>";
                                     echo "</tr>";
                                 }
-                                echo "</tbody>";                            
-                            echo "</table>";
-                            // Free result set
-                            mysqli_free_result($result);
-                        } else{
-                            echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
+                                echo "</tbody>";
+                                echo "</table>";
+                                // Free result set
+                                mysqli_free_result($result);
+                            } else {
+                                echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
+                            }
+                        } else {
+                            echo "Oops! Something went wrong. Please try again later.";
                         }
-                    } else{
-                        echo "Oops! Something went wrong. Please try again later.";
-                    }
- 
-                 
-                    ?>
+
+
+                        ?>
 
                     </div>
                 </div>
@@ -137,91 +137,90 @@ if ($installment_count > 0) {
                     <div class="card">
                         <div class="card-body">
                             <div>
-                            <table class="table table-hover">
-                   
-                    <tbody>
-                    
-                            <?php
-// Include config file
-require_once "config1.php";
+                                <table class="table table-hover">
 
-// Get the total amount paid by the user
-$sql = "SELECT SUM(payment_amount) AS total_paid FROM transactions WHERE user_id = $parent_id and status = 1 OR 2";
-$totalPaidResult = mysqli_query($link, $sql);
-$totalPaidRow = mysqli_fetch_assoc($totalPaidResult);
-$totalPaid = $totalPaidRow['total_paid'];
+                                    <tbody>
 
-// Attempt select query execution
-$sql = "SELECT *
+                                        <?php
+                                        // Include config file
+                                        require_once "config1.php";
+
+                                        // Get the total amount paid by the user
+                                        $sql = "SELECT SUM(payment_amount) AS total_paid FROM transactions WHERE user_id = $parent_id and status = 1 OR 2";
+                                        $totalPaidResult = mysqli_query($link, $sql);
+                                        $totalPaidRow = mysqli_fetch_assoc($totalPaidResult);
+                                        $totalPaid = $totalPaidRow['total_paid'];
+
+                                        // Attempt select query execution
+                                        $sql = "SELECT *
         FROM student
         INNER JOIN payments on student.grade_level = payments.grade_level 
         WHERE student.userId = $parent_id and isVerified=1";
-if($result = mysqli_query($link, $sql)){
-    // Add your additional query here    
-    if(mysqli_num_rows($result) > 0){
-        while ($row = mysqli_fetch_array($result)) {
+                                        if ($result = mysqli_query($link, $sql)) {
+                                            // Add your additional query here    
+                                            if (mysqli_num_rows($result) > 0) {
+                                                while ($row = mysqli_fetch_array($result)) {
 
-                        echo'<tr>';
-                        echo'<td class="col-md-9"><em>Total Tuition Fee:</em></h4></td>';
-                        echo'<td>   </td>'; 
-                        echo'<td>   </td>';
-                        echo'<td class="col-md-1 text-center">₱'.$row['total_whole_year'].'</td>';
-                        echo'</tr>';
-                        
-                        echo'<tr>';
-                        echo'<td class="col-md-9"><em>Upon Enrollment:</em></h4></td>';
-                        echo'<td>   </td>'; 
-                        echo'<td>   </td>';
-                        echo'<td class="col-md-1 text-center">₱'.$row['upon_enrollment'].'</td>';
-                        echo'</tr>';
+                                                    echo '<tr>';
+                                                    echo '<td class="col-md-9"><em>Total Tuition Fee:</em></h4></td>';
+                                                    echo '<td>   </td>';
+                                                    echo '<td>   </td>';
+                                                    echo '<td class="col-md-1 text-center">₱' . $row['total_whole_year'] . '</td>';
+                                                    echo '</tr>';
 
-                        echo'<tr>';
-                        echo'<td class="col-md-9"><ul>
-                        <li>Miscellaneous</li>
-                        <li>ID/Test Paper</li>
-                        <li>Card</li>
-                        <li>Developmental</li>
-                        <li>Computer Basic</li>
-                        <li>Laboratory/Library</li>
-                      </ul></td>';
-                        echo'<td></td>'; 
-                        echo'<td>   </td>';
-                        echo'<td class="col-md-1 text-center"></td>';
-                        echo'</tr>';
+                                                    echo '<tr>';
+                                                    echo '<td class="col-md-9"><em>Upon Enrollment:</em></h4></td>';
+                                                    echo '<td>   </td>';
+                                                    echo '<td>   </td>';
+                                                    echo '<td class="col-md-1 text-center">₱' . $row['upon_enrollment'] . '</td>';
+                                                    echo '</tr>';
 
-                        
-                        echo'<tr>';
-                            echo'<td>   </td>';
-                            echo'<td class="text-right"><h4><strong></strong></h4></td>';
-                            echo'<td class="text-right"><h4><strong>Total: </strong></h4></td>';
-                            $total = $row['total_whole_year'] + $row['books'] + $row['school_uniform'] + $row['pe_uniform'];
-                            
-                            echo'<td class="text-center text-danger"><h4><strong>₱'.$total.'</strong></h4></td>';
-                        echo'</tr>';
-                        echo'<tr>';
-                            echo'<td>   </td>';
-                            echo'<td class="text-right"><h4><strong>Total</strong></h4></td>';
-                            echo'<td class="text-right"><h4><strong>Balance: </strong></h4></td>';
-                            $total = $row['total_whole_year'] + $row['books'] + $row['school_uniform'] + $row['pe_uniform'];
-                            $remainingBalance = $total - $totalPaid;
-                            
-                            echo'<td class="text-center text-danger"><h4><strong>₱'.$remainingBalance.'</strong></h4></td>';
-                        echo'</tr>';
+                                                    echo '<tr>';
+                                                    echo '<td class="col-md-9"><ul>
+                                                        <li>Miscellaneous</li>
+                                                        <li>ID/Test Paper</li>
+                                                        <li>Card</li>
+                                                        <li>Developmental</li>
+                                                        <li>Computer Basic</li>
+                                                        <li>Laboratory/Library</li>
+                                                    </ul></td>';
+                                                    echo '<td></td>';
+                                                    echo '<td>   </td>';
+                                                    echo '<td class="col-md-1 text-center"></td>';
+                                                    echo '</tr>';
 
-                        echo '</tbody>';
-                        echo '</table>';
-                        
-        }
-        // Free result set
-        mysqli_free_result($result);
-    } else{
-        echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
-    }
-}
 
-// Close connection
+                                                    echo '<tr>';
+                                                    echo '<td>   </td>';
+                                                    echo '<td class="text-right"><h4><strong></strong></h4></td>';
+                                                    echo '<td class="text-right"><h4><strong>Total: </strong></h4></td>';
+                                                    $total = $row['total_whole_year'] + $row['books'] + $row['school_uniform'] + $row['pe_uniform'];
 
-?>                          
+                                                    echo '<td class="text-center text-danger"><h4><strong>₱' . $total . '</strong></h4></td>';
+                                                    echo '</tr>';
+                                                    echo '<tr>';
+                                                    echo '<td>   </td>';
+                                                    echo '<td class="text-right"><h4><strong>Total</strong></h4></td>';
+                                                    echo '<td class="text-right"><h4><strong>Balance: </strong></h4></td>';
+                                                    $total = $row['total_whole_year'] + $row['books'] + $row['school_uniform'] + $row['pe_uniform'];
+                                                    $remainingBalance = $total - $totalPaid;
+
+                                                    echo '<td class="text-center text-danger"><h4><strong>₱' . $remainingBalance . '</strong></h4></td>';
+                                                    echo '</tr>';
+
+                                                    echo '</tbody>';
+                                                    echo '</table>';
+                                                }
+                                                // Free result set
+                                                mysqli_free_result($result);
+                                            } else {
+                                                echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
+                                            }
+                                        }
+
+                                        // Close connection
+
+                                        ?>
                             </div>
                         </div>
                     </div>
@@ -243,34 +242,34 @@ if($result = mysqli_query($link, $sql)){
                                     FROM student
                                     INNER JOIN payments on student.grade_level = payments.grade_level 
                                     WHERE student.userId = $parent_id AND student.isPaidUpon = 1";
-                            if($result = mysqli_query($link, $sql)){
-                                if(mysqli_num_rows($result) > 0){
+                            if ($result = mysqli_query($link, $sql)) {
+                                if (mysqli_num_rows($result) > 0) {
                                     echo '<table class="table">';
-                                        echo "<thead>";
+                                    echo "<thead>";
+                                    echo "<tr>";
+                                    echo "<th>Month</th>";
+                                    echo "<th>Payment Amount</th>";
+                                    echo "</tr>";
+                                    echo "</thead>";
+                                    echo "<tbody>";
+                                    while ($row = mysqli_fetch_array($result)) {
+                                        $monthlyPayment = $row['upon_enrollment'] / 10;
+                                        $months = ["August", "September", "October", "November", "December", "January", "February", "March", "April", "May"];
+                                        foreach ($months as $month) {
                                             echo "<tr>";
-                                                echo "<th>Month</th>";
-                                                echo "<th>Payment Amount</th>";
+                                            echo "<td>$month</td>";
+                                            echo "<td>₱" . number_format($monthlyPayment, 2) . "</td>";
                                             echo "</tr>";
-                                        echo "</thead>";
-                                        echo "<tbody>";
-                                        while($row = mysqli_fetch_array($result)){
-                                            $monthlyPayment = $row['upon_enrollment'] / 10;
-                                            $months = ["August", "September", "October", "November", "December", "January", "February", "March", "April", "May"];
-                                            foreach ($months as $month) {
-                                                echo "<tr>";
-                                                    echo "<td>$month</td>";
-                                                    echo "<td>₱" . number_format($monthlyPayment, 2) . "</td>";
-                                                echo "</tr>";
-                                            }
                                         }
-                                        echo "</tbody>";                            
+                                    }
+                                    echo "</tbody>";
                                     echo "</table>";
                                     // Free result set
                                     mysqli_free_result($result);
-                                } else{
+                                } else {
                                     echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
                                 }
-                            } else{
+                            } else {
                                 echo "Oops! Something went wrong. Please try again later.";
                             }
                             ?>
@@ -283,231 +282,230 @@ if($result = mysqli_query($link, $sql)){
     </main><!-- End #main -->
 
     <!-- Modal -->
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="paymentModalLabel">Make a Payment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            
-            <div class="modal-body">
-                <!-- Payment form -->
-                <!-- Payment form -->
-            <!-- Payment form -->
-            <?php
-// Check if there are pending transactions
-$sql_pending = "SELECT COUNT(*) AS pending_count FROM transactions WHERE user_id = $parent_id AND (status = 0 OR status IS NULL)";
-$result_pending = mysqli_query($link, $sql_pending);
-$row_pending = mysqli_fetch_assoc($result_pending);
-$pending_count = $row_pending['pending_count'];
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Make a Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-// If there are pending transactions, prevent making new payments
-if ($pending_count > 0) {
-    echo '<div class="alert alert-danger">You have pending transactions. Please wait for verification before making new payments.</div>';
-} else { ?>
-<form id="paymentForm" method="post" action="make_payment.php" enctype="multipart/form-data">
-<div class="mb-3">
-    <label for="payment_type" class="form-label">Payment Type</label>
-    <select class="form-select" id="payment_type" name="payment_type">
-        <option value="cash">Cash</option>
-        <option value="installment">Installment</option>
-    </select>
-</div>
+                <div class="modal-body">
+                    <!-- Payment form -->
+                    <!-- Payment form -->
+                    <!-- Payment form -->
+                    <?php
+                    // Check if there are pending transactions
+                    $sql_pending = "SELECT COUNT(*) AS pending_count FROM transactions WHERE user_id = $parent_id AND (status = 0 OR status IS NULL)";
+                    $result_pending = mysqli_query($link, $sql_pending);
+                    $row_pending = mysqli_fetch_assoc($result_pending);
+                    $pending_count = $row_pending['pending_count'];
+
+                    // If there are pending transactions, prevent making new payments
+                    if ($pending_count > 0) {
+                        echo '<div class="alert alert-danger">You have pending transactions. Please wait for verification before making new payments.</div>';
+                    } else { ?>
+                        <form id="paymentForm" method="post" action="make_payment.php" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="payment_type" class="form-label">Payment Type</label>
+                                <select class="form-select" id="payment_type" name="payment_type">
+                                    <option value="cash">Cash</option>
+                                    <option value="installment">Installment</option>
+                                </select>
+                            </div>
 
 
-<div id="installmentFields" style="display: none;">
-            <div class="mb-3">
-                <label for="installment_type" class="form-label">Installment Type</label>
-                <select class="form-select" id="installment_type" name="installment_type">
-                    <option value="upon_enrollment">Upon Enrollment</option>
-                    <option value="partial">Partial</option>
-                </select>
+                            <div id="installmentFields" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="installment_type" class="form-label">Installment Type</label>
+                                    <select class="form-select" id="installment_type" name="installment_type">
+                                        <option value="upon_enrollment">Upon Enrollment</option>
+                                        <option value="partial">Partial</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="payment_amount" class="form-label">Payment Amount</label>
+                                <input type="text" class="form-control" id="payment_amount" name="payment_amount" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Payment Method</label>
+                                <div class="form-check">
+                                    <div style="display: inline-block; margin-right: 20px;">
+                                        <label class="form-check-label" for="payment_method_cash">
+                                            <img src="../images/cash_icon.png" alt="Cash Icon" class="payment-icon" style="width: 75px; height: 65px; vertical-align: middle; margin-right: 5px;">
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="payment_method" id="payment_method_cash" value="Cash" checked>
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <label class="form-check-label" for="payment_method_gcash">
+                                            <img src="../images/gcash_icon.png" alt="GCash Icon" class="payment-icon" style="width: 200px; height: 65px; vertical-align: middle; margin-right: 5px;">
+                                        </label>
+                                        <input class="form-check-input" type="radio" name="payment_method" id="payment_method_gcash" value="GCash">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="additionalFields" class="mb-3" style="display: none;">
+
+                                <div class="mb-3" style="text-align: center;">
+                                    <img id="uploadedImage" src="../images/gcash.png" alt="gcash qr">
+                                </div>
+                                <!-- Additional fields for GCash payment method -->
+                                <div class="mb-3">
+                                    <label for="gcash_number" class="form-label">GCash Number</label>
+                                    <input type="text" class="form-control" id="gcash_number" name="gcash_number">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reference_number" class="form-label">Reference Number</label>
+                                    <input type="text" class="form-control" id="reference_number" name="reference_number">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="screenshot" class="form-label">Upload Screenshot</label>
+                                    <input type="file" class="form-control" id="screenshot" name="screenshot">
+                                </div>
+                                <!-- Add more input fields as needed -->
+                            </div>
+                            <!-- Add more fields as needed -->
+                            <button type="submit" class="btn btn-primary">Make Payment</button>
+                        </form>
+                    <?php
+                    }
+                    ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
-
-    <div class="mb-3">
-        <label for="payment_amount" class="form-label">Payment Amount</label>
-        <input type="text" class="form-control" id="payment_amount" name="payment_amount" required>
     </div>
-    <div class="mb-3">
-    <label class="form-label">Payment Method</label>
-    <div class="form-check">
-        <div style="display: inline-block; margin-right: 20px;">
-            <label class="form-check-label" for="payment_method_cash">
-                <img src="../images/cash_icon.png" alt="Cash Icon" class="payment-icon" style="width: 75px; height: 65px; vertical-align: middle; margin-right: 5px;">
-            </label>
-            <input class="form-check-input" type="radio" name="payment_method" id="payment_method_cash" value="Cash" checked>
-        </div>
-        <div style="display: inline-block;">
-            <label class="form-check-label" for="payment_method_gcash">
-                <img src="../images/gcash_icon.png" alt="GCash Icon" class="payment-icon" style="width: 200px; height: 65px; vertical-align: middle; margin-right: 5px;">
-            </label>
-            <input class="form-check-input" type="radio" name="payment_method" id="payment_method_gcash" value="GCash">
-        </div>
-    </div>
-</div>
 
-<div id="additionalFields" class="mb-3" style="display: none;">
+    <?php
 
-    <div class="mb-3" style="text-align: center;">
-        <img id="uploadedImage" src="../images/gcash.png" alt="gcash qr">
-    </div>
-    <!-- Additional fields for GCash payment method -->
-    <div class="mb-3">
-        <label for="gcash_number" class="form-label">GCash Number</label>
-        <input type="text" class="form-control" id="gcash_number" name="gcash_number">
-    </div>
-    <div class="mb-3">
-        <label for="reference_number" class="form-label">Reference Number</label>
-        <input type="text" class="form-control" id="reference_number" name="reference_number">
-    </div>
-    <div class="mb-3">
-        <label for="screenshot" class="form-label">Upload Screenshot</label>
-        <input type="file" class="form-control" id="screenshot" name="screenshot">
-    </div>
-    <!-- Add more input fields as needed -->
-</div>
-    <!-- Add more fields as needed -->
-    <button type="submit" class="btn btn-primary">Make Payment</button>
-</form>
-<?php
-}
-?>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+    require_once "config1.php";
 
-<?php
+    $sql_installment_count = "SELECT COUNT(*) AS installment_count FROM transactions WHERE user_id = $parent_id AND payment_type = 'installment' AND status = 1";
+    $result_installment_count = mysqli_query($link, $sql_installment_count);
+    $row_installment_count = mysqli_fetch_assoc($result_installment_count);
+    $installment_count = $row_installment_count['installment_count'];
 
-require_once "config1.php";
+    // Get the total amount paid by the user
+    $sql = "SELECT SUM(payment_amount) AS total_paid FROM transactions WHERE user_id = $parent_id and status = 1";
+    $totalPaidResult = mysqli_query($link, $sql);
+    $totalPaidRow = mysqli_fetch_assoc($totalPaidResult);
+    $totalPaid = $totalPaidRow['total_paid'];
 
-$sql_installment_count = "SELECT COUNT(*) AS installment_count FROM transactions WHERE user_id = $parent_id AND payment_type = 'installment' AND status = 1";
-$result_installment_count = mysqli_query($link, $sql_installment_count);
-$row_installment_count = mysqli_fetch_assoc($result_installment_count);
-$installment_count = $row_installment_count['installment_count'];
-
-// Get the total amount paid by the user
-$sql = "SELECT SUM(payment_amount) AS total_paid FROM transactions WHERE user_id = $parent_id and status = 1";
-$totalPaidResult = mysqli_query($link, $sql);
-$totalPaidRow = mysqli_fetch_assoc($totalPaidResult);
-$totalPaid = $totalPaidRow['total_paid'];
-
-// Attempt select query execution
-$sql = "SELECT *
+    // Attempt select query execution
+    $sql = "SELECT *
         FROM student
         INNER JOIN payments on student.grade_level = payments.grade_level 
         WHERE student.userId = $parent_id";
-if($result = mysqli_query($link, $sql)){
-    if(mysqli_num_rows($result) > 0){
-        while ($row = mysqli_fetch_array($result)) {
-            $balance = $row['total_whole_year'] + $row['books'] + $row['school_uniform'] + $row['pe_uniform'];
-            $remainingBalance = $balance - $totalPaid;
-            $installment_balance = $row['upon_enrollment'];
-            $partialPayment = $row['partial_upon'];
-
-        }
-        // Free result set
-        mysqli_free_result($result);
-    } else{
-        $installment_balance = $row['upon_enrollment'];
-    }
-} else{
-    echo "Oops! Something went wrong. Please try again later.";
-}
-// Close connection
-mysqli_close($link);
-?>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    var paymentTypeSelect = document.getElementById("payment_type");
-    var paymentAmountInput = document.getElementById("payment_amount");
-    var balance = <?php echo json_encode($remainingBalance); ?>; 
-    var partialUpon = <?php echo json_encode($partialPayment); ?>; 
-    var installment_balance = <?php echo json_encode($installment_balance); ?>; // Assigning the balance to JavaScript variable
-
-    var cashRadio = document.getElementById("payment_method_cash");
-    var gcashRadio = document.getElementById("payment_method_gcash");
-    var additionalFieldsDiv = document.getElementById("additionalFields");
-    var installmentFieldsDiv = document.getElementById("installmentFields");
-    var installmentType = document.getElementById("installment_type");
-
-    // Set initial state based on default selection
-    if (cashRadio.checked) {
-        additionalFieldsDiv.style.display = 'none';
-    } else if (gcashRadio.checked) {
-        additionalFieldsDiv.style.display = 'block';
-    }
-
-    // Add event listeners to radio buttons to toggle additional fields
-    cashRadio.addEventListener("change", function() {
-        additionalFieldsDiv.style.display = 'none';
-    });
-
-    gcashRadio.addEventListener("change", function() {
-        additionalFieldsDiv.style.display = 'block';
-    });
-
-    // Function to update payment amount based on payment type
-    function updatePaymentAmount() {
-        var selectedPaymentType = paymentTypeSelect.value;
-        var selectedInstallmentType = installmentType.value;
-        if (selectedPaymentType === 'cash') {
-            // Set payment amount to the current balance
-            var installmentPaid = <?php echo json_encode($installment_count); ?>;
-            if(installmentPaid > 0){
-                // Divide the remaining balance by 10 if there are paid installments
-                paymentAmountInput.value = balance / 10;
-            } else {
-                paymentAmountInput.value = balance;
+    if ($result = mysqli_query($link, $sql)) {
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_array($result)) {
+                $balance = $row['total_whole_year'] + $row['books'] + $row['school_uniform'] + $row['pe_uniform'];
+                $remainingBalance = $balance - $totalPaid;
+                $installment_balance = $row['upon_enrollment'];
+                $partialPayment = $row['partial_upon'];
             }
-        } else if(selectedPaymentType === 'installment') {
-            // Check if there are any paid transactions with payment type "installment"
-            var installmentPaid = <?php echo json_encode($installment_count); ?>;
-            if(installmentPaid > 0){
-                // Divide the remaining balance by 10 if there are paid installments
-                paymentAmountInput.value = balance / 10;
-            } else {
-                // Otherwise, set payment amount as usual
-                if(selectedInstallmentType === 'upon_enrollment'){
-                    paymentAmountInput.value = installment_balance;
+            // Free result set
+            mysqli_free_result($result);
+        } else {
+            $installment_balance = $row['upon_enrollment'];
+        }
+    } else {
+        echo "Oops! Something went wrong. Please try again later.";
+    }
+    // Close connection
+    mysqli_close($link);
+    ?>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var paymentTypeSelect = document.getElementById("payment_type");
+            var paymentAmountInput = document.getElementById("payment_amount");
+            var balance = <?php echo json_encode($remainingBalance); ?>;
+            var partialUpon = <?php echo json_encode($partialPayment); ?>;
+            var installment_balance = <?php echo json_encode($installment_balance); ?>; // Assigning the balance to JavaScript variable
+
+            var cashRadio = document.getElementById("payment_method_cash");
+            var gcashRadio = document.getElementById("payment_method_gcash");
+            var additionalFieldsDiv = document.getElementById("additionalFields");
+            var installmentFieldsDiv = document.getElementById("installmentFields");
+            var installmentType = document.getElementById("installment_type");
+
+            // Set initial state based on default selection
+            if (cashRadio.checked) {
+                additionalFieldsDiv.style.display = 'none';
+            } else if (gcashRadio.checked) {
+                additionalFieldsDiv.style.display = 'block';
+            }
+
+            // Add event listeners to radio buttons to toggle additional fields
+            cashRadio.addEventListener("change", function() {
+                additionalFieldsDiv.style.display = 'none';
+            });
+
+            gcashRadio.addEventListener("change", function() {
+                additionalFieldsDiv.style.display = 'block';
+            });
+
+            // Function to update payment amount based on payment type
+            function updatePaymentAmount() {
+                var selectedPaymentType = paymentTypeSelect.value;
+                var selectedInstallmentType = installmentType.value;
+                if (selectedPaymentType === 'cash') {
+                    // Set payment amount to the current balance
+                    var installmentPaid = <?php echo json_encode($installment_count); ?>;
+                    if (installmentPaid > 0) {
+                        // Divide the remaining balance by 10 if there are paid installments
+                        paymentAmountInput.value = balance / 10;
+                    } else {
+                        paymentAmountInput.value = balance;
+                    }
+                } else if (selectedPaymentType === 'installment') {
+                    // Check if there are any paid transactions with payment type "installment"
+                    var installmentPaid = <?php echo json_encode($installment_count); ?>;
+                    if (installmentPaid > 0) {
+                        // Divide the remaining balance by 10 if there are paid installments
+                        paymentAmountInput.value = balance / 10;
+                    } else {
+                        // Otherwise, set payment amount as usual
+                        if (selectedInstallmentType === 'upon_enrollment') {
+                            paymentAmountInput.value = installment_balance;
+                        } else {
+                            paymentAmountInput.value = partialUpon;
+                        }
+                    }
                 } else {
-                    paymentAmountInput.value = partialUpon;
+                    paymentAmountInput.value = '';
                 }
             }
-        } else {
-            paymentAmountInput.value = '';
-        }
-    }
 
-    // Set initial state based on default selection
-    updatePaymentAmount();
+            // Set initial state based on default selection
+            updatePaymentAmount();
 
-    // Add event listener to payment type select
-    paymentTypeSelect.addEventListener("change", updatePaymentAmount);
-    installmentType.addEventListener("change", updatePaymentAmount);
+            // Add event listener to payment type select
+            paymentTypeSelect.addEventListener("change", updatePaymentAmount);
+            installmentType.addEventListener("change", updatePaymentAmount);
 
-    function updatePaymentFields() {
-        if (paymentTypeSelect.value === 'installment') {
-            installmentFieldsDiv.style.display = 'block';
-        } else {
-            installmentFieldsDiv.style.display = 'none';
-        }
-    }
+            function updatePaymentFields() {
+                if (paymentTypeSelect.value === 'installment') {
+                    installmentFieldsDiv.style.display = 'block';
+                } else {
+                    installmentFieldsDiv.style.display = 'none';
+                }
+            }
 
-    // Set initial state
-    updatePaymentFields();
+            // Set initial state
+            updatePaymentFields();
 
-    // Add event listener to payment type select
-    paymentTypeSelect.addEventListener("change", updatePaymentFields);
+            // Add event listener to payment type select
+            paymentTypeSelect.addEventListener("change", updatePaymentFields);
 
-});
-</script>
+        });
+    </script>
 
 
 
@@ -516,7 +514,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <?php
 
     include 'script.php';
-  ?>
+    ?>
 
 </body>
 

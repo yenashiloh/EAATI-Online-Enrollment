@@ -111,24 +111,24 @@ if(isset($_GET['verified']) && $_GET['verified'] == 1){
                                         if ($row['status'] == 0 || $row['status'] === null) {
                                         echo '<a href="#" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#verifyModal'.$row['user_id'].'" title="Verify Record" data-toggle="tooltip"><span class="bi bi-check-circle-fill"></span></a>';
                                         // Verification Modal
-echo '
-<div class="modal fade" id="verifyModal'.$row['user_id'].'" tabindex="-1" aria-labelledby="verifyModalLabel'.$row['user_id'].'" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="verifyModalLabel'.$row['user_id'].'">Confirm Verification</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to verify this record?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <a href="verify.php?id='.$row['user_id'].'" class="btn btn-success">Verify</a>
-      </div>
-    </div>
-  </div>
-</div>';
+                                            echo '
+                                            <div class="modal fade" id="verifyModal'.$row['user_id'].'" tabindex="-1" aria-labelledby="verifyModalLabel'.$row['user_id'].'" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="verifyModalLabel'.$row['user_id'].'">Confirm Verification</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to verify this record?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <a href="verify.php?id='.$row['user_id'].'" class="btn btn-success">Verify</a>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            </div>';
 
 
 echo '<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal' . $row['transaction_id'] . '" title="Delete Record"><span class="bi bi-x-circle-fill"></span></button>';

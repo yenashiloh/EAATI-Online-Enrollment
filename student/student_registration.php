@@ -1,12 +1,9 @@
 <?php
-// Your database connection logic
 include 'config.php';
 
-// Start session and error reporting
 session_start();
 error_reporting(E_ALL);
 
-// Check if the user is logged in
 if (!isset($_SESSION['student_id'])) {
     header('location:login.php');
     exit;
@@ -16,7 +13,6 @@ $student_id = $_SESSION['student_id'];
 $error = "";
 $msg = "";
 
-// Get user information
 $query = $conn->prepare("SELECT * FROM users WHERE id = :student_id");
 $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
 $query->execute();
@@ -36,11 +32,15 @@ if (isset($user['role']) && $user['role'] == 'student') {
 }
 
 if (isset($_POST['add_registration'])) {
+
+    // get student information from POST
+    $grade_level_id = $_POST['grade_level'];
     $sname = $_POST['sname'];
     $dob = $_POST['dob'];
     $pob = $_POST['pob'];
     $email = $_POST['email'];
     $age = $_POST['age'];
+    $gender = $_POST['gender'];
     $student_house_number = $_POST['student_house_number'];
     $student_street = $_POST['student_street'];
     $student_barangay = $_POST['student_barangay'];
@@ -50,7 +50,23 @@ if (isset($_POST['add_registration'])) {
     $school_address = $_POST['school_address'];
     $grade_level = $_POST['grade_level'];
 
-    // Handle image upload
+    // get father information from POST
+    $father_name = $_POST['father_name'];
+    $telephone_father = $_POST['telephone_father'];
+    $houseNo_father = $_POST['houseNo_father'];
+    $street_father = $_POST['street_father'];
+    $barangay_father = $_POST['barangay_father'];
+    $municipality_father = $_POST['municipality_father'];
+
+    // get mother information from POST
+    $mother_name = $_POST['mother_name'];
+    $telephone_mother = $_POST['telephone_mother'];
+    $houseNo_mother = $_POST['houseNo_mother'];
+    $street_mother = $_POST['street_mother'];
+    $barangay_mother = $_POST['barangay_mother'];
+    $municipality_mother = $_POST['municipality_mother'];
+
+    // handle image upload
     $uploaded_image_path = '';
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $image_name = $_FILES['image']['name'];
@@ -63,7 +79,7 @@ if (isset($_POST['add_registration'])) {
         }
     }
 
-    // Handle requirements upload
+    // handle requirements upload
     $uploaded_files = [];
     if (isset($_FILES['requirements']) && is_array($_FILES['requirements']['name'])) {
         $file_count = count($_FILES['requirements']['name']);
@@ -93,13 +109,13 @@ if (isset($_POST['add_registration'])) {
         try {
             $conn->beginTransaction();
 
-            // Insert student information
-            $sql = "INSERT INTO student (userId, name, dob, pob, email, age, student_house_number, student_street, 
-                    student_barangay, student_municipality, guardian, previous_school, school_address, grade_level, 
-                    requirements, image_path, isVerified) 
-                    VALUES (:student_id, :sname, :dob, :pob, :email, :age, :student_house_number, :student_street,
-                    :student_barangay, :student_municipality, :guardian, :previous_school, :school_address, 
-                    :grade_level, :requirements, :image_path, 0)";
+            // insert student information
+            $sql = "INSERT INTO student (userId, name, dob, pob, email, age, gender, student_house_number, student_street, 
+            student_barangay, student_municipality, guardian, previous_school, school_address, grade_level_id, 
+            requirements, image_path, isVerified) 
+            VALUES (:student_id, :sname, :dob, :pob, :email, :age, :gender, :student_house_number, :student_street,
+            :student_barangay, :student_municipality, :guardian, :previous_school, :school_address, 
+            :grade_level_id, :requirements, :image_path, 0)";
 
             $query = $conn->prepare($sql);
             $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
@@ -108,6 +124,7 @@ if (isset($_POST['add_registration'])) {
             $query->bindParam(':pob', $pob, PDO::PARAM_STR);
             $query->bindParam(':email', $email, PDO::PARAM_STR);
             $query->bindParam(':age', $age, PDO::PARAM_INT);
+            $query->bindParam(':gender', $gender, PDO::PARAM_STR);
             $query->bindParam(':student_house_number', $student_house_number, PDO::PARAM_STR);
             $query->bindParam(':student_street', $student_street, PDO::PARAM_STR);
             $query->bindParam(':student_barangay', $student_barangay, PDO::PARAM_STR);
@@ -115,19 +132,20 @@ if (isset($_POST['add_registration'])) {
             $query->bindParam(':guardian', $guardian, PDO::PARAM_STR);
             $query->bindParam(':previous_school', $previous_school, PDO::PARAM_STR);
             $query->bindParam(':school_address', $school_address, PDO::PARAM_STR);
-            $query->bindParam(':grade_level', $grade_level, PDO::PARAM_STR);
+            $query->bindParam(':grade_level_id', $grade_level_id, PDO::PARAM_INT);
             $query->bindParam(':requirements', json_encode($uploaded_files), PDO::PARAM_STR);
             $query->bindParam(':image_path', $uploaded_image_path, PDO::PARAM_STR);
 
             $query->execute();
             $new_student_id = $conn->lastInsertId();
 
-            // Insert father information
-            $father_sql = "INSERT INTO father_information (student_id, father_name, telephone_father, houseNo_father, street_father, barangay_father, municipality_father) 
-            VALUES (:student_id, :father_name, :telephone_father, :houseNo_father, :street_father, :barangay_father, :municipality_father)";
+            // insert father information
+            $father_sql = "INSERT INTO father_information (student_id, father_name, telephone_father, houseNo_father, 
+                          street_father, barangay_father, municipality_father) 
+                          VALUES (:student_id, :father_name, :telephone_father, :houseNo_father, :street_father, 
+                          :barangay_father, :municipality_father)";
 
             $father_query = $conn->prepare($father_sql);
-
             $father_query->bindParam(':student_id', $new_student_id, PDO::PARAM_INT);
             $father_query->bindParam(':father_name', $father_name, PDO::PARAM_STR);
             $father_query->bindParam(':telephone_father', $telephone_father, PDO::PARAM_STR);
@@ -138,14 +156,21 @@ if (isset($_POST['add_registration'])) {
 
             $father_query->execute();
 
+            // insert mother information
+            $mother_sql = "INSERT INTO mother_information (student_id, mother_name, telephone_mother, houseNo_mother, 
+                          street_mother, barangay_mother, municipality_mother) 
+                          VALUES (:student_id, :mother_name, :telephone_mother, :houseNo_mother, :street_mother, 
+                          :barangay_mother, :municipality_mother)";
 
-            // Insert mother information
-            $mother_sql = "INSERT INTO mother_information (student_id, mother_name, telephone_mother) 
-                          VALUES (:student_id, :mother_name, :telephone_mother)";
             $mother_query = $conn->prepare($mother_sql);
             $mother_query->bindParam(':student_id', $new_student_id, PDO::PARAM_INT);
             $mother_query->bindParam(':mother_name', $mother_name, PDO::PARAM_STR);
             $mother_query->bindParam(':telephone_mother', $telephone_mother, PDO::PARAM_STR);
+            $mother_query->bindParam(':houseNo_mother', $houseNo_mother, PDO::PARAM_STR);
+            $mother_query->bindParam(':street_mother', $street_mother, PDO::PARAM_STR);
+            $mother_query->bindParam(':barangay_mother', $barangay_mother, PDO::PARAM_STR);
+            $mother_query->bindParam(':municipality_mother', $municipality_mother, PDO::PARAM_STR);
+
             $mother_query->execute();
 
             $conn->commit();
@@ -156,8 +181,6 @@ if (isset($_POST['add_registration'])) {
         }
     }
 }
-
-// HTML template starts here
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -218,7 +241,6 @@ if (isset($_POST['add_registration'])) {
 
                                 if ($count > 0) {
                                     if ($result['isVerified'] == 0) {
-                                        // User is already registered but not verified
                                 ?>
                                         <div class="alert alert-info text-center" style="font-size: 22px;">
                                             Thank you for your submission. We have received your registration.<br>
@@ -248,7 +270,7 @@ if (isset($_POST['add_registration'])) {
                                             <option value="">Select Grade Level</option>
                                             <?php
                                             include "config1.php";
-                                            // Fetch grade levels from database
+
                                             $sql = "SELECT * FROM gradelevel";
                                             $result = mysqli_query($link, $sql);
                                             while ($row = mysqli_fetch_assoc($result)) {
@@ -258,6 +280,7 @@ if (isset($_POST['add_registration'])) {
                                         </select>
                                     </div>
                                 </div>
+
                                 <form method="post" name="add_registration" onSubmit="return valid();" enctype="multipart/form-data" id="registrationForm" style="display: none;">
                                     <!-- Personal Information Section -->
                                     <div class="row mb-3 justify-content-center">
@@ -291,7 +314,15 @@ if (isset($_POST['add_registration'])) {
                                             <input type="text" class="form-control" id="pob" name="pob" required>
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-3">
+                                            <label for="gender" class="form-label">Gender</label>
+                                            <select class="form-control" id="gender" name="gender" required>
+                                                <option value="">-- Select Gender --</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
                                             <label for="email" class="form-label">Email Address</label>
                                             <input type="email" class="form-control" id="email" name="email" value="<?php echo isset($student_email) ? htmlspecialchars($student_email) : ''; ?>" required>
                                         </div>
@@ -462,25 +493,28 @@ if (isset($_POST['add_registration'])) {
             var selectedGradeLevel = this.value;
 
             if (selectedGradeLevel !== '') {
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'check_enrollment.php');
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        var response = JSON.parse(xhr.responseText);
-                        if (response.enrollmentExists) {
-                            registrationForm.style.display = 'block';
-                            registrationForm.insertBefore(gradeLevelContainer, registrationForm.firstChild);
-                        } else {
-                            var enrollmentModal = new bootstrap.Modal(document.getElementById('enrollmentModal'));
-                            enrollmentModal.show();
-                            registrationForm.style.display = 'none';
-                        }
+                fetch('check_enrollment.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'grade_level=' + selectedGradeLevel
+                })
+                .then(response => response.json())
+                .then(response => {
+                    if (response.status === 'For Review' || response.status === 'Declined' || !response.enrollmentExists) {
+                        var enrollmentModal = new bootstrap.Modal(document.getElementById('enrollmentModal'));
+                        enrollmentModal.show();
+                        registrationForm.style.display = 'none';
                     } else {
-                        alert('Error: Unable to check enrollment schedule. Please try again.');
+                        registrationForm.style.display = 'block';
+                        registrationForm.insertBefore(gradeLevelContainer, registrationForm.firstChild);
                     }
-                };
-                xhr.send('grade_level=' + selectedGradeLevel);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error: Unable to check enrollment schedule. Please try again.');
+                });
             } else {
                 registrationForm.style.display = 'none';
             }
