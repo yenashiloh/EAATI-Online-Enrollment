@@ -15,13 +15,15 @@ $error = $msg = "";
 $student = $father = $mother = [];
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-
-    $sql = "SELECT * FROM student WHERE student_id = :id";
+    $sql = "SELECT s.*, g.gradelevel_name FROM student s
+            LEFT JOIN gradelevel g ON s.grade_level_id = g.gradelevel_id
+            WHERE s.student_id = :id";
     $query = $conn->prepare($sql);
     $query->bindParam(':id', $id, PDO::PARAM_INT);
     $query->execute();
     $student = $query->fetch(PDO::FETCH_ASSOC);
 
+    // Other queries remain the same
     $sql_father = "SELECT * FROM father_information WHERE student_id = :id";
     $query_father = $conn->prepare($sql_father);
     $query_father->bindParam(':id', $id, PDO::PARAM_INT);
@@ -110,9 +112,13 @@ $grades = $query_grades->fetchAll(PDO::FETCH_ASSOC);
                                             <label for="pob" class="form-label">Place of Birth</label>
                                             <input type="text" class="form-control" id="pob" name="pob" value="<?php echo $student['pob']; ?>" disabled>
                                         </div>
-                                        <div class="col-md-4">
-                                            <label for="pob" class="form-label">Place of Birth</label>
-                                            <input type="text" class="form-control" id="age" name="age" readonly value="<?php echo $student['age']; ?>" disabled>
+                                        <div class="col-md-2">
+                                            <label for="pob" class="form-label">Age</label>
+                                            <input type="text" class="form-control" id="age" name="age" readonly value="<?php echo $student['age']; ?> years old" disabled>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="pob" class="form-label">Gender</label>
+                                            <input type="text" class="form-control" id="gender" name="gender" readonly value="<?php echo $student['gender']; ?>" disabled>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -227,16 +233,16 @@ $grades = $query_grades->fetchAll(PDO::FETCH_ASSOC);
 
                                     <hr size=8 noshade>
                                     <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="grade_level" class="form-label">Grade Level</label>
-                                            <select class="form-select" id="grade_level" name="grade_level" disabled>
-                                                <?php foreach ($grades as $grade): ?>
-                                                    <option value="<?php echo $grade['gradelevel_id']; ?>" <?php if ($student['grade_level'] == $grade['gradelevel_id']) echo 'selected'; ?>>
-                                                        <?php echo $grade['gradelevel_name']; ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
+                                    <div class="col-md-6">
+                                        <label for="grade_level" class="form-label">Grade Level</label>
+                                        <select class="form-select" id="grade_level" name="grade_level" disabled>
+                                            <?php foreach ($grades as $grade): ?>
+                                                <option value="<?php echo $grade['gradelevel_id']; ?>" <?php if ($student['grade_level_id'] == $grade['gradelevel_id']) echo 'selected'; ?>>
+                                                    <?php echo $grade['gradelevel_name']; ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
                                         <div class="col-md-6" style="margin-top: 20px;">
                                             <label for="requirements" class="form-label">Uploaded Requirements:</label>
                                             <?php

@@ -1,17 +1,23 @@
 <?php
-
 include 'config.php';
-
 session_start();
-
 $registrar_id = $_SESSION['registrar_id'];
-
 if(!isset($registrar_id)){
    header('location:login.php');
-   exit; // Add exit to stop further execution
+   exit; 
 }
 
-?>
+if(isset($_GET['verified']) && $_GET['verified'] == 1){
+    $id = $_GET['id']; 
+
+    $sql = "UPDATE student SET isVerified = 1 WHERE student_id = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $success_message = "Student Verified Successfully!";
+}
+    ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -54,17 +60,16 @@ if(!isset($registrar_id)){
                     <div class="card-body">
                         <h5 class="card-title"></h5>
                         <?php
-                        // Check if the 'deleted' parameter is set and equals to 1
-                        if(isset($_GET['verified']) && $_GET['verified'] == 1){
-                            echo "<div class='alert alert-success'>Record verified successfully.</div>";
-                        }
-                        ?>
+                            if(isset($_GET['verified']) && $_GET['verified'] == 1){
+                                echo "<div class='alert alert-success alert-dismissible fade show' role='alert'>
+                                    Student Verified Successfully!
+                                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                                </div>";
+                            }
+                            ?>
                     </div>
                     <?php
-                    // Include config file
                     require_once "config1.php";
-
-                    // Attempt select query execution
                     $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id";
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
@@ -74,24 +79,32 @@ if(!isset($registrar_id)){
                                         echo "<th>Name</th>";
                                         echo "<th>Date of Birth</th>";
                                         echo "<th>Email</th>";
-                                        
+                                        echo "<th>Status</th>";
                                         echo "<th>Action</th>";
                                     echo "</tr>";
                                 echo "</thead>";
                                 echo "<tbody>";
-                                while($row = mysqli_fetch_array($result)){
+                                while ($row = mysqli_fetch_array($result)) {
+                        
                                     echo "<tr>";
                                         echo "<td>" . $row['name'] . "</td>";
                                         echo "<td>" . $row['dob'] . "</td>";
                                         echo "<td>" . $row['email'] . "</td>";
-                                        
+                                        echo "<td>" . ($row['isVerified'] == 1 ? 'Verified' : 'Not Verified') . "</td>";
+
                                         echo "<td>";
                                         
                                         echo '<a href="view_record.php?id='.$row['student_id'].'" class="btn btn-info" title="View Record"><span class="bi bi-eye-fill"></span></a>';    
                                             echo '  ';
+                                            if ($row['isVerified'] == 0) {
+                                                echo '<a href="students.php?verified=1&id=' . $row['student_id'] . '" class="btn btn-success" title="Verify" data-toggle="tooltip"><span class="bi bi-check-circle"></span></a>';
+                                            } else {
+                                                echo '<span class="btn btn-success" title="Verified" data-toggle="tooltip" style="display:none;"><span class="bi bi-check-circle"></span></span>';
+                                            }
+                                            
+                                            echo '  ';
                                             echo '<a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal'.$row['id'].'" title="Delete Record" data-toggle="tooltip"><span class="bi bi-trash-fill"></span></a>';
-
-                                            // Delete Modal
+                                        
                                             echo '
                                             <div class="modal fade" id="deleteModal'.$row['id'].'" tabindex="-1" aria-labelledby="deleteModalLabel'.$row['id'].'" aria-hidden="true">
                                               <div class="modal-dialog">
@@ -126,7 +139,6 @@ if(!isset($registrar_id)){
                         echo "Oops! Something went wrong. Please try again later.";
                     }
 
-                    // Close connection
                     mysqli_close($link);
                     ?>
 

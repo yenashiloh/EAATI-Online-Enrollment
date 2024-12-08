@@ -74,7 +74,7 @@ if (!isset($student_id)) {
                 die("Connection failed: " . mysqli_connect_error());
               }
 
-              $sql = "SELECT * FROM student WHERE userId = $student_id"; // Assuming user_id 1 for demonstration
+              $sql = "SELECT * FROM student WHERE userId = $student_id"; 
 
               $result = mysqli_query($conn, $sql);
 
@@ -83,7 +83,8 @@ if (!isset($student_id)) {
                 while ($row = mysqli_fetch_assoc($result)) {
                   echo '<img src="' . $row["image_path"] . '" alt="Profile" class="rounded-circle" width="150" height="150">';
                   echo '<h2>' . $row["name"] . '</h2>';
-                  echo '<h3>' . $row["grade_level"] . '</h3>';
+                  echo '<br>';
+                  echo '<h3> Grade ' . $row["grade_level_id"] . '</h3>';
                 }
               } else {
                 echo "0 results";
