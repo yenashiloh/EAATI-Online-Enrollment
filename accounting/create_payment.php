@@ -6,7 +6,7 @@ error_reporting(0);
 $accounting_id = $_SESSION['accounting_id'];
 
 if(!isset($accounting_id)) {
-    header('location:login.php');
+    header('location:../login.php');
 } else {
     if(isset($_POST['add_payment'])) {
         // Database connection assumed to be established in config.php
@@ -40,7 +40,7 @@ if(!isset($accounting_id)) {
             $query->bindParam(':partial_upon_divided', $partial_upon_divided, PDO::PARAM_STR);
         
         if($query->execute()) {
-            $msg = "Payment Added Successfully";
+            $msg = "Payment Added Successfully!";
         } else {
             $error = "Something went wrong. Please try again";
         }
@@ -48,139 +48,121 @@ if(!isset($accounting_id)) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>Add Payment</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<?php
+			include 'link.php';
+		?>
 
-  <title>Dashboard</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+        <style>
+        .custom-bullet li {
+            list-style-type: disc; 
+            margin-left: 20px;
+        }
+        </style>
 
-  <?php include 'asset.php';?>
+	</head>
+	<body class="sidebar-light">
+    <?php
+		include 'header.php';
+		include 'sidebar.php';
+    ?>
 
-</head>
+		<div class="mobile-menu-overlay"></div>
+		<div class="main-container">
+			<div class="pd-ltr-20 xs-pd-20-10">
+				<div class="min-height-200px">
+					<div class="page-header">
+						<div class="row">
+							<div class="col-md-12 col-sm-12">
+								<div class="title">
+									<h4>Add Payment</h4>
+								</div>
+								<nav aria-label="breadcrumb" role="navigation">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="accounting_dashboard.php">Dashboard</a>
+										</li>
+                                        <li class="breadcrumb-item">
+											<a href="payment.php">Payment</a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">
+											Add Payment
+										</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+		
+                    <div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
+                    <!-- Success and Error Messages -->
+                    <?php if ($error) { ?>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo htmlentities($error); ?>
+                        </div>
+                    <?php } else if ($msg) { ?>
+                        <div class="alert alert-success" role="alert">
+                        <?php echo htmlentities($msg); ?>
+                        </div>
+                    <?php } ?>
 
-<body>
+                    <form class="row g-3" method="post" name="add_payment" onSubmit="return valid();">
+                        <!-- Grade Level and Upon Enrollment (Same Row) -->
+                        <div class="col-md-6 mb-3">
+                            <label for="grade_level" class="form-label">Grade Level</label>
+                            <select class="custom-select col-12" id="grade_level" name="grade_level" required>
+                                <option value="">Select Grade Level</option>
+                                <?php
+                                include "config1.php";
+                                $sql = "SELECT * FROM gradelevel";
+                                $result = mysqli_query($link, $sql);
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    echo "<option value='" . $row['gradelevel_id'] . "'>" . $row['gradelevel_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="upon_enrollment" class="form-label">Upon Enrollment</label>
+                            <input type="number" class="form-control" id="upon_enrollment" name="upon_enrollment">
+                        </div>
 
-<?php 
-    include 'header.php';
-    include 'sidebar.php';
-?>
+                        <!-- Total Tuition Fee  -->
+                        <div class="col-6 mb-3">
+                            <label for="total_whole_year" class="form-label">Total Tuition Fee</label>
+                            <input type="number" class="form-control" id="total_whole_year" name="total_whole_year">
+                        </div>
 
-<main id="main" class="main">
+                        <!-- Additional Fees List -->
+                        <div class="col-6 mb-3">
+                            <ul class="custom-bullet ms-3">
+                                <li>Miscellaneous</li>
+                                <li>ID / Test Paper</li>
+                                <li>Card</li>
+                                <li>Developmental</li>
+                                <li>Computer Basic</li>
+                                <li>Laboratory / Library</li>
+                            </ul>
+                        </div>
 
-<div class="card">
-            <div class="card-body">
-              <h5 class="card-title"></h5>
-
-              <form class="row g-3"  method="post" name="add_payment" onSubmit="return valid();">
-              <?php if($error){?>
-                                <div class="alert alert-danger" role="alert">
-                                    <strong>ERROR</strong>: <?php echo htmlentities($error); ?>
-                                </div>
-                                <?php } else if($msg){?>
-                                <div class="alert alert-success" role="alert">
-                                    <strong>SUCCESS</strong>: <?php echo htmlentities($msg); ?>
-                                </div>
-                                <?php }?>
-                                <div class="row mb-3">
-    <label for="grade_level" class="col-sm-2 col-form-label">Grade Level</label>
-    <div class="col-md-4">
-        <select class="form-select" id="grade_level" name="grade_level" required>
-                            <option value="">Select Grade Level</option>
-                            <?php
-                            include "config1.php";
-                            // Fetch grade levels from database
-                            $sql = "SELECT * FROM gradelevel";
-                            $result = mysqli_query($link, $sql);
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                echo "<option value='" . $row['gradelevel_id'] . "'>" . $row['gradelevel_name'] . "</option>";
-                            }
-                            ?>
-                        </select>
-    </div>
-    <label for="upon_enrollment" class="col-sm-2 col-form-label">Upon Enrollment</label>
-    <div class="col-md-4">
-        <input type="number" class="form-control" id="upon_enrollment" name="upon_enrollment">
-        <ul>
-  <li>Miscellaneous</li>
-  <li>ID / Test Paper</li>
-  <li>Card</li>
-  <li>Developmental</li>
-  <li>Computer Basic</li>
-  <li>Laboratory / Library</li>
-</ul>  
-    </div>
-</div>
-<div class="row mb-3">
-    <label for="total_whole_year" class="col-sm-2 col-form-label">Total Tuition Fee</label>
-    <div class="col-md-4">
-        <input type="number" class="form-control" id="total_whole_year" name="total_whole_year">
-    </div>
-    <!-- <label for="pe_uniform" class="col-sm-2 col-form-label">P.E Uniform</label>
-    <div class="col-md-4">
-        <input type="number" class="form-control" id="pe_uniform" name="pe_uniform">
-    </div> -->
-
-   <!--  <label for="partial_upon" class="col-sm-2 col-form-label">Partial Upon</label>
-    <div class="col-md-4">
-        <input type="number" class="form-control" id="partial_upon" name="partial_upon">
-    </div> -->
-    
-</div>
-
-                                <div class="row mb-3">
-    <!-- <label for="tuition_june_to_march" class="col-sm-2 col-form-label">Tuition August to May</label>
-    <div class="col-md-4">
-        <input type="number" class="form-control" id="tuition_june_to_march" name="tuition_june_to_march">
-    </div> -->
-</div>
-
-
-<!-- <div class="row mb-3">
-    <label for="books" class="col-sm-2 col-form-label">Books</label>
-    <div class="col-md-4">
-        <input type="number" class="form-control" id="books" name="books">
-    </div>
-    <label for="school_uniform" class="col-sm-2 col-form-label">School Uniform</label>
-    <div class="col-md-4">
-        <input type="number" class="form-control" id="school_uniform" name="school_uniform">
-    </div>
-</div> -->
-<!-- <div class="row mb-3">
-<label for="upon_enrollment_divided" class="col-sm-2 col-form-label">Upon Enrollment (August - May)</label>
-    <div class="col-md-4">
-        <input type="number" class="form-control" id="upon_enrollment_divided" name="upon_enrollment_divided" readonly>
-    </div>
-
-    <label for="partial_upon_divided" class="col-sm-2 col-form-label">Partial Upon (August - May)</label>
-    <div class="col-md-4">
-        <input type="number" class="form-control" id="partial_upon_divided" name="partial_upon_divided" readonly>
-    </div>
-</div> -->
-<div class="text-center">
-                        <button type="submit" class="btn btn-primary" name="add_payment">Submit</button>
-                        <button type="reset" class="btn btn-secondary">Reset</button>
-                    </div>
-              </form><!-- End Horizontal Form -->
-
+                        <!-- Submit and Reset Buttons -->
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary" name="add_payment">Submit</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-          </div>
-</main><!-- End #main -->
+		</div>
 
-
-
-  <?php
-    include 'footer.php';
-    include 'script.php';
-  ?>
-
-
-
-
-</body>
-
+		<?php
+		    include 'footer.php';
+        ?>
+		<?php } ?>
+	</body>
 </html>
-<?php } ?>

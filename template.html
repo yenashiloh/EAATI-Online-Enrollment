@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learner's Observed Values Report</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+             max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 2px solid #000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .report-header {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        .core-values {
+            margin-bottom: 20px;
+        }
+        .core-values h5 {
+            font-weight: bold;
+        }
+        .marking-table {
+        border-collapse: collapse;
+        width: 55%; 
+        margin-top: 10px;
+    }
+
+ 
+        .grading-scale {
+            margin-bottom: 20px;
+        }
+        .grading-scale h5 {
+            font-weight: bold;
+        }
+        .remarks {
+            margin-bottom: 20px;
+        }
+        .remarks h5 {
+            font-weight: bold;
+        }
+        .signature-section {
+            margin-bottom: 20px;
+        }
+        .signature-section h5 {
+            font-weight: bold;
+        }
+        .attendance-table {
+            width: 60%;
+      
+        }
+        .attendance-table th, .attendance-table td {
+            border: 1px solid #000;
+            text-align: center;
+        }
+        .attendance-table th {
+            writing-mode: vertical-rl; 
+            transform: rotate(180deg); 
+            white-space: nowrap;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .table-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    .core-table {
+        border-collapse: collapse;
+        width: 60%; /* Adjust width as needed */
+    }
+
+    .core-table th, .core-table td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .core-table thead th {
+        text-align: center;
+    }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="report-header">
+            <h4>REPORT ON LEARNER'S OBSERVED VALUES</h4>
+        </div>
+        <div class="table-container">
+            <table class="core-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Core Values</th>
+                        <th rowspan="2">Behavior Statements</th>
+                        <th colspan="4" style="text-align: center; width: 50%;">Quarter</th>
+                    </tr>
+                    <tr>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1. Maka-Diyos</td>
+                        <td> Expresses one's spiritual <br> beliefs while respecting <br> beliefs of others.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>2. Makatao </td>
+                        <td>Shows adherence to <br> ethical principles by <br> upholding truth. <br><hr style="height: 1px; background-color: black; border: none;">Is sensitive to individual, <br> social, and cultural <br> differences.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>3. Maka-Kalikasan  </td>
+                        <td>Cares for the environment <br> and utilizes resources <br> wisely, judiciously, and <br> economically.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>4. Maka-Bansa</td>
+                        <td>Demonstrates pride in <br> being a Filipino; exercises <br> the rights and <br> responsibilities of a <br> Filipino citizen. <br> <hr style="height: 1px; background-color: black; border: none;">Demonstrates appropriate <br> behavior in carrying out <br> activities in the school, <br> community, and country</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-container">
+            <table class="marking-table">
+                <thead>
+                    <tr>
+                        <th>Marking</th>
+                        <th>Non-numerical Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AO</td>
+                        <td>Always Observed</td>
+                    </tr>
+                    <tr>
+                        <td>SO</td>
+                        <td>Sometimes Observed</td>
+                    </tr>
+                    <tr>
+                        <td>RO</td>
+                        <td>Rarely Observed</td>
+                    </tr>
+                    <tr>
+                        <td>NO</td>
+                        <td>Not Observed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+        <div class="table-container">
+            <table class="marking-table">
+                <thead>
+                    <tr>
+                        <th>Descriptors</th>
+                        <th>Grading Scale</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Outstanding</td>
+                        <td>90-100</td>
+                        <td>Passed</td>
+                    </tr>
+                    <tr>
+                        <td>Very Satisfactory </td>
+                        <td>85-89</td>
+                        <td>Passed</td>
+                    </tr>
+                    <tr>
+                        <td>Satisfactory</td>
+                        <td>80-84</td>
+                        <td>Passed</td>
+                    </tr>
+                    <tr>
+                        <td>Fairly Satisfactory </td>
+                        <td>75-79</td>
+                        <td>Passed</td>
+                    </tr>
+                    <tr>
+                        <td>Did Not Meet Expectations</td>
+                        <td>Below 75</td>
+                        <td>Failed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h5 style="text-align: center;   font-weight: bold; margin-top: 40px;">Parent/Guardian's Signature</h5>
+        <div style="text-align: center; margin-bottom: 10px;">1<sup>st</sup> Quarter ______________________________________________________</div>
+        <div style="text-align: center; margin-bottom: 10px;">2<sup>nd</sup> Quarter ______________________________________________________</div>
+        <div style="text-align: center; margin-bottom: 10px;">3<sup>rd</sup> Quarter ______________________________________________________</div>
+        <div style="text-align: center; margin-bottom: 10px; ">4<sup>th</sup> Quarter ______________________________________________________</div>
+
+
+        <div style="text-align: center; margin-bottom: 10px; font-weight: bold;">Promoted to grade: _______________________________________________</div>
+        <div style="text-align: center; margin-bottom: 10px; font-weight: bold;">Eligible for Admission to Grade: ____________________________________</div>
+
+        <div style="text-align: center; margin-bottom: 10px; font-weight: bold; margin-right: 490px;">Approved:</div>
+        <div style="text-align: center; margin-right: 340px;  text-decoration: underline;">FE H. VERGARA</div>
+        <div style="text-align: center; margin-bottom: 10px; margin-right: 340px;  ">Principal</div>
+
+    <div class="table-container">
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>August</th>
+                    <th>September</th>
+                    <th>October</th>
+                    <th>November</th>
+                    <th>December</th>
+                    <th>January</th>
+                    <th>February</th>
+                    <th>March</th>
+                    <th>April</th>
+                    <th>May</th>
+                    <th>June</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: left;">No. of <br> School Days</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">No. of <br> Days Present</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">No. of <br> Days Absent</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

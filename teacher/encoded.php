@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 // Check if the user is logged in
 $teacher_id = $_SESSION['teacher_id'];
 if (!isset($teacher_id)) {
-    header('location:login.php');
+    header('location:../login.php');
     exit; // Stop further execution
 }
 

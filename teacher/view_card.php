@@ -1,427 +1,654 @@
 <?php
-// Include config file
-require_once "config1.php";
+include 'config.php';
+include 'config1.php';
+session_start();
 
-echo '<style>
-    body {
-        font-size: 12px; /* Change this to your desired font size */
-    }
-    .container {
-        display: flex;
-    }
-    .column1 {
-        float: left;
-        width: 50%;
-      }
-      .column2 {
-        float: left;
-        width: 33%;
-      }
-      
-      /* Clear floats after the columns */
-      .row:after {
-        content: "";
-        display: table;
-        clear: both;
-      }
-    .column {
-        flex: 50%;
-        padding: 10px;
-    }
-    table, th, td {
-        border: 1px solid black;
-        border-collapse: collapse;
-        font-size: 12px;
-    }
-    td {
-        text-align: center;
-    }
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-    .header2 {
-        
-        margin-bottom: 10px;
-    }
-    .header1 {
-        text-align: center;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-    .header img {
-        width: 100px; /* Adjust as needed */
-        height: 100px; /* Adjust as needed */
-    }
-    .header h1 {
-        text-align: center;
-        margin: 0;
-        padding: 0;
-    }
-    .student-details {
-        margin-bottom: 5px;
-        text-decoration: underline;
-        text-decoration-thickness: 2px; 
-    }
-    .indent-par {
-        text-indent: 80px; /* Adjust the value as needed */
-    }
-    .verticalTableHeader {
-        text-align:center;
-        white-space:nowrap;
-        transform-origin:50% 50%;
-        -webkit-transform: rotate(-90deg);
-        -moz-transform: rotate(-90deg);
-        -ms-transform: rotate(-90deg);
-        -o-transform: rotate(-90deg);
-        transform: rotate(-90deg);
-        
-    }
-    .verticalTableHeader:before {
-        content:"";
-        padding-top:100%;/* takes width as reference, + 10% for faking some extra padding */
-        display:inline-block;
-        vertical-align:middle;
-    }
-    
-</style>';
+$teacher_id = $_SESSION['teacher_id'];
 
-// Check if student_id is set in the URL and is a valid integer
-if(isset($_GET['id']) && ctype_digit($_GET['id'])){
-    $student_id = $_GET['id'];
-    
-    // Prepare and execute SQL query to fetch student details
-    $sql_student = "SELECT * FROM student INNER JOIN gradelevel on student.grade_level = gradelevel.gradelevel_id 
-    WHERE student_id = ?";
-    if($stmt_student = mysqli_prepare($link, $sql_student)){
-        mysqli_stmt_bind_param($stmt_student, "i", $student_id);
-        if(mysqli_stmt_execute($stmt_student)){
-            $result_student = mysqli_stmt_get_result($stmt_student);
-            $student = mysqli_fetch_assoc($result_student);
-        } else {
-            echo "Error executing the student query.";
-        }
-    } else {
-        echo "Error preparing the student query.";
-    }
-
-    // Prepare and execute SQL query for the report card
-    $sql = "SELECT * FROM student 
-            INNER JOIN encodedgrades ON student.student_id = encodedgrades.student_id
-            INNER JOIN gradelevel on student.grade_level = gradelevel.gradelevel_id
-            INNER JOIN schedules ON encodedgrades.schedule_id = schedules.id
-            INNER JOIN subjects ON schedules.subject_id = subjects.subject_id
-            WHERE student.student_id = ?";
-    if($stmt = mysqli_prepare($link, $sql)){
-        mysqli_stmt_bind_param($stmt, "i", $student_id);
-        if(mysqli_stmt_execute($stmt)){
-            $result = mysqli_stmt_get_result($stmt);
-            if(mysqli_num_rows($result) > 0){
-                // Initialize variables for computing the general weighted average
-                $total_final_grade = 0;
-                $num_subjects = 0;
-
-                echo '
-                
-                <div class="container">
-                    <div class="column">
-                        <div class="header">
-                            <img src="../images/logo.png" alt="Left Image">
-                            <center><p><b>Republic of the Philippines<br>
-                            DEPARTMENT OF EDUCATION<br>
-                            National Capital Region<br>
-                            DIVISION OF TAGUIG CITY AND PATEROS
-                            </b></p></center>
-                            <img src="../images/deped.png" alt="Right Image">
-                        </div>
-                        <div class="header1">
-                            <center><p><b>EASTERN ACHIEVER ACADEMY OF TAGUIG INC.
-                            </b></p></center>
-                        </div>
-                        <div class="header1">
-                            <center><p><b>REPORT CARD
-                            </b></p></center>
-                        </div>
-                        <div class="header2">
-                            Name: <span class="student-details">'.$student['name'].'________________________</span><br>
-                            LRN: <span class="student-details">________________________</span>
-                            AGE: <span class="student-details">'.$student['age'].'_______________________</span><br>
-                            Grade: <span class="student-details">'.$student['gradelevel_name'].'________________</span>
-                            <br>
-                            Section: <span class="student-details">'.$student['gradelevel_name'].'________________</span>
-                            School Year: <span class="student-details">2024-2025__________</span>
-                        </div>
-                        
-                        <div>
-                            <p>Dear Parent:</p>
-                            <p class="indent-par">This report card shows the ability and progress your child<br>
-                            has made in the different learning areas as well as his/her core values.</p>
-                            <p class="indent-par">The school welcomes you should you desire to know more<br>
-                            about your childs progress.</p>
-                        </div>
-                        <div>
-                            <span class="student-details">FE H. VERGARA</span>
-                            <br>Principal
-                        </div>
-                        <div>
-                            <center><p><b>REPORT ON LEARNING PROGRESS AND ACHIEVEMENT
-                            </b></p></center>
-                        </div>
-                        
-                        <table style="width:100%">
-                            <tr>
-                                <th></th>
-                                <td colspan="4">QUARTER</td>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th>SUBJECTS</th>
-                                <th>1</th>
-                                <th>2</th>
-                                <th>3</th>
-                                <th>4</th>
-                                <th>FINAL GRADE</th>
-                            </tr>';
-                            while($row = mysqli_fetch_assoc($result)){
-                                $final_grade = intval(($row['quarter1'] + $row['quarter2'] + $row['quarter3'] + $row['quarter4']) / 4);
-                                $total_final_grade += $final_grade; // Add the final grade to the total
-                                $num_subjects++; // Increment the number of subjects
-                                echo '<tr>
-                                        <td>'.$row['subject_name'].'</td>
-                                        <td>'.intval($row['quarter1']).'</td>
-                                        <td>'.intval($row['quarter2']).'</td>
-                                        <td>'.intval($row['quarter3']).'</td>
-                                        <td>'.intval($row['quarter4']).'</td>
-                                        <td>'.number_format($final_grade).'</td>
-                                    </tr>';
-                            }
-
-                            // Calculate the general weighted average
-                            $general_weighted_average = $total_final_grade / $num_subjects;
-
-                            // Output the row for general weighted average
-                            echo '<tr>
-                                    <td colspan="5"><b>General Weighted Average</b></td>
-                                    <td>'.number_format($general_weighted_average).'</td>
-                                </tr>';
-
-                            echo '</table>
-                    </div>
-                    <div class="column">
-                        <div class="header1">
-                        <center><p><b>REPORT ON LEARNERS OBSERVED VALUES 
-                        </b></p></center>   
-                        </div>
-                        <table style="width: 100%;"> 
-                        <thead> 
-                        <tr> 
-                            <th>Core Values</th> <!-- First column -->
-                            <th>Behavior Statements</th> <!-- Second column -->
-                            <th colspan="4">Quarter</th>
-                        </tr> 
-                    </thead> 
-                    <tbody> 
-                    <tr>
-                    <td></td>
-                    <td></td>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>3</th>
-                    <th>4</th>
-                    </tr>
-                        <tr> 
-                            <td rowspan="2">1. Maka-Diyos</td> <!-- First column -->
-                            <td>Expresses one`s  spiritual beliefs while respecting beliefs of others</td> <!-- Second column -->
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr> 
-                        <tr> 
-                            <td>Shows adherence to ethical principles by upholding truth.</td> <!-- Second column -->
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr> 
-                        <tr> 
-                            <td rowspan="2">2. Makatao</td> <!-- First column -->
-                            <td>Is sensitive to individual, social, and cultural differences</td> <!-- Second column -->
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr> 
-                        <tr> 
-                            <td>Demonstrates contributions toward solidarity.</td> <!-- Second column -->
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr> 
-                        <tr> 
-                            <td>3. Maka-kalikasan</td> <!-- First column -->
-                            <td>Cares for the environment and utilizes resources wisely, judiciously and<br>economically</td> <!-- Second column -->
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr> 
-                    
-                        <tr> 
-                            <td rowspan="2">4. Maka-Bansa </td> <!-- First column -->
-                            <td>Demonstrates pride in being a filipino, exercises
-                            the rights and
-                            responsibilities of a filipino citizen</td> <!-- Second column -->
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr> 
-                        <tr> 
-                            <td>Demonstrates appropriate behavior in carrying out activities in the school, community, and country</td> <!-- Second column -->
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr> 
-                    </tbody> 
-</table>
-
-<div class="row" style="text-align: center;">
-  <div class="column1">
-        <p><b>Marking</b><br>
-        AO<br>
-        SO<br>
-        RO<br>
-        NO</p>
-  </div>
-  <div class="column1"><p><b>Non-numerical rating</b><br>
-  Always Observed<br>
-        Sometimes Observed<br>
-        Rarely Observed<br>
-        Not Observed</p></div>
-</div>
-
-<div class="row" style="text-align: center;">
-  <div class="column2">
-        <p><b>Descriptors</b><br>
-        Outstanding<br>
-        Very Satisfactory<br>
-        Satisfactory<br>
-        Fairly Satisfactory<br>
-        Did not Meet Expectations</p>
-  </div>
-  <div class="column2"><p><b>Grading Scale</b><br>
-  90-100<br>
-        85-89<br>
-        80-84<br>
-        75-79<br>
-        Below 75</p></div>
-        <div class="column2"><p><b>Remarks</b><br>
-        Passed<br>
-        Passed<br>
-        Passed<br>
-        Passed<br>
-        Failed</p></div>     
-</div>
-<div class="row">
-<div class="column1" style="text-align:center;">
-<p><b>Parent/Guardian`s Signature</b></p>
-<p>1<sup>st</sup> Quarter ______________________________</p>
-<p>2<sup>nd</sup> Quarter ______________________________</p>
-<p>3<sup>rd</sup> Quarter ______________________________</p>
-<p>4<sup>th</sup> Quarter ______________________________</p>
-</div>
-<div class="column1">
-<p><b>Promoted to grade:__________________________________</b></p>
-<p><b>Eligible for admission to Grade:_______________________</b></p>
-<p><b>Approved:</b></p>
-<p style="margin-left: 80px;"><span class="student-details">FE H. VERGARA</span>
-<br>Principal</p>
-</div>
-</div>
-
-<table style="width:100%">
-    <tr>
-      <th></th>
-      <th class="verticalTableHeader">August</th>
-      <th class="verticalTableHeader">September</th>
-      <th class="verticalTableHeader">October</th>
-      <th class="verticalTableHeader">November</th>
-      <th class="verticalTableHeader">December</th>
-      <th class="verticalTableHeader">Januar</th>
-      <th class="verticalTableHeader">February</th>
-      <th class="verticalTableHeader">March</th>
-      <th class="verticalTableHeader">April</th>
-      <th class="verticalTableHeader">May</th>
-      <th class="verticalTableHeader">June</th>
-      <th class="verticalTableHeader">Total</th>
-    </tr>
-    <tr>
-      <td>No. of<br>School Days</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>No. of<br>Days Present</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>No. of<br>Days Absent</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-</table>
-
-                        
-                </div>';
-            } else {
-                echo "No records found for the student.";
-            }
-        } else {
-            echo "Error executing the query.";
-        }
-    } else {
-        echo "Error preparing the query.";
-    }
-} else {
-    echo "Invalid request.";
+if (!isset($teacher_id)) {
+    header('location:../login.php');
+    exit;
 }
 
-// Close connection
-mysqli_close($link);
+if (isset($_GET['id'])) {
+    $student_id = $_GET['id'];
+
+    $student_query = "SELECT * FROM student WHERE student_id = ?";
+    $stmt = $link->prepare($student_query);
+    $stmt->bind_param("i", $student_id);
+    $stmt->execute();
+    $student_result = $stmt->get_result();
+    $student = $student_result->fetch_assoc();
+
+    $grades_query = "SELECT eg.*, s.subject_name, s.section_id 
+                     FROM encodedgrades eg 
+                     INNER JOIN schedules s ON eg.schedule_id = s.id 
+                     WHERE eg.student_id = ?";
+    $stmt = $link->prepare($grades_query);
+    $stmt->bind_param("i", $student_id);
+    $stmt->execute();
+    $grades_result = $stmt->get_result();
+
+    if ($grades_result->num_rows > 0) {
+        $grade_row = $grades_result->fetch_assoc();
+        $section_id = $grade_row['section_id'];
+        $section_query = "SELECT sections.section_name, gradelevel.gradelevel_name 
+                         FROM sections 
+                         INNER JOIN gradelevel ON sections.gradelevel_id = gradelevel.gradelevel_id 
+                         WHERE sections.section_id = ?";
+        $stmt = $link->prepare($section_query);
+        $stmt->bind_param("i", $section_id);
+        $stmt->execute();
+        $section_result = $stmt->get_result();
+        $section = $section_result->fetch_assoc();
+
+        $section_name = htmlspecialchars($section['section_name'] ?? '');
+        $grade_level = htmlspecialchars($section['gradelevel_name'] ?? 'Not assigned');
+    } else {
+        $section_name = 'Not assigned';
+        $grade_level = 'Not assigned';
+    }
+
+    mysqli_data_seek($grades_result, 0);
+}
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Elementary School Report Card</title>
+    
+    <style>
+        .container{
+             max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 2px solid #000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .report-header {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        .core-values {
+            margin-bottom: 20px;
+        }
+        .core-values h5 {
+            font-weight: bold;
+        }
+        .marking-table {
+            border-collapse: collapse;
+            width: 55%; 
+            margin-top: 10px;
+        }
+        .grading-scale {
+            margin-bottom: 20px;
+        }
+        .grading-scale h5 {
+            font-weight: bold;
+        }
+        .remarks {
+            margin-bottom: 20px;
+        }
+        .remarks h5 {
+            font-weight: bold;
+        }
+        .signature-section {
+            margin-bottom: 20px;
+        }
+        .signature-section h5 {
+            font-weight: bold;
+        }
+        .attendance-table {
+            width: 100%;
+        }
+        .attendance-table th, .attendance-table td {
+            border: 1px solid #000;
+            text-align: center;
+        }
+        .attendance-table th {
+            writing-mode: vertical-rl; 
+            transform: rotate(180deg); 
+            white-space: nowrap;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .table-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .core-table {
+            border-collapse: collapse;
+            width: 100%; 
+        }
+
+        .core-table th, .core-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .core-table thead th {
+            text-align: center;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .report-card {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 2px solid #000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        u {
+                text-decoration: none; 
+            }
+        .personal-info span {
+            margin-left: 5px;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .text-content {
+            text-align: center;
+            flex: 1;
+        }
+
+        .logo-left, .logo-right {
+            object-fit: contain;
+        }
+
+        .school-name {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .personal-info {
+            margin-top: 20px;
+            padding: 10px;
+        }
+        .personal-info div {
+            margin-bottom: 5px;
+        }
+        .personal-info label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .personal-info input {
+            border: none;
+            background: transparent;
+            width: 150px;
+            text-align: left;
+        }
+        .grade-table {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .grade-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .grade-table th, .grade-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        .grade-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 10px;
+        }
+        .dear-parent {
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .principal-name {
+            text-decoration: underline;
+            margin-top: 40px;
+            margin-bottom: -5px;
+        }
+        .principal {
+            font-style: italic;
+            margin-left: 37px;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableArea, #printableArea * {
+                visibility: visible;
+            }
+            #printableArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+        .print-button {
+            display: block;
+            width:  70px;
+     
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+           
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableArea, #printableArea * {
+                visibility: visible;
+            }
+            #printableArea {
+                position: absolute;
+               
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                border: none;
+                box-shadow: none;
+            }
+            .print-button {
+                display: none;
+            }
+           
+            #printableCore, #printableCore * {
+                visibility: visible;
+            }
+                #printableCore {
+                visibility: visible;
+                position: relative;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                border: none;
+                box-shadow: none;
+                page-break-before: always; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="report-card" >
+    <button onclick="window.print()" class="print-button">Print</button>
+    <div id="printableArea">
+        <div class="header">
+        <div class="header-content">
+            <img src="../asset/img/logo.png" alt="School Logo" class="logo-left" style=" width: 100px; height: 100px;">
+            <div class="text-content">
+                <div>Republic of the Philippines</div>
+                <div>DEPARTMENT OF EDUCATION</div>
+                <div>NATIONAL CAPITAL REGION</div>
+                <div style="margin-bottom:10px;">DIVISION OF TAGUIG CITY AND PATERNOS</div>
+                <div class="school-name" style="margin-bottom:10px;">EASTERN ACHIEVER ACADEMY OF TAGUIG, INC.</div>
+            </div>
+            <img src="../asset/img/DepEd-logo.webp" alt="DepEd Logo" class="logo-right" style=" width: 130px; height: 130px;">
+        </div>
+    </div>
+    <div class="personal-info">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <label>Name:</label> 
+                <u style="min-width: 300px; display: inline-block; border-bottom: 1px solid black; position: relative; padding-bottom: 5px;">
+                    <span style="position: absolute; left: 0; bottom: 1px; width: 100%;"><?php echo htmlspecialchars($student['name']); ?></span>
+                </u>
+            </div>
+            <div style="text-align: right;">
+                <label>Age:</label> 
+                <u style="min-width: 100px; display: inline-block; border-bottom: 1px solid black; position: relative; padding-bottom: 5px;">
+                    <span style="position: absolute; left: 0; bottom: 1px; width: 100%;"><?php echo htmlspecialchars($student['age']); ?> years old</span>
+                </u>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+            <div>
+                <label>Sex:</label> 
+                <u style="min-width: 100px; display: inline-block; border-bottom: 1px solid black; position: relative; padding-bottom: 5px;">
+                    <span style="position: absolute; left: 0; bottom: 1px; width: 100%;"><?php echo htmlspecialchars($student['gender']); ?></span>
+                </u>
+            </div>
+            <div>
+                <label>Grade:</label> 
+                <u style="min-width: 100px; display: inline-block; border-bottom: 1px solid black; position: relative; padding-bottom: 5px;">
+                    <span style="position: absolute; left: 0; bottom: 1px; width: 100%;"><?php echo $grade_level; ?></span>
+                </u>
+            </div>
+            <div>
+                <label>Section:</label> 
+                <u style="min-width: 100px; display: inline-block; border-bottom: 1px solid black; position: relative; padding-bottom: 5px;">
+                    <span style="position: absolute; left: 0; bottom: 1px; width: 100%;"><?php echo $section_name; ?></span>
+                </u>
+            </div>
+        </div>
+        <br>
+        <div class="dear-parent">
+                <label>Dear Parent:</label>
+                <p style="margin-left: 15px;">This report card shows the ability and progress your child has made in the different learning areas as well as his/her core values. <br><br>The school welcomes you should you desire to know more about your child's progress.</p>
+            </div>
+        <div class="footer">
+            <p class="principal-name">FE DE VERGARA</p>
+            <p class="principal">Principal</p>
+        </div>
+
+        <div class="grade-table">
+    <h4>REPORT ON LEARNING PROGRESS AND ACHIEVEMENT</h4>
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2">SUBJECTS</th>
+                <th colspan="4">QUARTER</th>
+                <th rowspan="2">FINAL GRADE</th>
+            </tr>
+            <tr>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+        while($grade = $grades_result->fetch_assoc()) {
+            // Calculate final grade (average of four quarters)
+            $quarter1 = floatval($grade['quarter1']);
+            $quarter2 = floatval($grade['quarter2']);
+            $quarter3 = floatval($grade['quarter3']);
+            $quarter4 = floatval($grade['quarter4']);
+            
+            $final_grade = round(($quarter1 + $quarter2 + $quarter3 + $quarter4) / 4, 2);
+        ?>
+            <tr>
+                <td><?php echo htmlspecialchars($grade['subject_name']); ?></td>
+                <td><?php echo intval($grade['quarter1']) == $grade['quarter1'] ? intval($grade['quarter1']) : $grade['quarter1']; ?></td>
+                <td><?php echo intval($grade['quarter2']) == $grade['quarter2'] ? intval($grade['quarter2']) : $grade['quarter2']; ?></td>
+                <td><?php echo intval($grade['quarter3']) == $grade['quarter3'] ? intval($grade['quarter3']) : $grade['quarter3']; ?></td>
+                <td><?php echo intval($grade['quarter4']) == $grade['quarter4'] ? intval($grade['quarter4']) : $grade['quarter4']; ?></td>
+
+                <td><?php echo intval($final_grade) == $final_grade ? intval($final_grade) : $final_grade; ?></td>
+
+            </tr>
+        <?php } ?>
+                    
+           
+            <?php
+
+            $total_subjects = 0;
+            $total_grade = 0;
+
+            mysqli_data_seek($grades_result, 0);
+
+            while($grade = $grades_result->fetch_assoc()) {
+                $final_grade = round(
+                    (floatval($grade['quarter1']) + 
+                    floatval($grade['quarter2']) + 
+                    floatval($grade['quarter3']) + 
+                    floatval($grade['quarter4'])) / 4, 
+                    2
+                );
+                
+                $total_grade += $final_grade;
+                $total_subjects++;
+            }
+
+            // Calculate General Weighted Average
+            $gwa = ($total_subjects > 0) ? round($total_grade / $total_subjects, 2) : 0;
+            ?>
+            <tr>
+                <td colspan="5"><strong>GENERAL WEIGHTED AVERAGE</strong></td>
+                <td><?php echo intval($gwa) == $gwa ? intval($gwa) : $gwa; ?></td>
+
+            </tr>
+        </tbody>
+    </table>
+</div>
+    </div>
+    </div>
+    </div>
+
+    <div class="container">
+    <div id="printableCore">
+        <div class="report-header">
+            <h4>REPORT ON LEARNER'S OBSERVED VALUES</h4>
+        </div>
+        <div class="table-container">
+            <table class="core-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Core Values</th>
+                        <th rowspan="2">Behavior Statements</th>
+                        <th colspan="4" style="text-align: center; width: 50%;">Quarter</th>
+                    </tr>
+                    <tr>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1. Maka-Diyos</td>
+                        <td> Expresses one's spiritual <br> beliefs while respecting <br> beliefs of others.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>2. Makatao </td>
+                        <td>Shows adherence to <br> ethical principles by <br> upholding truth. <br><hr style="height: 1px; background-color: black; border: none;">Is sensitive to individual, <br> social, and cultural <br> differences.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>3. Maka-Kalikasan  </td>
+                        <td>Cares for the environment <br> and utilizes resources <br> wisely, judiciously, and <br> economically.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>4. Maka-Bansa</td>
+                        <td>Demonstrates pride in <br> being a Filipino; exercises <br> the rights and <br> responsibilities of a <br> Filipino citizen. <br> <hr style="height: 1px; background-color: black; border: none;">Demonstrates appropriate <br> behavior in carrying out <br> activities in the school, <br> community, and country</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-container">
+            <table class="marking-table">
+                <thead>
+                    <tr>
+                        <th>Marking</th>
+                        <th>Non-numerical Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AO</td>
+                        <td>Always Observed</td>
+                    </tr>
+                    <tr>
+                        <td>SO</td>
+                        <td>Sometimes Observed</td>
+                    </tr>
+                    <tr>
+                        <td>RO</td>
+                        <td>Rarely Observed</td>
+                    </tr>
+                    <tr>
+                        <td>NO</td>
+                        <td>Not Observed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+        <div class="table-container">
+            <table class="marking-table">
+                <thead>
+                    <tr>
+                        <th>Descriptors</th>
+                        <th>Grading Scale</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Outstanding</td>
+                        <td>90-100</td>
+                        <td>Passed</td>
+                    </tr>
+                    <tr>
+                        <td>Very Satisfactory </td>
+                        <td>85-89</td>
+                        <td>Passed</td>
+                    </tr>
+                    <tr>
+                        <td>Satisfactory</td>
+                        <td>80-84</td>
+                        <td>Passed</td>
+                    </tr>
+                    <tr>
+                        <td>Fairly Satisfactory </td>
+                        <td>75-79</td>
+                        <td>Passed</td>
+                    </tr>
+                    <tr>
+                        <td>Did Not Meet Expectations</td>
+                        <td>Below 75</td>
+                        <td>Failed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h5 style="text-align: center;   font-weight: bold; margin-top: 40px;">Parent/Guardian's Signature</h5>
+        <div style="text-align: center; margin-bottom: 10px;">1<sup>st</sup> Quarter ______________________________________________________</div>
+        <div style="text-align: center; margin-bottom: 10px;">2<sup>nd</sup> Quarter ______________________________________________________</div>
+        <div style="text-align: center; margin-bottom: 10px;">3<sup>rd</sup> Quarter ______________________________________________________</div>
+        <div style="text-align: center; margin-bottom: 10px; ">4<sup>th</sup> Quarter ______________________________________________________</div>
+
+
+        <div style="text-align: center; margin-bottom: 10px; font-weight: bold;">Promoted to grade: _______________________________________________</div>
+        <div style="text-align: center; margin-bottom: 10px; font-weight: bold;">Eligible for Admission to Grade: ____________________________________</div>
+
+        <div style="text-align: center; margin-bottom: 10px; font-weight: bold; margin-right: 490px;">Approved:</div>
+        <div style="text-align: center; margin-right: 340px;  text-decoration: underline;">FE H. VERGARA</div>
+        <div style="text-align: center; margin-bottom: 10px; margin-right: 340px;  ">Principal</div>
+
+    <div class="table-container">
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>August</th>
+                    <th>September</th>
+                    <th>October</th>
+                    <th>November</th>
+                    <th>December</th>
+                    <th>January</th>
+                    <th>February</th>
+                    <th>March</th>
+                    <th>April</th>
+                    <th>May</th>
+                    <th>June</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: left;">No. of <br> School Days</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">No. of <br> Days Present</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">No. of <br> Days Absent</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+    </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+</body>
+</html>

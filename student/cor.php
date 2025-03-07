@@ -1,131 +1,169 @@
 <?php
-
+session_start(); 
 include 'config.php';
-
-session_start();
-
 $student_id = $_SESSION['student_id'];
-
-if(!isset($student_id)){
-   header('location:login.php');
+if (!isset($student_id)) {
+    header('location:../login.php');
+    exit();
 }
 
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>Certificate of Registration</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<!-- Site favicon -->
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="../asset/img/logo.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="../asset/img/logo.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="../asset/img/logo.png"
+		/>
 
-  <title>Dashboard - Student</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+		<!-- Mobile Specific Metas -->
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
 
-  <!-- Favicons -->
-  <link href="../assets/img/favicon.png" rel="icon">
-  <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+		<!-- Google Font -->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="../vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../vendors/styles/icon-font.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/cropperjs/dist/cropper.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="../vendors/styles/style.css" />
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
 
-  <!-- Vendor CSS Files -->
-  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="../assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="../assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="../assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="../assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="../assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="../assets/css/style.css" rel="stylesheet">
-</head>
-
-<body>
-
-<?php 
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<!-- Google Tag Manager -->
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+		<!-- End Google Tag Manager -->
+	</head>
+	<body class="sidebar-light">
+    <?php
     include 'header.php';
     include 'sidebar.php';
-?>
-  <main id="main" class="main">
+    ?>
 
-<div class="pagetitle">
-  <h1>Certificate of Registration</h1>
-  <nav>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-      <li class="breadcrumb-item active">Certificate of Registration</li>
-    </ol>
-  </nav>
-</div><!-- End Page Title -->
+	<div class="mobile-menu-overlay"></div>
+		<div class="main-container">
+			<div class="pd-ltr-20 xs-pd-20-10">
+				<div class="min-height-200px">
+					<div class="page-header">
+						<div class="row">
+							<div class="col-md-12 col-sm-12">
+								<div class="title">
+									<h4>Certificate of Registration</h4>
+								</div>
+								<nav aria-label="breadcrumb" role="navigation">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="student_dashboard.php">Home</a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">
+											Certificate of Registration
+										</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+			
+					<div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
+						<?php
+						try {
+							$query_transactions = "SELECT * FROM transactions WHERE user_id = :student_id AND status = 2";
+							$stmt_transactions = $conn->prepare($query_transactions);
+							$stmt_transactions->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+							$stmt_transactions->execute();
 
-<section class="section profile">
-  <div class="row">
-    <div class="col-md-12 ">
-      <?php
-      $query_transactions = "SELECT * FROM transactions WHERE user_id = :student_id";
-      $stmt_transactions = $conn->prepare($query_transactions);
-      $stmt_transactions->bindParam(':student_id', $student_id, PDO::PARAM_INT);
-      $stmt_transactions->execute();
+							if ($stmt_transactions->rowCount() > 0) {
+								echo "<ul class='list-unstyled'>";
+								echo "<li>
+										<a href='cor_template.php?user_id={$student_id}' class='btn btn-primary mt-2'>
+											View Certificate of Registration
+										</a>
+									</li>";
+								echo "</ul>";
+							} else {
+								echo "<div class='alert alert-danger' role='alert'>
+										No completed transactions found. Please proceed with payment. 
+										If you've already paid and the COR is still not showing, please reach out to the administrator for assistance.
+									</div>";
+							}
+						} catch (PDOException $e) {
+							error_log("Database Error: " . $e->getMessage());
+							echo "<div class='alert alert-danger' role='alert'>
+									An error occurred while retrieving your Certificate of Registration. Please try again later or contact support.
+								</div>";
+						}
+						?>
+					</div>
+				</div>
+			</div>
+		</div>
 
-      if ($stmt_transactions->rowCount() > 0) {
-          $query = "SELECT * FROM generatedcor WHERE userId = :user_id";
-          $stmt = $conn->prepare($query);
-          $stmt->bindParam(':user_id', $student_id, PDO::PARAM_INT);
-          $stmt->execute();
-
-          if ($stmt->errorCode() !== '00000') {
-              $errors = $stmt->errorInfo();
-              echo "Error fetching PDF: {$errors[2]}";
-          } else {
-              $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-              if ($rows) {
-                  echo "<ul>";
-                  foreach ($rows as $row) {
-                      if (isset($row['cor_content'])) {
-                          echo "<li><a href='cor_template.php?id={$row['id']}'>Download Certificate of Registration</a></li>";
-                      }
-                  }
-                  echo "</ul>";
-              } else {
-                  echo "We couldn't find your Certificate of Registration. Please proceed with payment. If you've already paid and the COR is still not showing, please reach out to the administrator for assistance.";
-              }
-          }
-      } else {
-          echo "We couldn't find your Certificate of Registration. Please proceed with payment. If you've already paid and the COR is still not showing, please reach out to the administrator for assistance.";
-      }
-      ?>
-    </div>
-  </div>
-</section>
-
-
-</main><!-- End #main -->
-
-  <!-- ======= Footer ======= -->
-  <?php
-    include 'footer.php';
-  ?>
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="../assets/vendor/apexcharts/apexcharts.min.js"></script>
-  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="../assets/vendor/chart.js/chart.umd.js"></script>
-  <script src="../assets/vendor/echarts/echarts.min.js"></script>
-  <script src="../assets/vendor/quill/quill.min.js"></script>
-  <script src="../assets/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="../assets/vendor/tinymce/tinymce.min.js"></script>
-  <script src="../assets/vendor/php-email-form/validate.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="../assets/js/main.js"></script>
-
-</body>
-
+		<!-- js -->
+		<script src="../vendors/scripts/core.js"></script>
+		<script src="../vendors/scripts/script.min.js"></script>
+		<script src="../vendors/scripts/process.js"></script>
+		<script src="../vendors/scripts/layout-settings.js"></script>
+		<script src="src/plugins/cropperjs/dist/cropper.js"></script>
+		
+	</body>
 </html>

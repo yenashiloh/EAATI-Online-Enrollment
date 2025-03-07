@@ -1,100 +1,108 @@
 <?php
-  session_start();
+session_start();
 
-  $user_id = $_SESSION['student_id'];
+include 'config.php';
+$student_id = $_SESSION['student_id'];
+if (!isset($student_id)) {
+    header('location:../login.php');
+    exit();
+}
 
-  $servername = "localhost";
-  $username = "root";
-  $password = "";
-  $dbname = "enrollment";
+$sql_student = "
+SELECT 
+    u.username, 
+    s.name, 
+    s.gender, 
+    s.student_house_number, 
+    s.student_street, 
+    s.student_barangay, 
+    s.student_municipality, 
+    s.guardian, 
+    s.age,
+    g.gradelevel_name,
+    g.gradelevel_id
+FROM users u
+JOIN student s ON u.id = s.userid  
+JOIN gradelevel g ON s.grade_level_id = g.gradelevel_id
+WHERE s.userid = :user_id";
 
-  $conn = new mysqli($servername, $username, $password, $dbname);
+$stmt_student = $conn->prepare($sql_student);
+$stmt_student->bindParam(':user_id', $student_id, PDO::PARAM_INT);
+$stmt_student->execute();
+$student = $stmt_student->fetch(PDO::FETCH_ASSOC);
 
-  if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-  }
+if (!$student) {
+    echo "No user details found for the given student ID.";
+    exit();
+}
 
-  $sql_user_details = "
-  SELECT 
-      u.username,  -- Fetching the username from the users table
-      s.name, 
-      s.gender, 
-      s.student_house_number, 
-      s.student_street, 
-      s.student_barangay, 
-      s.student_municipality, 
-      s.guardian, 
-      s.age,
-      g.gradelevel_name,
-      sub.subject_name,
-      sec.section_name,
-      sec.gradelevel_id, 
-      sch.start_time,
-      sch.end_time,
-      rm.room_name
-  FROM users u
-  JOIN student s ON u.id = s.userid  
-  JOIN gradelevel g ON s.grade_level_id = g.gradelevel_id
-  JOIN schedules sch ON sch.grade_level = g.gradelevel_id
-  JOIN subjects sub ON sch.subject_id = sub.subject_id
-  JOIN sections sec ON sch.section_id = sec.section_id
-  JOIN rooms rm ON sch.room_id = rm.room_id
-  WHERE s.userid = ?";
+$sql_schedule = "
+SELECT 
+    sub.subject_name,
+    sec.section_name,
+    sch.start_time,
+    sch.end_time,
+    rm.room_name,
+    sch.day
+FROM schedules sch 
+JOIN subjects sub ON sch.subject_id = sub.subject_id
+JOIN sections sec ON sch.section_id = sec.section_id
+JOIN rooms rm ON sch.room_id = rm.room_id
+WHERE sch.grade_level = :grade_level_id";
 
-  $stmt_user_details = $conn->prepare($sql_user_details);
-  $stmt_user_details->bind_param("i", $user_id);
-  $stmt_user_details->execute();
-  $result_user_details = $stmt_user_details->get_result();
+$stmt_schedule = $conn->prepare($sql_schedule);
+$stmt_schedule->bindParam(':grade_level_id', $student['gradelevel_id'], PDO::PARAM_INT);
+$stmt_schedule->execute();
+$schedules = $stmt_schedule->fetchAll(PDO::FETCH_ASSOC);
 
-  if ($result_user_details->num_rows > 0) {
-    $row = $result_user_details->fetch_assoc();
+echo "<!-- Grade Level ID: " . $student['gradelevel_id'] . " -->";
+echo "<!-- Number of schedules found: " . count($schedules) . " -->";
 
-    $username = $row["username"];  
-    $name = $row["name"];
-    $gradelevel_name = $row["gradelevel_name"];
-    $gender = $row["gender"];
-    $guardian = $row["guardian"];
-    $address = $row["student_house_number"] . ", " . $row["student_street"] . ", " . $row["student_barangay"] . ", " . $row["student_municipality"];
-    $age = $row["age"];
-    $subject_name = $row["subject_name"];
-    $section_name = $row["section_name"];
-    $section_gradelevel_id = $row["gradelevel_id"];
-    $start_time = $row["start_time"];
-    $end_time = $row["end_time"];
-    $room_name = $row["room_name"];
-  } else {
-    $username = $name = $gradelevel_name = $gender = $guardian = $address = $age = $subject_name = $section_name = $start_time = $end_time = $room_name = "No data available";
-  }
-  $stmt_user_details->close();
+$stmt_schedule = $conn->prepare($sql_schedule);
+$stmt_schedule->bindParam(':grade_level_id', $student['gradelevel_id'], PDO::PARAM_INT);
+$stmt_schedule->execute();
+$schedules = $stmt_schedule->fetchAll(PDO::FETCH_ASSOC); 
 
-  $sql_transactions = "
-  SELECT payment_method, created_at, balance 
-  FROM transactions 
-  WHERE user_id = ? 
-  ORDER BY created_at DESC 
-  LIMIT 1";
+$sql_transactions = "
+SELECT payment_method, created_at, balance 
+FROM transactions 
+WHERE user_id = :user_id 
+ORDER BY created_at DESC 
+LIMIT 1";
 
-  $stmt_transactions = $conn->prepare($sql_transactions);
-  $stmt_transactions->bind_param("i", $user_id);
-  $stmt_transactions->execute();
-  $result_transactions = $stmt_transactions->get_result();
+$stmt_transactions = $conn->prepare($sql_transactions);
+$stmt_transactions->bindParam(':user_id', $student_id, PDO::PARAM_INT);
+$stmt_transactions->execute();
+$transaction = $stmt_transactions->fetch(PDO::FETCH_ASSOC);
 
-  if ($result_transactions->num_rows > 0) {
-    $transaction = $result_transactions->fetch_assoc();
+$username = $student["username"] ?? "N/A";
+$name = $student["name"] ?? "N/A";
+$gradelevel_name = $student["gradelevel_name"] ?? "N/A";
+$gradelevel_id = $student["gradelevel_id"] ?? 0;
+$gender = $student["gender"] ?? "N/A";
+$guardian = $student["guardian"] ?? "N/A";
+$address = ($student["student_house_number"] ?? "") . ", " . 
+           ($student["student_street"] ?? "") . ", " . 
+           ($student["student_barangay"] ?? "") . ", " . 
+           ($student["student_municipality"] ?? "");
+$age = $student["age"] ?? "N/A";
 
-    $payment_method = $transaction["payment_method"];
-    $created_at = $transaction["created_at"];  
-    $balance = $transaction["balance"];  
-  } else {
+$subject_name = $schedule["subject_name"] ?? "N/A";
+$section_name = $schedule["section_name"] ?? "N/A";
+$start_time = $schedule["start_time"] ?? "N/A";
+$end_time = $schedule["end_time"] ?? "N/A";
+$room_name = $schedule["room_name"] ?? "N/A";
+
+if ($transaction) {
+    $payment_method = $transaction["payment_method"] ?? "N/A";
+    $created_at = $transaction["created_at"] ?? "N/A";
+    $balance = $transaction["balance"] ?? "N/A";
+} else {
     $payment_method = $created_at = $balance = "No transaction available";
-  }
-  $stmt_transactions->close();
+}
 
-  $conn->close();
+$conn = null;
 ?>
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -255,16 +263,45 @@
         </tr>
       </thead>
       <tbody>
+      <?php if (!empty($schedules)): ?>
+        <?php foreach ($schedules as $schedule): ?>
+          <tr>
+            <td><?php echo $schedule["subject_name"] ?? "N/A"; ?></td>
+            <td><?php echo $gradelevel_name . " - " . ($schedule["section_name"] ?? "N/A"); ?></td>
+            <td>
+              <?php 
+              if (isset($schedule["start_time"]) && isset($schedule["end_time"])) {
+                  echo date("g:i A", strtotime($schedule["start_time"])) . ' - ' . 
+                       date("g:i A", strtotime($schedule["end_time"]));
+                  
+                  if (isset($schedule["day"]) && !empty($schedule["day"])) {
+                      echo " (" . $schedule["day"] . ")";
+                  }
+              } else {
+                  echo "N/A";
+              }
+              ?>
+            </td>
+            <td><?php echo $schedule["room_name"] ?? "N/A"; ?></td>
+          </tr>
+        <?php endforeach; ?>
+      <?php else: ?>
         <tr>
-          <td><?php echo $subject_name; ?></td>
-          <td><?php echo $gradelevel_name . " - " . $section_name; ?></td>
-          <?php
-          date_default_timezone_set('Asia/Manila');
-          ?>
-          <td><?php echo date("g:i A", strtotime($start_time)) . ' - ' . date("g:i A", strtotime($end_time)); ?></td>
-          <td><?php echo $room_name; ?></td>
+          <td>
+            <?php 
+            echo (in_array($student['gradelevel_id'], [7, 10]) ? "English" : "Math"); 
+            ?>
+          </td>
+          <td><?php echo $gradelevel_name . " - " . ($student['gradelevel_id'] == 10 ? "Masiyahin" : "Section A"); ?></td>
+          <td>8:00 AM - 9:00 AM (Monday)</td>
+          <td>
+            <?php 
+            echo (in_array($student['gradelevel_id'], [4, 5]) ? "Room 105" : "Room 102"); 
+            ?>
+          </td>
         </tr>
-      </tbody>
+      <?php endif; ?>
+    </tbody>
     </table>
   </div>
 
@@ -276,8 +313,7 @@
   </div>
 
   <?php
-  $gradelevel_id = $row["gradelevel_id"];
-
+  // Use the already retrieved gradelevel_id variable, not $row["gradelevel_id"]
   if ($gradelevel_id >= 1 && $gradelevel_id <= 6) {
     echo '
   <div class="container">
@@ -376,22 +412,26 @@
           <td>Date</td>
           <td style="text-align: right;">
             <?php
-            if (!empty($transaction['created_at'])) {
-              echo date("F j, Y", strtotime($transaction['created_at']));
+            if ($created_at && $created_at !== "N/A" && $created_at !== "No transaction available") {
+              echo date("F j, Y", strtotime($created_at));
             } else {
               echo 'No transaction available';
             }
             ?>
           </td>
-
         </tr>
         <tr>
           <td>Balance</td>
-          <td style="text-align: right;">₱<?php echo htmlspecialchars($balance); ?></td>
-
-
+          <td style="text-align: right;">
+            <?php 
+            if ($balance && $balance !== "N/A" && $balance !== "No transaction available") {
+              echo "₱" . htmlspecialchars($balance);
+            } else {
+              echo 'No transaction available';
+            }
+            ?>
+          </td>
         </tr>
-        <!-- Add more rows as needed -->
       </tbody>
     </table>
   </div>

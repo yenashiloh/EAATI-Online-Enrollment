@@ -32,16 +32,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Redirect back to the page with a success message
-        header('location:encode_student.php?success=1&id=' . $schedule_id);
+        header('Location: encode_student.php?success=1&id=' . $schedule_id);
         exit;
     } else {
         // If no students were selected or schedule_id is missing, redirect back with an error message
-        header('location:encode_student.php?error=no_students_selected');
+        header('Location: encode_student.php?error=no_students_selected');
         exit;
     }
 } else {
     // If the form was not submitted via POST method, redirect back
-    header('location:encode_student.php');
+    header('Location: encode_student.php');
     exit;
 }
 ?>

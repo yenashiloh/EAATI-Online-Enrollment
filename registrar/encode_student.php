@@ -1,38 +1,32 @@
 <?php
-// Your database connection logic
 include 'config.php';
 
-// Start session and error reporting
 session_start();
 error_reporting(E_ALL);
 
-// Check if the user is logged in
 $registrar_id = $_SESSION['registrar_id'];
 if (!isset($registrar_id)) {
-    header('location:login.php');
-    exit; // Stop further execution
+    header('location:../login.php');
+    exit; 
 } else {
-    $error = ""; // Initialize $error variable
-    $msg = ""; // Initialize $error variable
+    $error = ""; 
+    $msg = ""; 
 }
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>Add Student</title>
 
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <?php
+            include 'link.php';
+        ?>
 
-    <title>Registrar</title>
-    <meta content="" name="description">
-    <meta content="" name="keywords">
-
-    <?php include 'asset.php'; ?>
-
-</head>
-
-<body>
-
+	</head>
+	<body class="sidebar-light">
     <?php
     include 'header.php';
     include 'sidebar.php';
@@ -47,195 +41,177 @@ if (!isset($registrar_id)) {
     }
     ?>
 
-    <main id="main" class="main">
-
-        <div class="pagetitle">
-            <h1>Class</h1>
-            <nav>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item"><a href="index.html">Schedule</a></li>
-                    <li class="breadcrumb-item active">Class</li>
-                </ol>
-            </nav>
-        </div><!-- End Page Title -->
-
-        <section class="section">
-            <div class="row">
-                <div class="col-lg-12">
-
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title"></h5>
-
-                            <?php
-                            // Check if the 'deleted' parameter is set and equals to 1
-                            if (isset($_GET['deleted']) && $_GET['deleted'] == 1) {
-                                echo "<div class='alert alert-success'>Student Remove from the class successfully.</div>";
-                            }
-
-                            if (isset($_GET['success']) && $_GET['success'] == 1) {
-                                // Display a success message
-                                echo "<div class='alert alert-success'>Students added successfully!</div>";
-                            }
-                            ?>
-                            <button type="button" class="btn btn-success pull-right" data-bs-toggle="modal"
-                                data-bs-target="#addSubjectModal">
-                                <i class="fa fa-plus"></i> Add Student
-                            </button>
-                            <!-- Modal -->
-                            <div class="modal fade" id="addSubjectModal" tabindex="-1" aria-labelledby="addSubjectModalLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="addSubjectModalLabel">Add Student</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <!-- Form to add subject -->
-                                            <form method="post" action="encoded.php">
-                                                <input type="hidden" name="schedule_id" value="<?php echo $id; ?>">
-                                                <div class="table-responsive">
-                                                    <table class="table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Select</th>
-                                                                <th>Grade Level</th>
-                                                                <th>Student Name</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <?php
-                                                            // Fetch students already associated with the class
-                                                            $sql = "SELECT student_id FROM encodedstudentsubjects WHERE schedule_id = :schedule_id";
-                                                            $query = $conn->prepare($sql);
-                                                            $query->bindParam(':schedule_id', $id, PDO::PARAM_INT);
-                                                            $query->execute();
-                                                            $associated_students = $query->fetchAll(PDO::FETCH_COLUMN);
-
-                                                            // Fetch all students
-                                                            $sql = "SELECT * FROM student";
-                                                            $query = $conn->prepare($sql);
-                                                            $query->execute();
-                                                            $students = $query->fetchAll(PDO::FETCH_ASSOC);
-
-                                                            // Display students for selection
-                                                            foreach ($students as $student) {
-                                                                // Check if the student is already associated with the class
-                                                                if (!in_array($student['student_id'], $associated_students)) {
-                                                                    echo '<tr>';
-                                                                    echo '<td><input class="form-check-input" type="checkbox" name="selected_students[]" value="' . $student['student_id'] . '"></td>';
-                                                                    echo '<td>' . $student['grade_level'] . '</td>';
-                                                                    echo '<td>' . $student['name'] . '</td>';
-                                                                    echo '</tr>';
-                                                                }
-                                                            }
-                                                            ?>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                                <div class="text-center"> <!-- Centered div for the button -->
-                                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
+    <div class="mobile-menu-overlay"></div>
+    <div class="main-container">
+        <div class="pd-ltr-20 xs-pd-20-10">
+            <div class="min-height-200px">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12">
+                            <div class="title">
+                                <h4>Add Student</h4>
                             </div>
-
-
-                            <?php
-                            require_once "config1.php";
-
-                            // Check if the schedule id is provided in the URL
-                            if (isset($_GET['id'])) {
-                                // Get the id from the URL
-                                $schedule_id = $_GET['id'];
-
-                                // Attempt select query execution
-                                $sql = "SELECT * FROM encodedstudentsubjects 
-                                    INNER JOIN student ON encodedstudentsubjects.student_id = student.student_id 
-                                    WHERE student.isVerified = 2 AND encodedstudentsubjects.schedule_id = $schedule_id";
-
-                                if ($result = mysqli_query($link, $sql)) {
-                                    if (mysqli_num_rows($result) > 0) {
-                                        // Output data of each row
-                                        echo '<table class="table datatable">';
-                                        echo "<thead>";
-                                        echo "<tr>";
-                                        echo "<th>Name</th>";
-                                        echo "<th>Date of Birth</th>";
-                                        echo "<th>Email</th>";
-                                        echo "<th>Action</th>";
-                                        echo "</tr>";
-                                        echo "</thead>";
-                                        echo "<tbody>";
-
-                                        while ($row = mysqli_fetch_array($result)) {
-                                            echo "<tr>";
-                                            echo "<td>" . $row['name'] . "</td>";
-                                            echo "<td>" . $row['dob'] . "</td>";
-                                            echo "<td>" . $row['email'] . "</td>";
-                                            echo "<td>";
-                                            echo '<a href="view_record.php?id=' . $row['student_id'] . '" class="btn btn-info" title="View Record"><span class="bi bi-eye-fill"></span></a>';
-                                            echo '  ';
-                                            echo '<a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal' . $row['encoded_id'] . '" title="Delete Record" data-toggle="tooltip"><span class="bi bi-trash-fill"></span></a>';
-
-                                            // Delete Modal
-                                            echo '
-                                            <div class="modal fade" id="deleteModal' . $row['encoded_id'] . '" tabindex="-1" aria-labelledby="deleteModalLabel' . $row['encoded_id'] . '" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="deleteModalLabel' . $row['encoded_id'] . '">Confirm Delete</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            Are you sure you want to delete this record?
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                            <a href="delete_encodedstudent.php?id=' . $row['encoded_id'] . '&schedule_id=' . $schedule_id . '" class="btn btn-danger">Delete</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>';
-
-                                            echo "</td>";
-                                            echo "</tr>";
-                                        }
-                                        echo "</tbody>";
-                                        echo "</table>";
-                                        // Free result set
-                                        mysqli_free_result($result);
-                                    } else {
-                                        echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
-                                    }
-                                } else {
-                                    echo "Oops! Something went wrong. Please try again later.";
-                                }
-                            } else {
-                                echo "Schedule id is not provided in the URL.";
-                            }
-
-                            // Close connection
-                            mysqli_close($link);
-                            ?>
+                            <nav aria-label="breadcrumb" role="navigation">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a href="registrar_dashboard.php">Menu</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a href="schedule.php">Schedule</a>
+                                    </li>
+                                    <li class="breadcrumb-item active" aria-current="page">Add Student</li>
+                                </ol>
+                            </nav>
                         </div>
-
                     </div>
                 </div>
+                <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
+                    <?php
+                    if (isset($_GET['deleted']) && $_GET['deleted'] == 1) {
+                        echo "<div class='alert alert-success'>Schedule Deleted Successfully!</div>";
+                    }
+                    ?>
+                    <button type="button" class="btn btn-success mb-3" data-toggle="modal" data-target="#addSubjectModal">
+                        <i class="fa fa-plus"></i> Add Student
+                    </button>
+                    <?php
+                    if (isset($_GET['deleted']) && $_GET['deleted'] == 1) {
+                        echo "<div class='alert alert-success'>Student Removed from the class successfully.</div>";
+                    }
+                    if (isset($_GET['success']) && $_GET['success'] == 1) {
+                        echo "<div class='alert alert-success'>Students added successfully!</div>";
+                    }
+                    ?>
+                    <div class="pb-20">
+                    <?php
+                    require_once "config1.php";
+                    if (isset($_GET['id'])) {
+                        $schedule_id = $_GET['id'];
+                        $schedule_id = mysqli_real_escape_string($link, $schedule_id);
+                        
+                        $sql = "SELECT encodedstudentsubjects.encoded_id, student.student_id, student.name, 
+                                student.dob, users.email 
+                                FROM encodedstudentsubjects 
+                                INNER JOIN student ON encodedstudentsubjects.student_id = student.student_id 
+                                LEFT JOIN users ON student.userId = users.id 
+                                WHERE student.isVerified = 2 AND encodedstudentsubjects.schedule_id = $schedule_id";
+                        
+                        if ($result = mysqli_query($link, $sql)) {
+                            if (mysqli_num_rows($result) > 0) {
+                                echo '<table class="data-table table stripe hover nowrap">';
+                                echo "<thead><tr><th>Name</th><th>Date of Birth</th><th>Email</th><th>Action</th></tr></thead><tbody>";
+                                while ($row = mysqli_fetch_array($result)) {
+                                    echo "<tr>";
+                                    echo "<td>{$row['name']}</td>";
+                                    echo "<td>{$row['dob']}</td>";
+                                    echo "<td>" . (isset($row['email']) ? $row['email'] : 'No email available') . "</td>";
+                                    echo "<td>";
+                                    echo '<a href="view_record.php?id=' . $row['student_id'] . '" class="btn p-0 me-1" title="View Record">
+                                            <span class="bi bi-eye-fill" style="font-size: 18px;"></span>
+                                        </a>';
+                                    echo '<a href="#" class="btn p-2" data-toggle="modal" data-target="#deleteModal' . $row['encoded_id'] . '" title="Delete Record">
+                                            <span class="bi bi-trash-fill" style="font-size: 18px;"></span>
+                                        </a>';
+
+                                    echo '<div class="modal fade" id="deleteModal' . $row['encoded_id'] . '" tabindex="-1" aria-labelledby="deleteModalLabel' . $row['encoded_id'] . '" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteModalLabel' . $row['encoded_id'] . '">Confirm Delete</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                    </div>
+                                                    <div class="modal-body">Are you sure you want to delete this record?</div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                        <a href="delete_encodedstudent.php?id=' . $row['encoded_id'] . '&schedule_id=' . $schedule_id . '" class="btn btn-danger">Delete</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>';
+                                    echo "</td></tr>";
+                                }
+                                echo "</tbody></table>";
+                                mysqli_free_result($result);
+                            } else {
+                                echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
+                            }
+                        } else {
+                            echo "Oops! Something went wrong. Please try again later. Error: " . mysqli_error($link);
+                        }
+                    } else {
+                        echo "Schedule id is not provided in the URL.";
+                    }
+                    mysqli_close($link);
+                    ?>
+                </div>
+                </div>
             </div>
-        </section>
+        </div>
+    </div>
+    <div class="modal fade" id="addSubjectModal" tabindex="-1" aria-labelledby="addSubjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSubjectModalLabel">Add Student</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="encoded.php">
+                    <input type="hidden" name="schedule_id" value="<?php echo $id; ?>">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Select</th>
+                                    <th>Grade Level</th>
+                                    <th>Student Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $sql = "SELECT student_id FROM encodedstudentsubjects WHERE schedule_id = :schedule_id";
+                                $query = $conn->prepare($sql);
+                                $query->bindParam(':schedule_id', $id, PDO::PARAM_INT);
+                                $query->execute();
+                                $associated_students = $query->fetchAll(PDO::FETCH_COLUMN);
+                                
+                                $sql = "SELECT s.*, g.gradelevel_name 
+                                        FROM student s 
+                                        LEFT JOIN gradelevel g ON s.grade_level_id = g.gradelevel_id";
+                                $query = $conn->prepare($sql);
+                                $query->execute();
+                                $students = $query->fetchAll(PDO::FETCH_ASSOC);
+                                
+                                if (empty($students) || count($students) == count($associated_students)) {
+                                    echo '<tr><td colspan="3" class="text-center">No students available to add to this class.</td></tr>';
+                                } else {
+                                    foreach ($students as $student) {
+                                        if (!in_array($student['student_id'], $associated_students)) {
+                                            echo '<tr>';
+                                            echo '<td class="text-center"><input class="form-check-input position-static" type="checkbox" name="selected_students[]" value="' . $student['student_id'] . '"></td>';
+                                            echo '<td>' . $student['gradelevel_name'] . '</td>';
+                                            echo '<td>' . $student['name'] . '</td>';
+                                            echo '</tr>';
+                                        }
+                                    }
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-    </main><!-- End #main -->
-
-    <?php
-    include 'footer.php';
-    include 'script.php';
+	<?php
+        include 'footer.php';
     ?>
-
-</body>
-
+		<!-- End Google Tag Manager (noscript) -->
+	</body>
 </html>

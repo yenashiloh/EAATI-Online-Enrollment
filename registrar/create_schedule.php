@@ -7,44 +7,48 @@ error_reporting(0);
 $registrar_id = $_SESSION['registrar_id'];
 
 if (!isset($registrar_id)) {
-    header('location:login.php');
+    header('location:../login.php');
 } else {
     if (isset($_POST['add_schedule'])) {
         $grade_level = $_POST['grade_level'];
         $section_id = $_POST['section'];
         $subject_id = $_POST['subject_name'];
+        
+        $subject_query = $conn->prepare("SELECT subject_name FROM subjects WHERE subject_id = :subject_id");
+        $subject_query->bindParam(':subject_id', $subject_id, PDO::PARAM_INT);
+        $subject_query->execute();
+        $subject_name = $subject_query->fetchColumn();
+    
         $teacher_id = $_POST['teacher'];
         $room_id = $_POST['room'];
         $start_time = $_POST['start_time'];
         $end_time = $_POST['end_time'];
-        $days = $_POST['days']; // This is now an array
-
-        // Validate inputs here...
-
-        // Prepare and execute SQL query for each selected day
-        $sql = "INSERT INTO schedules (grade_level, section_id, subject_id, teacher_id, room_id, start_time, end_time, day) 
-                VALUES (:grade_level, :section_id, :subject_id, :teacher_id, :room_id, :start_time, :end_time, :day)";
+        $days = $_POST['days']; 
+    
+        $sql = "INSERT INTO schedules (grade_level, section_id, subject_name, subject_id, teacher_id, room_id, start_time, end_time, day) 
+                VALUES (:grade_level, :section_id, :subject_name, :subject_id, :teacher_id, :room_id, :start_time, :end_time, :day)";
         $query = $conn->prepare($sql);
-
+    
         $success = true;
         foreach ($days as $day) {
             $query->bindParam(':grade_level', $grade_level, PDO::PARAM_STR);
             $query->bindParam(':section_id', $section_id, PDO::PARAM_INT);
+            $query->bindParam(':subject_name', $subject_name, PDO::PARAM_STR);
             $query->bindParam(':subject_id', $subject_id, PDO::PARAM_INT);
             $query->bindParam(':teacher_id', $teacher_id, PDO::PARAM_INT);
             $query->bindParam(':room_id', $room_id, PDO::PARAM_INT);
             $query->bindParam(':start_time', $start_time, PDO::PARAM_STR);
             $query->bindParam(':end_time', $end_time, PDO::PARAM_STR);
             $query->bindParam(':day', $day, PDO::PARAM_STR);
-
+    
             if (!$query->execute()) {
                 $success = false;
                 break;
             }
         }
-
+    
         if ($success) {
-            $msg = "Schedule Added Successfully";
+            $msg = "Schedule Added Successfully!";
         } else {
             $error = "Something went wrong. Please try again";
         }
@@ -52,182 +56,181 @@ if (!isset($registrar_id)) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>Create Schedule</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <?php
+            include 'link.php';
+        ?>
 
-  <title>Dashboard</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <?php include 'asset.php';?>
-
-</head>
-
-<body>
-
-<?php 
+	</head>
+	<body class="sidebar-light">
+    <?php
     include 'header.php';
     include 'sidebar.php';
-?>
+    ?>
 
-<main id="main" class="main">
+		<div class="mobile-menu-overlay"></div>
+		<div class="main-container">
+			<div class="pd-ltr-20 xs-pd-20-10">
+				<div class="min-height-200px">
+					<div class="page-header">
+						<div class="row">
+							<div class="col-md-12 col-sm-12">
+								<div class="title">
+									<h4>Create Schedule</h4>
+								</div>
+								<nav aria-label="breadcrumb" role="navigation">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="teacher_dashboard.php">Menu</a>
+										</li>
+                                        <li class="breadcrumb-item">
+											<a href="schedule.php">Schedule</a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">
+											Create Schedule
+										</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+		
+              <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
+                  <?php if ($error) { ?>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo htmlentities($error); ?>
+                        </div>
+                    <?php } elseif ($msg) { ?>
+                        <div class="alert alert-success" role="alert">
+                            <?php echo htmlentities($msg); ?>
+                        </div>
+                    <?php } ?>
 
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Create Schedule</h5>
+                <form class="row g-3" method="post" name="add_schedule">
+                    
+                    <div class="col-md-12">
+                        <label for="grade_level" class="form-label">Grade Level</label>
+                        <select id="grade_level" class="custom-select col-12 mb-3" name="grade_level" required>
+                            <option selected>Select Grade Level</option>
+                            <?php
+                            $sql = "SELECT * FROM gradelevel ORDER BY gradelevel_name ASC";
+                            $result = $conn->query($sql);
+                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                echo "<option value='" . $row['gradelevel_id'] . "'>" . $row['gradelevel_name'] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
 
-            <form class="row g-3" method="post" name="add_schedule">
-              <?php if($error){?>
-                <div class="alert alert-danger" role="alert">
-                  <strong>ERROR</strong>: <?php echo htmlentities($error); ?>
-                </div>
-              <?php } else if($msg){?>
-                <div class="alert alert-success" role="alert">
-                  <strong>SUCCESS</strong>: <?php echo htmlentities($msg); ?>
-                </div>
-              <?php }?>
-              <div class="col-md-12">
-                <select id="grade_level" class="form-select" name="grade_level" required>
-                  <option selected>Select Grade Level</option>
-                  <?php
-                    // Assuming you have a table named 'users' with 'role' column as 'teacher'
-                    $sql = "SELECT * FROM gradelevel ORDER By gradelevel_name ASC";
-                    $result = $conn->query($sql);
-                    while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='" . $row['gradelevel_id'] . "'>" . $row['gradelevel_name'] . "</option>";
-                    }
-                  ?>
-                </select>
-              </div>
-              <div class="col-md-12">
-                <select id="section" class="form-select" name="section" required>
-                  <option selected>Select Section</option>
-                  <?php
-                    // Assuming you have a table named 'users' with 'role' column as 'teacher'
-                    $sql = "SELECT * FROM sections";
-                    $result = $conn->query($sql);
-                    while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='" . $row['section_id'] . "'>" . $row['section_name'] . "</option>";
-                    }
-                  ?>
-                </select>
-              </div>
-              <div class="col-md-12">
-                <select id="subject_name" class="form-select" name="subject_name" required>
-                  <option selected>Select Subject</option>
-                  <?php
-                    // Assuming you have a table named 'users' with 'role' column as 'teacher'
-                    $sql = "SELECT * FROM subjects";
-                    $result = $conn->query($sql);
-                    while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='" . $row['subject_id'] . "'>" . $row['subject_name'] . "</option>";
-                    }
-                  ?>
-                </select>
-              </div>
-              <div class="col-md-12">
-                <select id="teacher" class="form-select" name="teacher" required>
-                  <option selected>Select Teacher</option>
-                  <?php
-                    // Assuming you have a table named 'users' with 'role' column as 'teacher'
-                    $sql = "SELECT * FROM users WHERE role = 'teacher'";
-                    $result = $conn->query($sql);
-                    while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='" . $row['id'] . "'>" . $row['first_name'] . " " . $row['last_name'] . "</option>";
-                    }
-                  ?>
-                </select>
-              </div>
-              <div class="col-md-12">
-                <select id="room" class="form-select" name="room" required>
-                  <option selected>Select Room</option>
-                  <?php
-                    // Assuming you have a table named 'users' with 'role' column as 'teacher'
-                    $sql = "SELECT * FROM rooms";
-                    $result = $conn->query($sql);
-                    while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='" . $row['room_id'] . "'>" . $row['room_name'] . "</option>";
-                    }
-                  ?>
-                </select>
-              </div>
+                    <div class="col-md-12">
+                        <label for="section" class="form-label">Section</label>
+                        <select id="section" class="custom-select col-12 mb-3" name="section" required>
+                            <option selected>Select Section</option>
+                            <?php
+                            $sql = "SELECT * FROM sections";
+                            $result = $conn->query($sql);
+                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                echo "<option value='" . $row['section_id'] . "'>" . $row['section_name'] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
 
-              <div class="col-md-12">
-    <label for="days" class="form-label">Select Days</label><br>
-    <div class="form-check form-check-inline">
-      <input type="checkbox" id="monday" name="days[]" value="Monday" class="form-check-input" onclick="handleSingleCheckbox(this)">
-      <label for="monday" class="form-check-label">Monday</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input type="checkbox" id="tuesday" name="days[]" value="Tuesday" class="form-check-input" onclick="handleSingleCheckbox(this)">
-      <label for="tuesday" class="form-check-label">Tuesday</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input type="checkbox" id="wednesday" name="days[]" value="Wednesday" class="form-check-input" onclick="handleSingleCheckbox(this)">
-      <label for="wednesday" class="form-check-label">Wednesday</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input type="checkbox" id="thursday" name="days[]" value="Thursday" class="form-check-input" onclick="handleSingleCheckbox(this)">
-      <label for="thursday" class="form-check-label">Thursday</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input type="checkbox" id="friday" name="days[]" value="Friday" class="form-check-input" onclick="handleSingleCheckbox(this)">
-      <label for="friday" class="form-check-label">Friday</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input type="checkbox" id="saturday" name="days[]" value="Saturday" class="form-check-input" onclick="handleSingleCheckbox(this)">
-      <label for="saturday" class="form-check-label">Saturday</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input type="checkbox" id="sunday" name="days[]" value="Sunday" class="form-check-input" onclick="handleSingleCheckbox(this)">
-      <label for="sunday" class="form-check-label">Sunday</label>
-    </div>
-  </div>
+                    <div class="col-md-12">
+                        <label for="subject_name" class="form-label">Subject</label>
+                        <select id="subject_name" class="custom-select col-12 mb-3" name="subject_name" required>
+                            <option selected>Select Subject</option>
+                            <?php
+                            $sql = "SELECT * FROM subjects";
+                            $result = $conn->query($sql);
+                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                echo "<option value='" . $row['subject_id'] . "'>" . $row['subject_name'] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
 
-              <div class="col-md-12">
-                <label for="start_time" class="form-label">Start Time</label>
-                <input type="time" class="form-control" id="start_time" name="start_time" required>
-              </div>
-              <div class="col-md-12">
-                <label for="end_time" class="form-label">End Time</label>
-                <input type="time" class="form-control" id="end_time" name="end_time" required>
-              </div>
+                    <div class="col-md-12">
+                        <label for="teacher" class="form-label">Teacher</label>
+                        <select id="teacher" class="custom-select col-12 mb-3" name="teacher" required>
+                            <option selected>Select Teacher</option>
+                            <?php
+                            $sql = "SELECT * FROM users WHERE role = 'teacher'";
+                            $result = $conn->query($sql);
+                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                echo "<option value='" . $row['id'] . "'>" . ucfirst($row['first_name']) . " " . ucfirst($row['last_name']) . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
 
-              <div class="text-center">
-                <button type="submit" class="btn btn-primary" name="add_schedule">Submit</button>
-                <button type="reset" class="btn btn-secondary">Reset</button>
-              </div>
-            </form>
+                    <div class="col-md-12">
+                        <label for="room" class="form-label">Room</label>
+                        <select id="room" class="custom-select" name="room" required>
+                            <option selected>Select Room</option>
+                            <?php
+                            $sql = "SELECT * FROM rooms";
+                            $result = $conn->query($sql);
+                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                echo "<option value='" . $row['room_id'] . "'>" . $row['room_name'] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
 
+                    <div class="col-md-12">
+                        <label for="days" class="form-label mt-3">Select Days</label><br>
+                        <?php
+                        $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                        foreach ($days as $day) {
+                            echo '
+                            <div class="form-check form-check-inline ">
+                                <input type="checkbox"  id="' . strtolower($day) . '" name="days[]" value="' . $day . '" class="form-check-input">
+                                <label for="' . strtolower($day) . '" class="form-check-label">' . $day . '</label>
+                            </div>';
+                        }
+                        ?>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="start_time" class="form-label mt-3">Start Time</label>
+                        <input type="time" class="form-control" id="start_time" name="start_time" required>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="end_time" class="form-label  mt-3">End Time</label>
+                        <input type="time" class="form-control" id="end_time" name="end_time" required>
+                    </div>
+
+                    <div class="d-flex justify-content-start ml-3 mt-3">
+                      <button type="submit" class="btn btn-primary mr-2" name="add_schedule">Submit</button>
+                      <button type="reset" class="btn btn-secondary">Reset</button>
+                  </div>
+
+                </form>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-</main>
-<script>
-    function handleSingleCheckbox(checkbox) {
-        var checkboxes = document.querySelectorAll('input[name="' + checkbox.name + '"]');
-        checkboxes.forEach(function(cb) {
-            if (cb !== checkbox) {
-                cb.checked = false;
-            }
-        });
-    }
-</script>
-<?php
-    include 'footer.php';
-    include 'script.php';
-?>
+    <script>
+      function handleSingleCheckbox(checkbox) {
+          var checkboxes = document.querySelectorAll('input[name="' + checkbox.name + '"]');
+          checkboxes.forEach(function(cb) {
+              if (cb !== checkbox) {
+                  cb.checked = false;
+              }
+          });
+      }
+    </script>
 
-</body>
-
+		<?php
+      include 'footer.php';
+    ?>
+	</body>
 </html>
 <?php } ?>

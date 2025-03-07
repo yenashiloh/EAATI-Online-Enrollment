@@ -7,125 +7,132 @@ session_start();
 $teacher_id = $_SESSION['teacher_id'];
 
 if(!isset($teacher_id)){
-   header('location:login.php');
-   exit; // Add exit to stop further execution
+   header('location:../login.php');
+   exit;
 }
 
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>	Form 138</title>
 
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+       <?php
+         include 'link.php';
+       ?>
 
-    <title>Teacher</title>
-    <meta content="" name="description">
-    <meta content="" name="keywords">
+	</head>
+	<body class="sidebar-light">
+    <?php
+        include 'header.php';
+        include 'sidebar.php';
 
-    <?php include 'asset.php';?>
+        // Fetch user details for editing
+        if(isset($_GET['id'])) {
+            $id = $_GET['id'];
+            $sql = "SELECT * FROM schedules WHERE id = :id";
+            $query = $conn->prepare($sql);
+            $query->bindParam(':id', $id, PDO::PARAM_INT);
+            $query->execute();
+            $student = $query->fetch(PDO::FETCH_ASSOC);
+        }
+    ?>
 
-</head>
+        <div class="mobile-menu-overlay"></div>
+        <div class="main-container">
+            <div class="pd-ltr-20 xs-pd-20-10">
+                <div class="min-height-200px">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12">
+                                <div class="title">
+                                    <h4>Form 138</h4>
+                                </div>
+                                <nav aria-label="breadcrumb" role="navigation">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <a href="teacher_dashboard.php">Menu</a>
+                                        </li>
+                                        <li class="breadcrumb-item active" aria-current="page">
+                                            Form 138
+                                        </li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
 
-<body>
+                    <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
+                        <div class="pd-20">
+                            <h4 class="h4 mb-1">Encoded Grades List</h4>
+                        </div>
 
-<?php 
-    include 'header.php';
-    include 'sidebar.php';
-?>
-
-<main id="main" class="main">
-
-    <div class="pagetitle">
-        <h1>Form 138</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                <li class="breadcrumb-item active">Form 138</li>
-            </ol>
-        </nav>
-    </div><!-- End Page Title -->
-
-    <section class="section">
-        <div class="row">
-            <div class="col-lg-12">
-
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title"></h5>
                         <?php
-                        // Check if the 'deleted' parameter is set and equals to 1
                         if(isset($_GET['verified']) && $_GET['verified'] == 1){
                             echo "<div class='alert alert-success'>Record verified successfully.</div>";
                         }
                         ?>
-                    </div>
-                    <?php
-                    // Include config file
-                    require_once "config1.php";
+                        <div class="pb-20">
+                            <?php
+                            require_once "config1.php";
 
-                    // Attempt select query execution
-                    $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id WHERE student.isVerified = 2";
-                    if($result = mysqli_query($link, $sql)){
-                        if(mysqli_num_rows($result) > 0){
-                            echo '<table class="table datatable">';
-                                echo "<thead>";
-                                    echo "<tr>";                                      
-                                        echo "<th>Name</th>";
-                                        echo "<th>Date of Birth</th>";
-                                        echo "<th>Email</th>";
-                                        
-                                        echo "<th>Action</th>";
-                                    echo "</tr>";
-                                echo "</thead>";
-                                echo "<tbody>";
-                                while($row = mysqli_fetch_array($result)){
+                            $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id WHERE student.isVerified = 2";
+                            if ($result = mysqli_query($link, $sql)) {
+                                if (mysqli_num_rows($result) > 0) {
+                                    echo '<table class="data-table table stripe hover nowrap">';
+                                    echo "<thead>";
                                     echo "<tr>";
+                                    echo "<th>No.</th>"; 
+                                    echo "<th>Name</th>";
+                                    echo "<th>Date of Birth</th>";
+                                    echo "<th>Email</th>";
+                                    echo "<th>Action</th>";
+                                    echo "</tr>";
+                                    echo "</thead>";
+                                    echo "<tbody>";
+
+                                    $counter = 1; 
+                                    while ($row = mysqli_fetch_array($result)) {
+                                        echo "<tr>";
+                                        echo "<td>" . $counter . "</td>"; 
                                         echo "<td>" . $row['name'] . "</td>";
                                         echo "<td>" . $row['dob'] . "</td>";
                                         echo "<td>" . $row['email'] . "</td>";
-                                        
                                         echo "<td>";
-                                        
-                        echo '<a href="view_card.php?id='.$row['student_id'].'" class="btn btn-info" title="View Record"><span class="bi bi-file-earmark-spreadsheet-fill"></span></a>';
-
-                                        
-                                            echo '  ';
-
-
+                                        echo '<a href="view_card.php?id=' . $row['student_id'] . '" class="btno" title="View Record" data-bs-toggle="tooltip" data-bs-placement="top">
+                                                <span class="bi bi-eye-fill" style="font-size:20px;"></span>
+                                            </a>';
+                                        echo '  ';
                                         echo "</td>";
-                                        
-                                    echo "</tr>";
+                                        echo "</tr>";
+
+                                        $counter++;
+                                    }
+
+                                    echo "</tbody>";
+                                    echo "</table>";
+                                    mysqli_free_result($result);
+                                } else {
+                                    echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
                                 }
-                                echo "</tbody>";                            
-                            echo "</table>";
-                            // Free result set
-                            mysqli_free_result($result);
-                        } else{
-                            echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
-                        }
-                    } else{
-                        echo "Oops! Something went wrong. Please try again later.";
-                    }
+                            } else {
+                                echo "Oops! Something went wrong. Please try again later.";
+                            }
+                            mysqli_close($link);
+                            ?>
+                        </div>
 
-                    // Close connection
-                    mysqli_close($link);
-                    ?>
-
+                    </div>
                 </div>
             </div>
-
         </div>
-        </div>
-    </section>
 
-</main><!-- End #main -->
+		<?php
+         include 'footer.php';
+       ?>
 
-<?php
-    include 'footer.php';
-    include 'script.php';
-?>
-
-</body>
-
+	</body>
 </html>

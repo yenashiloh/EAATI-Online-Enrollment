@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 
 $registrar_id = $_SESSION['registrar_id'] ?? null;
 if (!$registrar_id) {
-    header('location:login.php');
+    header('location:../login.php');
     exit;
 }
 
@@ -43,40 +43,56 @@ $query_grades->execute();
 $grades = $query_grades->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>Students</title>
 
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Registrar</title>
-    <?php include 'asset.php'; ?>
-</head>
+        <?php
+            include 'link.php';
+        ?>
 
-<body>
+	</head>
+	<body class="sidebar-light">
     <?php
     include 'header.php';
     include 'sidebar.php';
     ?>
 
-    <main id="main" class="main">
-        <div class="pagetitle">
-            <h1>Student Registration</h1>
-            <nav>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Student Registration</li>
-                </ol>
-            </nav>
-        </div>
-
-        <section class="section">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="container mt-5">
-                                <?php if ($error): ?>
+		<div class="mobile-menu-overlay"></div>
+		<div class="main-container">
+			<div class="pd-ltr-20 xs-pd-20-10">
+				<div class="min-height-200px">
+					<div class="page-header">
+						<div class="row">
+							<div class="col-md-12 col-sm-12">
+								<div class="title">
+									<h4>Students</h4>
+								</div>
+								<nav aria-label="breadcrumb" role="navigation">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="registrar_dashboard.php">Menu</a>
+										</li>
+                                        <li class="breadcrumb-item">
+											<a href="students.php">Students</a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">
+											View Student
+										</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+		
+                    <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
+                        
+                        <div class="pb-20">
+                        <?php if ($error): ?>
                                     <div class="alert alert-danger" role="alert">
                                         <strong>ERROR</strong>: <?php echo htmlentities($error); ?>
                                     </div>
@@ -140,7 +156,7 @@ $grades = $query_grades->fetchAll(PDO::FETCH_ASSOC);
                                         </div>
 
                                     </div>
-                                    <div class="row mb-3">
+                                    <div class="row mb-4">
                                         <div class="col-md-6">
                                             <label for="previous_school" class="form-label">Previous School Attended</label>
                                             <input type="text" class="form-control" id="previous_school" name="previous_school" value="<?php echo $student['previous_school']; ?>" disabled>
@@ -151,7 +167,8 @@ $grades = $query_grades->fetchAll(PDO::FETCH_ASSOC);
                                         </div>
                                     </div>
 
-                                    <h6 class=" card-title">Father Information</h6>
+                                    <hr size=8 noshade>
+                                    <h6 class=" card-title mt-4">Father Information</h6>
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="father_name" class="form-label">Name</label>
@@ -165,7 +182,7 @@ $grades = $query_grades->fetchAll(PDO::FETCH_ASSOC);
                                         </div>
                                     </div>
 
-                                    <div class="row mb-3">
+                                    <div class="row mb-4">
                                         <div class="col-md-3">
                                             <label for="houseNo_father" class="form-label">House No.</label>
                                             <input type="text" class="form-control" id="houseNo_father" name="houseNo_father"
@@ -188,7 +205,8 @@ $grades = $query_grades->fetchAll(PDO::FETCH_ASSOC);
                                         </div>
                                     </div>
 
-                                    <h6 class=" card-title">Mother Information</h6>
+                                    <hr size=8 noshade>
+                                    <h6 class=" card-title mt-4">Mother Information</h6>
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="mother_name" class="form-label">Name</label>
@@ -233,42 +251,47 @@ $grades = $query_grades->fetchAll(PDO::FETCH_ASSOC);
 
                                     <hr size=8 noshade>
                                     <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="grade_level" class="form-label">Grade Level</label>
-                                        <select class="form-select" id="grade_level" name="grade_level" disabled>
-                                            <?php foreach ($grades as $grade): ?>
-                                                <option value="<?php echo $grade['gradelevel_id']; ?>" <?php if ($student['grade_level_id'] == $grade['gradelevel_id']) echo 'selected'; ?>>
-                                                    <?php echo $grade['gradelevel_name']; ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                        <div class="col-md-6" style="margin-top: 20px;">
-                                            <label for="requirements" class="form-label">Uploaded Requirements:</label>
-                                            <?php
-                                            $sql = "SELECT requirements FROM student WHERE student_id = :id";
-                                            $query = $conn->prepare($sql);
-                                            $query->bindParam(':id', $id, PDO::PARAM_INT);
-                                            $query->execute();
-                                            $filesJson = $query->fetchColumn();
-                                            $files = json_decode($filesJson, true);
+                                        <div class="col-md-6">
+                                            <label for="grade_level" class="form-label">Grade Level</label>
+                                            <select class="custom-select col-12" id="grade_level" name="grade_level" disabled style="color:black;">
+                                                <?php foreach ($grades as $grade): ?>
+                                                    <option value="<?php echo $grade['gradelevel_id']; ?>" <?php if ($student['grade_level_id'] == $grade['gradelevel_id']) echo 'selected'; ?>>
+                                                        <?php echo $grade['gradelevel_name']; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                            <div class="col-md-6" style="margin-top: 20px;">
+                                                <label for="requirements" class="form-label">Uploaded Requirements:</label>
+                                                <?php
+                                                $sql = "SELECT requirements FROM student WHERE student_id = :id";
+                                                $query = $conn->prepare($sql);
+                                                $query->bindParam(':id', $id, PDO::PARAM_INT);
+                                                $query->execute();
+                                                $filesJson = $query->fetchColumn();
+                                                $files = json_decode($filesJson, true);
 
-                                            if ($files) {
-                                                echo "<ul>";
-                                                foreach ($files as $file) {
-                                                    echo "<li><a href='" . $file . "' target='_blank'>" . basename($file) . "</a></li>";
+                                                if ($files) {
+                                                    echo "<ul>";
+                                                    foreach ($files as $file) {
+                                                        echo "<li><a href='" . $file . "' target='_blank' style='color: blue; text-decoration: underline;'>" . basename($file) . "</a></li>";
+
+                                                    }
+                                                    echo "</ul>";
                                                 }
-                                                echo "</ul>";
-                                            }
-                                            ?>
-                                </form>
+                                                ?>
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    </main>
-</body>
 
+		<?php
+            include 'footer.php';
+        ?>
+		<!-- End Google Tag Manager (noscript) -->
+	</body>
 </html>

@@ -13,11 +13,13 @@ $student_id = $_SESSION['student_id'];
 $error = "";
 $msg = "";
 
+// Get user information first
 $query = $conn->prepare("SELECT * FROM users WHERE id = :student_id");
 $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
 $query->execute();
 $user = $query->fetch(PDO::FETCH_ASSOC);
 
+// Combine first and last name
 $full_name = '';
 if (isset($user['first_name'])) {
     $full_name = $user['first_name'];
@@ -26,19 +28,15 @@ if (isset($user['first_name'])) {
     }
 }
 
-$student_email = '';
-if (isset($user['role']) && $user['role'] == 'student') {
-    $student_email = isset($user['email']) ? $user['email'] : '';
-}
+// Get email from users table
+$student_email = isset($user['email']) ? $user['email'] : '';
 
 if (isset($_POST['add_registration'])) {
 
     // get student information from POST
     $grade_level_id = $_POST['grade_level'];
-    $sname = $_POST['sname'];
     $dob = $_POST['dob'];
     $pob = $_POST['pob'];
-    $email = $_POST['email'];
     $age = $_POST['age'];
     $gender = $_POST['gender'];
     $student_house_number = $_POST['student_house_number'];
@@ -110,19 +108,18 @@ if (isset($_POST['add_registration'])) {
             $conn->beginTransaction();
 
             // insert student information
-            $sql = "INSERT INTO student (userId, name, dob, pob, email, age, gender, student_house_number, student_street, 
+            $sql = "INSERT INTO student (userId, name, dob, pob, age, gender, student_house_number, student_street, 
             student_barangay, student_municipality, guardian, previous_school, school_address, grade_level_id, 
             requirements, image_path, isVerified) 
-            VALUES (:student_id, :sname, :dob, :pob, :email, :age, :gender, :student_house_number, :student_street,
+            VALUES (:student_id, :full_name, :dob, :pob, :age, :gender, :student_house_number, :student_street,
             :student_barangay, :student_municipality, :guardian, :previous_school, :school_address, 
             :grade_level_id, :requirements, :image_path, 0)";
 
             $query = $conn->prepare($sql);
             $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
-            $query->bindParam(':sname', $sname, PDO::PARAM_STR);
+            $query->bindParam(':full_name', $full_name, PDO::PARAM_STR);
             $query->bindParam(':dob', $dob, PDO::PARAM_STR);
             $query->bindParam(':pob', $pob, PDO::PARAM_STR);
-            $query->bindParam(':email', $email, PDO::PARAM_STR);
             $query->bindParam(':age', $age, PDO::PARAM_INT);
             $query->bindParam(':gender', $gender, PDO::PARAM_STR);
             $query->bindParam(':student_house_number', $student_house_number, PDO::PARAM_STR);
@@ -174,7 +171,7 @@ if (isset($_POST['add_registration'])) {
             $mother_query->execute();
 
             $conn->commit();
-            $msg = "Student Registered Successfully";
+            $msg = "";
         } catch (PDOException $e) {
             $conn->rollBack();
             $error = "Registration failed: " . $e->getMessage();
@@ -182,105 +179,187 @@ if (isset($_POST['add_registration'])) {
     }
 }
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>Student Registration</title>
 
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<!-- Site favicon -->
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="../asset/img/logo.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="../asset/img/logo.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="../asset/img/logo.png"
+		/>
 
-    <title>Student</title>
-    <meta content="" name="description">
-    <meta content="" name="keywords">
+		<!-- Mobile Specific Metas -->
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
 
-    <?php include 'asset.php'; ?>
+		<!-- Google Font -->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="../vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../vendors/styles/icon-font.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="src/plugins/cropperjs/dist/cropper.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="../vendors/styles/style.css" />
 
-</head>
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
 
-<body>
-
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<!-- Google Tag Manager -->
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+		<!-- End Google Tag Manager -->
+	</head>
+	<body class="sidebar-light">
     <?php
     include 'header.php';
     include 'sidebar.php';
     ?>
 
-    <main id="main" class="main">
+		<div class="mobile-menu-overlay"></div>
+		<div class="main-container">
+			<div class="pd-ltr-20 xs-pd-20-10">
+				<div class="min-height-200px">
+					<div class="page-header">
+						<div class="row">
+							<div class="col-md-12 col-sm-12">
+								<div class="title">
+									<h4>Student Registration</h4>
+								</div>
+								<nav aria-label="breadcrumb" role="navigation">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="student_dashboard.php">Home</a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">
+											Student Registration
+										</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
 
-        <div class="pagetitle">
-            <h1>Student Registration</h1>
-            <nav>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Student Registration</li>
-                </ol>
-            </nav>
-        </div><!-- End Page Title -->
+                    <div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
+                        <?php 
+                            try {
+                                $conn = new PDO("mysql:host=localhost;dbname=enrollment", "root", "");
+                                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                            } catch(PDOException $e) {
+                                die("Connection failed: " . $e->getMessage());
+                            }
 
-        <section class="section">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="container mt-5">
-                                <?php if ($error) { ?>
-                                    <div class="alert alert-danger" role="alert">
-                                        <strong>ERROR</strong>: <?php echo htmlentities($error); ?>
-                                    </div>
-                                <?php } else if ($msg) { ?>
-                                    <div class="alert alert-success" role="alert">
-                                        <strong>SUCCESS</strong>: <?php echo htmlentities($msg); ?>
-                                    </div>
-                                <?php } ?>
+                            if ($error) { ?>
+                                <div class="alert alert-danger" role="alert">
+                                    <strong>ERROR</strong>: <?php echo htmlentities($error); ?>
+                                </div>
+                            <?php } else if ($msg) { ?>
+                                <div class="alert alert-success" role="alert">
+                                    <strong>SUCCESS</strong>: <?php echo htmlentities($msg); ?>
+                                </div>
+                            <?php } 
 
-                                <?php
+                            try {
                                 $query = $conn->prepare("SELECT * FROM student WHERE userId = :student_id");
                                 $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
                                 $query->execute();
-                                $count = $query->rowCount();
                                 $result = $query->fetch(PDO::FETCH_ASSOC);
-
-                                if ($count > 0) {
-                                    if ($result['isVerified'] == 0) {
-                                ?>
+                                
+                                if ($result) {
+                                    if ($result['isVerified'] == 0) { ?>
                                         <div class="alert alert-info text-center" style="font-size: 22px;">
                                             Thank you for your submission. We have received your registration.<br>
                                             Please be patient as our registrar verifies your information.<br>
                                             Once your registration is verified, you will receive a confirmation email.<br>
                                             If you have any further questions or concerns, please don't hesitate to reach out to us.
                                         </div>
-                                    <?php
-                                    } elseif ($result['isVerified'] == 1) {
-                                        // Student is already enrolled
-                                    ?>
+                                    <?php } elseif ($result['isVerified'] == 1) { ?>
                                         <div class="alert alert-success text-center" style="font-size: 22px;">
-                                            Verified. <br><a href="school_fees.php">Click here to proceed to payment.</a>
+                                            Verified. <br><a href="school_fees.php" >Click here to proceed to payment.</a>
                                         </div>
-                                <?php
-                                    }
-                                } else {
+                                    <?php }
                                 }
-                                ?>
+                            } catch(PDOException $e) {
+                                echo '<div class="alert alert-danger" role="alert">';
+                                echo '<strong>Database Error:</strong> ' . htmlentities($e->getMessage());
+                                echo '</div>';
+                            }
+                            ?>
 
                                 <!-- Grade Level selection -->
 
-                                <div class="row mb-3" id="grade_level_container">
-                                    <div class="col-md-6 offset-md-3 text-center">
-                                        <label for="grade_level" class="form-label">Grade Level</label>
-                                        <select class="form-select" id="grade_level" name="grade_level">
-                                            <option value="">Select Grade Level</option>
-                                            <?php
-                                            include "config1.php";
-
-                                            $sql = "SELECT * FROM gradelevel";
-                                            $result = mysqli_query($link, $sql);
-                                            while ($row = mysqli_fetch_assoc($result)) {
-                                                echo "<option value='" . $row['gradelevel_id'] . "'>" . $row['gradelevel_name'] . "</option>";
-                                            }
-                                            ?>
-                                        </select>
+                                <div class="form-group row justify-content-center align-items-center" id="grade_level_container">
+                                    <label class="col-auto col-form-label text-center">Grade Level</label>
+                                        <div class="col-4">
+                                            <select class="custom-select" id="grade_level" name="grade_level">
+                                                <option selected="">Select Grade Level</option>
+                                                <?php
+                                                    include "config1.php";
+                                                    $sql = "SELECT * FROM gradelevel";
+                                                    $result = mysqli_query($link, $sql);
+                                                    while ($row = mysqli_fetch_assoc($result)) {
+                                                        echo "<option value='" . $row['gradelevel_id'] . "'>" . $row['gradelevel_name'] . "</option>";
+                                                    }
+                                                ?>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-
+                                
                                 <form method="post" name="add_registration" onSubmit="return valid();" enctype="multipart/form-data" id="registrationForm" style="display: none;">
                                     <!-- Personal Information Section -->
                                     <div class="row mb-3 justify-content-center">
@@ -296,7 +375,8 @@ if (isset($_POST['add_registration'])) {
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="sname" class="form-label">Name</label>
-                                            <input type="text" class="form-control" id="sname" name="sname" value="<?php echo htmlentities($full_name); ?>" style="pointer-events: none;" required>
+                                            <input type="text" class="form-control" id="sname" name="sname" 
+                                            value="<?php echo htmlentities($full_name); ?>" readonly>
                                         </div>
                                         <div class="col-md-6">
                                             <label for="dob" class="form-label">Date of Birth</label>
@@ -324,7 +404,8 @@ if (isset($_POST['add_registration'])) {
                                         </div>
                                         <div class="col-md-4">
                                             <label for="email" class="form-label">Email Address</label>
-                                            <input type="email" class="form-control" id="email" name="email" value="<?php echo isset($student_email) ? htmlspecialchars($student_email) : ''; ?>" required>
+                                            <input type="email" class="form-control" id="email" name="email" 
+                                            value="<?php echo htmlentities($student_email); ?>" readonly>
                                         </div>
                                     </div>
 
@@ -457,36 +538,40 @@ if (isset($_POST['add_registration'])) {
                                         <button type="submit" class="btn btn-primary" name="add_registration">Submit</button>
                                     </div>
                                 </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Enrollment Modal -->
-            <div class="modal fade" id="enrollmentModal" tabindex="-1" aria-labelledby="enrollmentModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="enrollmentModalLabel">Enrollment Schedule</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            There is no enrollment schedule for today.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
 
-    <?php include 'footer.php'; ?>
-    <?php include 'script.php'; ?>
+                                <!-- Enrollment Modal -->
+                                <div class="modal fade" id="enrollmentModal" tabindex="-1" aria-labelledby="enrollmentModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title" id="myLargeModalLabel">
+                                                    Enrollment Schedule
+                                                </h4>
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                    ×
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>There is no enrollment schedule for today.</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+                    
+			</div>
+		</div>
 
-    <script>
-        // Your existing JavaScript code for grade level selection
+		<!-- js -->
+        <?php
+            include 'footer.php';
+        ?>
+		<script>
         document.getElementById('grade_level').addEventListener('change', function() {
             var gradeLevelContainer = document.getElementById('grade_level_container');
             var registrationForm = document.getElementById('registrationForm');
@@ -520,7 +605,6 @@ if (isset($_POST['add_registration'])) {
             }
         });
 
-        // Calculate age based on date of birth
         document.getElementById('dob').addEventListener('change', function() {
             var dob = new Date(this.value);
             var today = new Date();
@@ -532,7 +616,6 @@ if (isset($_POST['add_registration'])) {
             document.getElementById('age').value = age;
         });
 
-        // Image preview functions
         function triggerFileUpload() {
             document.getElementById('image').click();
         }
@@ -547,6 +630,5 @@ if (isset($_POST['add_registration'])) {
             reader.readAsDataURL(event.target.files[0]);
         }
     </script>
-</body>
-
+	</body>
 </html>

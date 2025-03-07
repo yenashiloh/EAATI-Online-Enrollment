@@ -7,7 +7,7 @@ error_reporting(0);
 $superadmin_id = $_SESSION['superadmin_id'];
 
 if(!isset($superadmin_id)){
-   header('location:login.php');
+   header('location:../login.php');
 }
 else{
     if(isset($_POST['edit_user'])) {
@@ -59,100 +59,124 @@ else{
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>Edit User</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <?php 
+            include 'link.php';    
+        ?>
+	
+	</head>
+	<body class="sidebar-light">
 
-  <title>Dashboard</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+    <?php 
+        include 'header.php';
+        include 'sidebar.php';
 
-  <?php include 'asset.php';?>
+        // Fetch user details for editing
+        if(isset($_GET['id'])) {
+            $id = $_GET['id'];
+            $sql = "SELECT * FROM users WHERE id = :id";
+            $query = $conn->prepare($sql);
+            $query->bindParam(':id', $id, PDO::PARAM_INT);
+            $query->execute();
+            $user = $query->fetch(PDO::FETCH_ASSOC);
+        }
+    ?>
 
-</head>
+        <div class="mobile-menu-overlay"></div>
+                <div class="main-container">
+                    <div class="pd-ltr-20 xs-pd-20-10">
+                        <div class="min-height-200px">
+                            <div class="page-header">
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <div class="title">
+                                            <h4>Edit User</h4>
+                                        </div>
+                                        <nav aria-label="breadcrumb" role="navigation">
+                                            <ol class="breadcrumb">
+                                                <li class="breadcrumb-item">
+                                                    <a href="superadmin_dashboard.php">Dashboard</a>
+                                                </li>
+                                                <li class="breadcrumb-item">
+                                                    <a href="user.php">User</a>
+                                                </li>
+                                                <li class="breadcrumb-item active" aria-current="page">
+                                                    Edit User
+                                                </li>
+                                            </ol>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
 
-<body>
+                            <div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
 
-<?php 
-    include 'header.php';
-    include 'sidebar.php';
+                            <form class="row g-3" method="post" name="edit_user" onSubmit="return valid();">
+                                <?php if(isset($error)){?>
+                                <div class="alert alert-danger" role="alert">
+                                    <?php echo htmlentities($error); ?>
+                                </div>
+                                <?php } else if(isset($msg)){?>
+                                <div class="alert alert-success" role="alert">
+                                   <?php echo htmlentities($msg); ?>
+                                </div>
+                                <?php }?>
+                                <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>">
 
-    // Fetch user details for editing
-    if(isset($_GET['id'])) {
-        $id = $_GET['id'];
-        $sql = "SELECT * FROM users WHERE id = :id";
-        $query = $conn->prepare($sql);
-        $query->bindParam(':id', $id, PDO::PARAM_INT);
-        $query->execute();
-        $user = $query->fetch(PDO::FETCH_ASSOC);
-    }
-?>
+                                <div class="col-md-6 mb-3">
+                                    <label for="first_name" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="first_name" placeholder="First Name" name="first_name" value="<?php echo $user['first_name']; ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="last_name" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="last_name" placeholder="Last Name" name="last_name" value="<?php echo $user['last_name']; ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="contact_number" class="form-label">Contact Number</label>
+                                    <input type="text" class="form-control" id="contact_number" placeholder="Contact Number" name="contact_number" value="<?php echo $user['contact_number']; ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Email" name="email" value="<?php echo $user['email']; ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="username" placeholder="Username" name="username" value="<?php echo $user['username']; ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="password" placeholder="New Password" name="password">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="role" class="form-label">Role</label>
+                                    <select id="role" class="custom-select col-12"  name="role">
+                                        <option selected>Choose role</option>
+                                        <option value="superadmin" <?php if($user['role'] == 'superadmin') echo 'selected'; ?>>SuperAdmin</option>
+                                        <option value="registrar" <?php if($user['role'] == 'registrar') echo 'selected'; ?>>Registrar</option>
+                                        <option value="accounting" <?php if($user['role'] == 'accounting') echo 'selected'; ?>>Accounting</option>
+                                        <option value="teacher" <?php if($user['role'] == 'teacher') echo 'selected'; ?>>Teacher</option>
+                                        <option value="user" <?php if($user['role'] == 'user') echo 'selected'; ?>>Student/Parent</option>
+                                    </select>
+                                </div>
 
-<main id="main" class="main">
-
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">Edit User</h5>
-
-        <form class="row g-3"  method="post" name="edit_user" onSubmit="return valid();">
-            <?php if(isset($error)){?>
-                <div class="alert alert-danger" role="alert">
-                    <strong>ERROR</strong>: <?php echo htmlentities($error); ?>
+                                <div class="col-12 mt-2">
+                                    <button type="submit" class="btn btn-primary" name="edit_user">Update</button>
+                                    <a href="user.php" class="btn btn-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-            <?php } else if(isset($msg)){?>
-                <div class="alert alert-success" role="alert">
-                    <strong>SUCCESS</strong>: <?php echo htmlentities($msg); ?>
-                </div>
-            <?php }?>
-            <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>">
-            <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="First Name" name="first_name" value="<?php echo $user['first_name']; ?>">
             </div>
-            <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Last Name" name="last_name" value="<?php echo $user['last_name']; ?>">
-            </div>
-            <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Contact Number" name="contact_number" value="<?php echo $user['contact_number']; ?>">
-            </div>
-            <div class="col-md-6">
-                <input type="email" class="form-control" placeholder="Email" name="email" value="<?php echo $user['email']; ?>">
-            </div>
-            <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Username" name="username" value="<?php echo $user['username']; ?>">
-            </div>
-            <div class="col-md-6">
-                <input type="password" class="form-control" placeholder="New Password" name="password">
-            </div>
-            <div class="col-md-4">
-                <select id="inputState" class="form-select" name="role">
-                    <option selected>Choose role</option>
-                    <option value="superadmin" <?php if($user['role'] == 'superadmin') echo 'selected'; ?>>SuperAdmin</option>
-                    <option value="registrar" <?php if($user['role'] == 'registrar') echo 'selected'; ?>>Registrar</option>
-                    <option value="accounting" <?php if($user['role'] == 'accounting') echo 'selected'; ?>>Accounting</option>
-                    <option value="teacher" <?php if($user['role'] == 'teacher') echo 'selected'; ?>>Teacher</option>
-                    <option value="user" <?php if($user['role'] == 'user') echo 'selected'; ?>>Student/Parent</option>
-                </select>
-            </div>
-            
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary" name="edit_user">Update</button>
-                <a href="user.php" class="btn btn-secondary">Cancel</a>
-            </div>
-        </form>
 
-    </div>
-</div>
-</main><!-- End #main -->
-
-
-<?php
-    include 'footer.php';
-    include 'script.php';
-?>
-
-</body>
-
+        <?php
+		    include 'footer.php';
+        ?>
+	</body>
 </html>
 <?php } ?>

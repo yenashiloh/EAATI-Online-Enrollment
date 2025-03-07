@@ -75,117 +75,144 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 $conn = null; // Close connection
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+    <title>Sign In</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<!-- Site favicon -->
+    <link href="asset/img/logo.png" rel="icon">
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="asset/img/logo.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="asset/img/logo.png"
+		/>
 
-  <title>EAATI</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+		<!-- Mobile Specific Metas -->
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
+    
+		<!-- Google Font -->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="vendors/styles/icon-font.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="vendors/styles/style.css" />
 
-  <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="assets/css/style.css" rel="stylesheet">
-</head>
-
-<body>
-
-  <main>
-
-    <div class="container">
-
-      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
-        <div class="container">
-          <div class="row justify-content-center">
-            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-              <div>
-
-              </div>
-
-              <div class="card mb-3">
-
-                <div class="card-body">
-
-                  <div class="pt-4 pb-2">
-                    <div class="d-flex justify-content-center align-items-center">
-                      <a href="index.html">
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+	
+	</head>
+	<body class="login-page">
+    <div class="login-wrap d-flex align-items-center justify-content-center min-vh-100">
+      <div class="container">
+          <div class="row justify-content-center align-items-center">
+              <div class="col-md-6 col-lg-5">
+                  <div class="login-box bg-white box-shadow border-radius-10 p-4">
+                  <div class="d-flex justify-content-center align-items-center mb-4 ">
+                      <a href="index.php">
                         <img src="assets/img/logo.png" alt="" height="100px" width="100px">
                       </a>
                     </div>
-
-                    <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
-                    <p class="text-center small">Enter your LRN/username & password to login</p>
-                  </div>
-
-                  <form class="row g-3 needs-validation" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" novalidate>
-                    <?php if (isset($error_message)) { ?>
-                      <div class="alert alert-danger"><?php echo $error_message; ?></div>
-                    <?php } ?>
-                    <div class="col-12">
-                      <label for="yourUsername" class="form-label">Learner Reference Number (LRN) or Username</label>
-                      <div class="input-group has-validation">
-                        <input type="text" name="username" class="form-control" id="yourUsername" required>
-                        <div class="invalid-feedback">Please enter your Learner Reference Number.</div>
+                      <div class="login-title">
+                          <h2 class="text-center text-primary">Sign In</h2>
                       </div>
-                    </div>
+                      <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <?php if (isset($error_message)) { ?>
+                          <div class="alert alert-danger"><?php echo $error_message; ?></div>
+                        <?php } ?>
+                          <div class="form-group">
+                              <label for="usernameOrLRN">Username or LRN</label>
+                              <div class="input-group custom">
+                                  <input type="text" id="usernameOrLRN" class="form-control form-control-lg" name="username"
+                                      placeholder="Enter Username or LRN" required />
+                                  <div class="input-group-append custom">
+                                      <span class="input-group-text">
+                                          <i class="icon-copy dw dw-user1"></i>
+                                      </span>
+                                  </div>
+                              </div>
+                          </div>
 
-                    <div class="col-12">
-                      <label for="yourPassword" class="form-label">Password</label>
-                      <input type="password" name="password" class="form-control" id="yourPassword" required>
-                      <div class="invalid-feedback">Please enter your password!</div>
-                    </div>
-                    <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit">Login</button>
-                    </div>
+                          <div class="form-group">
+                              <label for="password">Password</label>
+                              <div class="input-group custom">
+                                  <input type="password" id="password" class="form-control form-control-lg" name="password"
+                                      placeholder="Enter Password" required />
+                                  <div class="input-group-append custom">
+                                      <span class="input-group-text">
+                                          <i class="dw dw-padlock1"></i>
+                                      </span>
+                                  </div>
+                              </div>
+                          </div>
 
-                  </form>
-
-                </div>
+                          <div class="row">
+                              <div class="col-sm-12">
+                                  <div class="input-group mb-3">
+                                      <button class="btn btn-primary btn-lg btn-block" type="submit">Sign In</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </form>
+                  </div>
               </div>
-
-            </div>
           </div>
-        </div>
-
-      </section>
-
-    </div>
-  </main><!-- End #main -->
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/chart.js/chart.umd.js"></script>
-  <script src="assets/vendor/echarts/echarts.min.js"></script>
-  <script src="assets/vendor/quill/quill.min.js"></script>
-  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="assets/js/main.js"></script>
-
-</body>
-
+      </div>
+  </div>
+		<!-- welcome modal start -->
+	
+		<!-- welcome modal end -->
+		<!-- js -->
+		<script src="vendors/scripts/core.js"></script>
+		<script src="vendors/scripts/script.min.js"></script>
+		<script src="vendors/scripts/process.js"></script>
+		<script src="vendors/scripts/layout-settings.js"></script>
+		<!-- Google Tag Manager (noscript) -->
+		<noscript
+			><iframe
+				src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS"
+				height="0"
+				width="0"
+				style="display: none; visibility: hidden"
+			></iframe
+		></noscript>
+		<!-- End Google Tag Manager (noscript) -->
+	</body>
 </html>

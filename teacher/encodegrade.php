@@ -7,116 +7,121 @@ session_start();
 $teacher_id = $_SESSION['teacher_id'];
 
 if(!isset($teacher_id)){
-   header('location:login.php');
-   exit; // Add exit to stop further execution
+   header('location:../login.php');
+   exit;
 }
 
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>Encoded Grade</title>
 
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <?php
+            include 'link.php';
+        ?>
 
-    <title>Registrar</title>
-    <meta content="" name="description">
-    <meta content="" name="keywords">
-
-    <?php include 'asset.php';?>
-
-    <style>
-        /* Additional styling for cards */
-        .card {
-            margin-bottom: 20px;
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-    </style>
-</head>
-
-<body>
-
-<?php 
+	</head>
+	<body class="sidebar-light">
+    <?php
     include 'header.php';
     include 'sidebar.php';
-?>
+    ?>
 
-<main id="main" class="main">
-
-    <div class="pagetitle">
-        <h1>Schedule Management</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                <li class="breadcrumb-item active">Schedule</li>
-            </ol>
-        </nav>
-    </div><!-- End Page Title -->
-
-    <section class="section">
-        <div class="row">
-            <?php
-            // Include config file
-            require_once "config1.php";
-
-            // Attempt select query execution
-            $sql = "SELECT schedules.*,subjects.subject_name,sections.section_name,rooms.room_name, CONCAT(users.first_name, ' ', users.last_name) AS teacher_name, COUNT(encodedstudentsubjects.student_id) AS student_count FROM schedules 
-            INNER JOIN users ON schedules.teacher_id = users.id
-            INNER JOIN sections on sections.section_id = schedules.section_id
-            INNER JOIN subjects ON subjects.subject_id = schedules.subject_id
-            INNER JOIN gradelevel ON gradelevel.gradelevel_id = schedules.grade_level
-            INNER JOIN rooms ON rooms.room_id = schedules.room_id
-            LEFT JOIN encodedstudentsubjects ON encodedstudentsubjects.schedule_id = schedules.id
-            WHERE schedules.teacher_id = $teacher_id
-            GROUP BY schedules.id";
-            if($result = mysqli_query($link, $sql)){
-                if(mysqli_num_rows($result) > 0){
-                    while($row = mysqli_fetch_array($result)){
-                        ?>
-                        <div class="col-lg-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title" hidden>#<?php echo $row['id']; ?></h5>
-                                    <h1 class="card-title">Grade <?php echo $row['grade_level']; ?> - <?php echo $row['section_name']; ?></h1>
-                                    <p class="card-text">Subject: <?php echo $row['subject_name']; ?></p>
-                                    <p class="card-text">Enrolled Students: <?php echo $row['student_count']; ?></p>
-                                    
-                                    <div class="text-center">
-                                        <a href="encode_studentgrade.php?id=<?php echo $row['id']; ?>" class="btn btn-primary" title="Encode">
-                                            <span class="bi bi-file-earmark-spreadsheet-fill"></span>Encode Student Grade
-                                        </a>
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        </div>
+<div class="mobile-menu-overlay"></div>
+		<div class="main-container">
+			<div class="pd-ltr-20 xs-pd-20-10">
+				<div class="min-height-200px">
+					<div class="page-header">
+						<div class="row">
+							<div class="col-md-12 col-sm-12">
+								<div class="title">
+									<h4>Verify Grade</h4>
+								</div>
+								<nav aria-label="breadcrumb" role="navigation">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="registrar_dashboard.php">Menu</a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">
+											Verify Grade
+										</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+		
+                    <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
+                    <div class="pb-20">
+                        <div class="row">
                         <?php
-                    }
-                    // Free result set
-                    mysqli_free_result($result);
-                } else{
-                    echo '<div class="col-lg-12"><div class="alert alert-danger"><em>No records were found.</em></div></div>';
-                }
-            } else{
-                echo '<div class="col-lg-12"><div class="alert alert-danger"><em>Oops! Something went wrong. Please try again later.</em></div></div>';
-            }
+                        // Include config file
+                        require_once "config1.php";
 
-            // Close connection
-            mysqli_close($link);
-            ?>
+                        // Attempt select query execution
+                        $sql = "SELECT schedules.*,subjects.subject_name,sections.section_name,rooms.room_name, 
+                                    CONCAT(users.first_name, ' ', users.last_name) AS teacher_name, 
+                                    COUNT(encodedstudentsubjects.student_id) AS student_count 
+                                FROM schedules 
+                                INNER JOIN users ON schedules.teacher_id = users.id
+                                INNER JOIN sections ON sections.section_id = schedules.section_id
+                                INNER JOIN subjects ON subjects.subject_id = schedules.subject_id
+                                INNER JOIN gradelevel ON gradelevel.gradelevel_id = schedules.grade_level
+                                INNER JOIN rooms ON rooms.room_id = schedules.room_id
+                                LEFT JOIN encodedstudentsubjects ON encodedstudentsubjects.schedule_id = schedules.id
+                                GROUP BY schedules.id";
+
+                        if ($result = mysqli_query($link, $sql)) {
+                            if (mysqli_num_rows($result) > 0) {
+                                while ($row = mysqli_fetch_array($result)) {
+                                    ?>
+                                    <div class="col-lg-3 col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title" hidden>#<?php echo $row['id']; ?></h5>
+                                                <h1 class="card-title">Grade <?php echo $row['grade_level']; ?> - <?php echo $row['section_name']; ?></h1>
+                                                <p class="card-text">Subject: <?php echo $row['subject_name']; ?></p>
+                                                <p class="card-text">Enrolled Students: <?php echo $row['student_count']; ?></p>
+                                                
+                                                <div class="text-center">
+                                                    <a href="encode_studentgrade.php?section_id=<?php echo $row['section_id']; ?>" class="btn btn-primary" title="View Students">
+                                                        <span class="bi bi-eye-fill"></span> View Students
+                                                    </a>
+                                                   
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php
+                                }
+                                // Free result set
+                                mysqli_free_result($result);
+                            } else {
+                                echo '<div class="col-lg-12"><div class="alert alert-danger"><em>No records were found.</em></div></div>';
+                            }
+                        } else {
+                            echo '<div class="col-lg-12"><div class="alert alert-danger"><em>Oops! Something went wrong. Please try again later.</em></div></div>';
+                        }
+
+                        // Close connection
+                        mysqli_close($link);
+                        ?>
+                        </div> <!-- End of row -->
+                    </div>
+                </div>
+
+                </div>
+            </div>
         </div>
-    </section>
 
-</main><!-- End #main -->
-
-<?php
-    include 'footer.php';
-    include 'script.php';
-?>
-
-</body>
-
+		<?php
+            include 'footer.php';
+        ?>
+		<!-- End Google Tag Manager (noscript) -->
+	</body>
 </html>

@@ -7,13 +7,11 @@ error_reporting(0);
 $registrar_id = $_SESSION['registrar_id'];
 
 if (!isset($registrar_id)) {
-    header('location:login.php');
+    header('location:../login.php');
 } else {
     if(isset($_POST['edit_schedule'])) {
-        // You should add your database connection logic here
-        // Assuming $conn is your database connection object
 
-        $schedule_id = $_POST['schedule_id']; // Get schedule ID from the form        
+        $schedule_id = $_POST['schedule_id'];      
         $grade_level = $_POST['grade_level'];
         $section_id = $_POST['section'];
         $subject_id = $_POST['subject_name'];
@@ -46,7 +44,7 @@ if (!isset($registrar_id)) {
         $query->bindParam(':end_time', $end_time, PDO::PARAM_STR);
         
         if($query->execute()) {
-            $msg = "Schedule Updated Successfully";
+            $msg = "Schedule Updated Successfully!";
         } else {
             $error = "Something went wrong. Please try again";
         }
@@ -54,30 +52,27 @@ if (!isset($registrar_id)) {
 
 ?>
 
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>Edit Schedule</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <?php
+            include 'link.php';
+        ?>
 
-  <title>Dashboard</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+	</head>
+	<body class="sidebar-light">
+    <?php
 
-  <?php include 'asset.php';?>
-
-</head>
-
-
-<body>
-
-<?php 
     include 'header.php';
     include 'sidebar.php';
 
-    // Fetch schedule details for editing
-    if(isset($_GET['id'])) {
+     // Fetch schedule details for editing
+     if(isset($_GET['id'])) {
         $schedule_id = $_GET['id'];
         $sql = "SELECT * FROM schedules WHERE id = :schedule_id";
         $query = $conn->prepare($sql);
@@ -85,32 +80,53 @@ if (!isset($registrar_id)) {
         $query->execute();
         $schedule = $query->fetch(PDO::FETCH_ASSOC);
     }
-?>
+    ?>
 
-<main id="main" class="main">
-    <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Edit Schedule</h5>
-
-                <form class="row g-3"  method="post" name="edit_schedule">
-                    <?php if(isset($error)){?>
+		<div class="mobile-menu-overlay"></div>
+		<div class="main-container">
+			<div class="pd-ltr-20 xs-pd-20-10">
+				<div class="min-height-200px">
+					<div class="page-header">
+						<div class="row">
+							<div class="col-md-12 col-sm-12">
+								<div class="title">
+									<h4>Edit Schedule</h4>
+								</div>
+								<nav aria-label="breadcrumb" role="navigation">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="teacher_dashboard.php">Menu</a>
+										</li>
+                                        <li class="breadcrumb-item">
+											<a href="schedule.php">Schedule</a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">
+											Edit Schedule
+										</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+		
+              <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
+                  <?php if ($error) { ?>
                         <div class="alert alert-danger" role="alert">
-                            <strong>ERROR</strong>: <?php echo htmlentities($error); ?>
+                            <?php echo htmlentities($error); ?>
                         </div>
-                    <?php } else if(isset($msg)){?>
+                    <?php } elseif ($msg) { ?>
                         <div class="alert alert-success" role="alert">
-                            <strong>SUCCESS</strong>: <?php echo htmlentities($msg); ?>
+                            <?php echo htmlentities($msg); ?>
                         </div>
-                    <?php }?>
+                    <?php } ?>
+
+                    <form class="row g-3"  method="post" name="edit_schedule">
+                    
                     <input type="hidden" name="schedule_id" value="<?php echo $schedule['id']; ?>">
                     <div class="col-md-12">
-                        <select id="grade_level" class="form-select" name="grade_level" required>
+                        <select id="grade_level" class="custom-select col-12 mb-3" name="grade_level" required>
                             <option value="" selected>Select Grade Level</option>
                             <?php
-                                // Assuming you have a table named 'gradelevel' with 'gradelevel_id' column
                                 $sql = "SELECT * FROM gradelevel";
                                 $result = $conn->query($sql);
                                 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
@@ -121,10 +137,9 @@ if (!isset($registrar_id)) {
                         </select>
                     </div>
                     <div class="col-md-12">
-                        <select id="section" class="form-select" name="section" required>
+                        <select id="section" class="custom-select col-12 mb-3" name="section" required>
                             <option value="" selected>Select Section</option>
                             <?php
-                                // Assuming you have a table named 'gradelevel' with 'gradelevel_id' column
                                 $sql = "SELECT * FROM sections";
                                 $result = $conn->query($sql);
                                 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
@@ -135,10 +150,9 @@ if (!isset($registrar_id)) {
                         </select>
                     </div>
                     <div class="col-md-12">
-                        <select id="subject_name" class="form-select" name="subject_name" required>
+                        <select id="subject_name" class="custom-select col-12 mb-3" name="subject_name" required>
                             <option value="" selected>Select Subject</option>
                             <?php
-                                // Assuming you have a table named 'gradelevel' with 'gradelevel_id' column
                                 $sql = "SELECT * FROM subjects";
                                 $result = $conn->query($sql);
                                 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
@@ -149,10 +163,9 @@ if (!isset($registrar_id)) {
                         </select>
                     </div>
                     <div class="col-md-12">
-                        <select id="teacher_id" class="form-select" name="teacher_id" required>
+                        <select id="teacher_id" class="custom-select col-12 mb-3" name="teacher_id" required>
                             <option selected>Select Teacher</option>
                             <?php
-                                // Assuming you have a table named 'users' with 'role' column as 'teacher'
                                 $sql = "SELECT * FROM users WHERE role = 'teacher'";
                                 $result = $conn->query($sql);
                                 while($row = $result->fetch(PDO::FETCH_ASSOC)) {
@@ -163,10 +176,9 @@ if (!isset($registrar_id)) {
                         </select>
                     </div>
                     <div class="col-md-12">
-                        <select id="room" class="form-select" name="room" required>
+                        <select id="room"  class="custom-select col-12 mb-3" name="room" required>
                             <option value="" selected>Select Room</option>
                             <?php
-                                // Assuming you have a table named 'gradelevel' with 'gradelevel_id' column
                                 $sql = "SELECT * FROM rooms";
                                 $result = $conn->query($sql);
                                 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
@@ -177,48 +189,43 @@ if (!isset($registrar_id)) {
                         </select>
                     </div>
                     <?php
-// Assuming $schedule['day'] contains the days associated with the schedule as a comma-separated string
-$schedule_days = explode(',', $schedule['day']);
-$daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-?>
-<div class="col-md-12">
-    <label for="days" class="form-label">Select Days</label><br>
-    <?php
-    foreach ($daysOfWeek as $day) {
-        $checked = in_array($day, $schedule_days) ? 'checked' : '';
-        echo "<div class='form-check form-check-inline'>
-                <input type='checkbox' id='$day' name='days[]' value='$day' class='form-check-input' $checked onchange='handleCheckboxSelection(this)'>
-                <label for='$day' class='form-check-label'>$day</label>
-              </div>";
-    }
-    ?>
-</div>
+                 
+                    $schedule_days = explode(',', $schedule['day']);
+                    $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                    ?>
                     <div class="col-md-12">
-                        <label for="start_time" class="form-label">Start Time</label>
+                        <label for="days" class="form-label">Select Days</label><br>
+                        <?php
+                        foreach ($daysOfWeek as $day) {
+                            $checked = in_array($day, $schedule_days) ? 'checked' : '';
+                            echo "<div class='form-check form-check-inline'>
+                                    <input type='checkbox' id='$day' name='days[]' value='$day' class='form-check-input' $checked onchange='handleCheckboxSelection(this)'>
+                                    <label for='$day' class='form-check-label'>$day</label>
+                                </div>";
+                        }
+                        ?>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="start_time" class="form-label mt-3">Start Time</label>
                         <input type="time" class="form-control" id="start_time" name="start_time" value="<?php echo $schedule['start_time']; ?>" required>
                     </div>
                     <div class="col-md-12">
-                        <label for="end_time" class="form-label">End Time</label>
+                        <label for="end_time" class="form-label mt-3">End Time</label>
                         <input type="time" class="form-control" id="end_time" name="end_time" value="<?php echo $schedule['end_time']; ?>" required>
                     </div>
                     
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary" name="edit_schedule">Update</button>
+                    <div class="d-flex justify-content-start ml-3 mt-3">
+                        <button type="submit" class="btn btn-primary mr-2" name="edit_schedule">Update</button>
                         <a href="schedule.php" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
-            
-                </div>
-        </div>
             </div>
+          </div>
         </div>
-    </div>
-</main><!-- End #main -->
-<script>
+
+        <script>
         function handleCheckboxSelection(checkbox) {
-            // Get all checkboxes
             var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            // Uncheck all checkboxes
             checkboxes.forEach(function(cb) {
                 if (cb !== checkbox) {
                     cb.checked = false;
@@ -227,14 +234,9 @@ $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday
         }
     </script>
 
-
-
-<?php
-    include 'footer.php';
-    include 'script.php';
-?>
-
-</body>
-
+		<?php
+      include 'footer.php';
+    ?>
+	</body>
 </html>
 <?php } ?>

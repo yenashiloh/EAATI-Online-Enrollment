@@ -7,165 +7,272 @@ session_start();
 $accounting_id = $_SESSION['accounting_id'];
 
 if(!isset($accounting_id)){
-   header('location:login.php');
+   header('location:../login.php');
 }
-
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
+	<head>
+		<!-- Basic Page Info -->
+		<meta charset="utf-8" />
+		<title>Dashboard</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+		 <!-- Site favicon -->
+		 <link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="../asset/img/logo.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="../asset/img/logo.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="../asset/img/logo.png"
+		/>
 
-  <title>Dashboard - Accounting</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+		<!-- Mobile Specific Metas -->
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1"
+		/>
 
-  <!-- Favicons -->
-  <link href="../assets/img/favicon.png" rel="icon">
-  <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+		<!-- Google Font -->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="../vendors/styles/core.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../vendors/styles/icon-font.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../src/plugins/datatables/css/dataTables.bootstrap4.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../src/plugins/datatables/css/responsive.bootstrap4.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="../vendors/styles/style.css" />
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
+		></script>
+		<script
+			async
+			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2973766580778258"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
 
-  <!-- Vendor CSS Files -->
-  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="../assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="../assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="../assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="../assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="../assets/vendor/simple-datatables/style.css" rel="stylesheet">
+			gtag("config", "G-GBZ3SGGX85");
+		</script>
+		<!-- Google Tag Manager -->
+		<script>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
+		</script>
+		<!-- End Google Tag Manager -->
 
-  <!-- Template Main CSS File -->
-  <link href="../assets/css/style.css" rel="stylesheet">
-</head>
+	</head>
+	<body class="sidebar-light">
 
-<body>
+  	<?php
+		include 'header.php';
+		include 'sidebar.php';
+    ?>
 
-<?php 
-    include 'header.php';
-    include 'sidebar.php';
-?>
-  <main id="main" class="main">
+		<div class="mobile-menu-overlay"></div>
+	
+		<div class="main-container">
+			<div class="xs-pd-20-10 pd-ltr-20">
+				<div class="title pb-20">
+					<h2 class="h3 mb-0">Dashboard</h2>
+				</div>
 
-<div class="pagetitle">
-  <h1>Dashboard</h1>
-  <nav>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-      <li class="breadcrumb-item active">Dashboard</li>
-    </ol>
-  </nav>
-</div><!-- End Page Title -->
-<section class="section dashboard">
-<div class="row justify-content-center">
+				<!-- Statistics Cards Row -->
+				<div class="row pb-10">
+					<?php
+					include 'config1.php';
+					if ($link->connect_error) {
+						die("Connection failed: " . $link->connect_error);
+					}
+					// Count pending cash payments
+					$queryCash = "SELECT COUNT(*) AS pending_cash FROM transactions WHERE status = 2 AND payment_method = 'Cash'";
+					$resultCash = $link->query($queryCash);
+					$pending_cash = ($resultCash && $resultCash->num_rows > 0) ? $resultCash->fetch_assoc()["pending_cash"] : 0;
+					
+					// Count pending installment payments
+					$queryInstallment = "SELECT COUNT(*) AS pending_installment FROM transactions WHERE status = 2 AND payment_method = 'Installment'";
+					$resultInstallment = $link->query($queryInstallment);
+					$pending_installment = ($resultInstallment && $resultInstallment->num_rows > 0) ? $resultInstallment->fetch_assoc()["pending_installment"] : 0;
+					
+					// Count total students
+					$queryStudents = "SELECT COUNT(*) AS total_students FROM users WHERE role = 'student'";
+					$resultStudents = $link->query($queryStudents);
+					$total_students = ($resultStudents && $resultStudents->num_rows > 0) ? $resultStudents->fetch_assoc()["total_students"] : 0;
+					?>
 
-<!-- Left side columns -->
-  <div class="row justify-content-center">
+					<!-- Students Card -->
+					<div class="col-xl-4 col-lg-3 col-md-6 mb-20">
+						<div class="card-box height-100-p widget-style3">
+							<div class="d-flex flex-wrap">
+								<div class="widget-data">
+									<div class="weight-700 font-24 text-dark"><?php echo $total_students; ?></div>
+									<div class="font-14 text-secondary weight-500">Students</div>
+								</div>
+								<div class="widget-icon">
+									<div class="icon" data-color="#FFEB3B">
+										<span class="icon-copy dw dw-group"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
-    <!-- Sales Card -->
-    <div class="col-xxl-3 col-md-6">
-      <div class="card info-card sales-card">
-        <div class="card-body">
-          <h5 class="card-title">Pending Cash Payment</h5>
+					<!-- Pending Cash Payment Card -->
+					<div class="col-xl-4 col-lg-3 col-md-6 mb-20">
+						<div class="card-box height-100-p widget-style3">
+							<div class="d-flex flex-wrap">
+								<div class="widget-data">
+									<div class="weight-700 font-24 text-dark"><?php echo $pending_cash; ?></div>
+									<div class="font-14 text-secondary weight-500">Pending Cash Payment</div>
+								</div>
+								<div class="widget-icon">
+									<div class="icon" data-color="#00eccf">
+										<span class="icon-copy dw dw-money"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
-          <div class="d-flex align-items-center">
-            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-              <img src="../images/payment-method.png" alt="Pending Count" style="margin-left: 40px; width: 100px; height: 100px;">
-            </div>
-            <?php              
+					<!-- Pending Installment Payment Card -->
+					<div class="col-xl-4 col-lg-3 col-md-6 mb-20">
+						<div class="card-box height-100-p widget-style3">
+							<div class="d-flex flex-wrap">
+								<div class="widget-data">
+									<div class="weight-700 font-24 text-dark"><?php echo $pending_installment; ?></div>
+									<div class="font-14 text-secondary weight-500">Pending Installment Payment</div>
+								</div>
+								<div class="widget-icon">
+									<div class="icon" data-color="#ff5b5b">
+										<span class="icon-copy dw dw-credit-card"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
-              include 'config1.php';
-              // Check connection
-              if ($link->connect_error) {
-                  die("Connection failed: " . $link->connect_error);
-              }
+				<!-- Table Section -->
+				<div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
+					<div class="d-flex justify-content-between align-items-center mb-3">
+					<h4 class="text-blue h4 mb-0">Payment</h4>
+					<a href="payment.php" class="btn btn-primary">View</a>
+				</div>
+				
+					<?php
+					if(isset($_GET['deleted']) && $_GET['deleted'] == 1){
+						echo "<div class='alert alert-success mb-20'>Payment Deleted Successfully!</div>";
+					}
+					?>
 
-              // Query to count teachers
-              $query = "SELECT COUNT(*) AS pending_cash FROM transactions WHERE status = 0 AND payment_type= 'cash'";
-              $result = $link->query($query);
+					<div class="pb-20">
+						<table class="data-table table stripe hover nowrap">
+							<thead>
+								<tr>
+									<th>No.</th>
+									<th>Grade Level</th>
+									<th>Upon Enrollment</th>
+									<th>Total Tuition Fee</th>
+									<th>Partial Upon</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+								require_once "config1.php";
+								$sql = "SELECT * FROM payments INNER JOIN gradelevel ON payments.grade_level = gradelevel.gradelevel_id";
+								if($result = mysqli_query($link, $sql)){
+									if(mysqli_num_rows($result) > 0){
+										$counter = 1;
+										while($row = mysqli_fetch_array($result)){
+											echo "<tr>";
+											echo "<td>" . $counter++ . "</td>";
+											echo "<td>" . $row['gradelevel_name'] . "</td>";
+											echo "<td>" . $row['upon_enrollment'] . "</td>";
+											echo "<td>" . $row['total_whole_year'] . "</td>";
+											echo "<td>" . $row['partial_upon'] . "</td>";
+											echo "</tr>";
+										}
+										mysqli_free_result($result);
+									} else {
+										echo '<tr><td colspan="4" class="text-center"><div class="alert alert-danger"><em>No records were found.</em></div></td></tr>';
+									}
+								} else {
+									echo '<tr><td colspan="4" class="text-center">Oops! Something went wrong. Please try again later.</td></tr>';
+								}
+								mysqli_close($link);
+								?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
 
-              if ($result && $result->num_rows > 0) {
-                  $row = $result->fetch_assoc();
-                  $pending_cash = $row["pending_cash"];
-              } else {
-                  $pending_cash = 0;
-              }
-
-            ?>
-            <div class="ps-3" style="margin-left: 50px;">
-              <h1><?php echo "$pending_cash"; ?></h1>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div><!-- End Sales Card -->
-    <div class="col-xxl-3 col-md-6">
-      <div class="card info-card sales-card">
-        <div class="card-body">
-          <h5 class="card-title">Pending Installment Payment</h5>
-
-          <div class="d-flex align-items-center">
-            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-              <img src="../images/calendar.png" alt="Student Count" style="margin-left: 40px; width: 100px; height: 100px;">
-            </div>
-            <?php
-            
-              // Check connection
-              if ($link->connect_error) {
-                  die("Connection failed: " . $link->connect_error);
-              }
-
-              // Query to count teachers
-              $query = "SELECT COUNT(*) AS pending_installment FROM transactions WHERE status = 0 AND payment_type= 'installment'";
-              $result = $link->query($query);
-
-              if ($result && $result->num_rows > 0) {
-                  $row = $result->fetch_assoc();
-                  $pending_installment = $row["pending_installment"];
-              } else {
-                  $pending_installment = 0;
-              }
-
-            ?>
-            <div class="ps-3" style="margin-left: 50px;">
-              <h1><?php echo "$pending_installment"; ?></h1>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div><!-- End Sales Card -->
-  </div>
-</section>
-</div>
-</main><!-- End #main -->
-
-  <!-- ======= Footer ======= -->
-  <?php
-    include 'footer.php';
-  ?>
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="../assets/vendor/apexcharts/apexcharts.min.js"></script>
-  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="../assets/vendor/chart.js/chart.umd.js"></script>
-  <script src="../assets/vendor/echarts/echarts.min.js"></script>
-  <script src="../assets/vendor/quill/quill.min.js"></script>
-  <script src="../assets/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="../assets/vendor/tinymce/tinymce.min.js"></script>
-  <script src="../assets/vendor/php-email-form/validate.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="../assets/js/main.js"></script>
-
-</body>
-
+		<script src="../vendors/scripts/core.js"></script>
+		<script src="../vendors/scripts/script.min.js"></script>
+		<script src="../vendors/scripts/process.js"></script>
+		<script src="../src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+		<script src="../src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+		<script src="../src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+		<script src="../src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+		<!-- buttons for Export datatable -->
+		<script src="../src/plugins/datatables/js/dataTables.buttons.min.js"></script>
+		<script src="../src/plugins/datatables/js/buttons.bootstrap4.min.js"></script>
+		<script src="../src/plugins/datatables/js/buttons.print.min.js"></script>
+		<script src="../src/plugins/datatables/js/buttons.html5.min.js"></script>
+		<script src="../src/plugins/datatables/js/buttons.flash.min.js"></script>
+		<script src="../src/plugins/datatables/js/pdfmake.min.js"></script>
+		<script src="../src/plugins/datatables/js/vfs_fonts.js"></script>
+		<!-- Datatable Setting js -->
+		<script src="../vendors/scripts/datatable-setting.js"></script>
+		<!-- Google Tag Manager (noscript) -->
+		<noscript
+			><iframe
+				src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS"
+				height="0"
+				width="0"
+				style="display: none; visibility: hidden"
+			></iframe
+		></noscript>
+	</body>
 </html>
