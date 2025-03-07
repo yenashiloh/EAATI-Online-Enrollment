@@ -178,158 +178,190 @@ if (isset($_SESSION['error_message'])) {
             </a>
         </div>
         <div id="collapseTwo" class="collapse" data-parent="#accordion">
-            <div class="card-body">
-                <form method="post" action="insert.php" onsubmit="return validateForm()">
-                    <div class="form-group mb-2">
-                        <label>Are you a new or old student?</label>
-                        <div>
-                            <input type="radio" id="new_student" name="student_type" value="new" onclick="toggleStudentType()"> New
-                            <input type="radio" id="old_student" name="student_type" value="old" onclick="toggleStudentType()"> Old
+    <div class="card-body">
+        <form method="post" action="insert.php" onsubmit="return validateForm()">
+            <div class="form-group mb-2">
+                <label>Are you a new or old student?</label>
+                <div>
+                    <input type="radio" id="new_student" name="student_type" value="new" onclick="toggleStudentType()"> New
+                    <input type="radio" id="old_student" name="student_type" value="old" onclick="toggleStudentType()"> Old
+                </div>
+            </div>
+            
+            <div id="student_details" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-2">
+                            <label for="last_name">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-2">
+                            <label for="first_name">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-2">
+                            <label for="contact_number">Contact Number</label>
+                            <input type="text" class="form-control" id="contact_number" name="contact_number" required>
                         </div>
                     </div>
                     
-                    <div id="student_details" style="display: none;">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="last_name">Last Name</label>
-                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="first_name">First Name</label>
-                                    <input type="text" class="form-control" id="first_name" name="first_name" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="contact_number">Contact Number</label>
-                                    <input type="text" class="form-control" id="contact_number" name="contact_number" required>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                    <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="old_student_fields" style="display: none;">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group mb-2">
-                                        <label for="username">Learner Reference Number (LRN)</label>
-                                        <input type="text" class="form-control" id="username" name="username" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group mb-2">
-                                        <label for="password">Password</label>
-                                        <input type="password" class="form-control" id="password" name="password" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group mb-2">
-                                        <label for="confirm_password">Confirm Password</label>
-                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="new_student_fields" style="display: none;">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group mb-2">
-                                        <label for="password">Password</label>
-                                        <input type="password" class="form-control" id="password" name="password" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group mb-2">
-                                        <label for="confirm_password">Confirm Password</label>
-                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-3">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                        <div class="text-center mt-2">
-                            <medium><b><i>Note: Please login to submit your requirements.</i></b></medium>
+                    <div class="col-md-6">
+                        <div class="form-group mb-2">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Modal remains the same as before -->
-                    <div class="modal fade" id="requirementsModal" tabindex="-1" role="dialog" aria-labelledby="requirementsModalLabel" aria-hidden="true" style="margin-top: 50px;">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="requirementsModalLabel">Requirements</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <ul>
-                                        <li>F138 (CARD)</li>
-                                        <li>Birth Certificate Xerox</li>
-                                        <li>Good moral Certificate</li>
-                                    </ul>
-                                </div>
+                <div id="old_student_fields" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group mb-2">
+                                <label for="username">Learner Reference Number (LRN)</label>
+                                <input type="text" class="form-control" id="username" name="username">
+                                <small class="form-text text-muted">For old students, please enter your LRN.</small>
                             </div>
                         </div>
                     </div>
-                </form>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="old_password">Password</label>
+                                <input type="password" class="form-control" id="old_password" name="password">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="old_confirm_password">Confirm Password</label>
+                                <input type="password" class="form-control" id="old_confirm_password" name="confirm_password">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="new_student_fields" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="new_password">Password</label>
+                                <input type="password" class="form-control" id="new_password" name="password">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-2">
+                                <label for="new_confirm_password">Confirm Password</label>
+                                <input type="password" class="form-control" id="new_confirm_password" name="confirm_password">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="form-text text-info">
+                                <i>Note: For new students, your email will be used as your username for login.</i>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="text-center mt-2">
+                    <medium><b><i>Note: Please login to submit your requirements.</i></b></medium>
+                </div>
             </div>
 
-            <script>
-                function toggleStudentType() {
-                    var newStudent = document.getElementById('new_student').checked;
-                    var oldStudent = document.getElementById('old_student').checked;
-                    var studentDetails = document.getElementById('student_details');
-                    var newStudentFields = document.getElementById('new_student_fields');
-                    var oldStudentFields = document.getElementById('old_student_fields');
-                    
-                    // Show the main student details section
-                    studentDetails.style.display = 'block';
-                    
-                    if (newStudent) {
-                        newStudentFields.style.display = 'block';
-                        oldStudentFields.style.display = 'none';
-                        document.getElementById('username').required = false;
-                    } else if (oldStudent) {
-                        newStudentFields.style.display = 'none';
-                        oldStudentFields.style.display = 'block';
-                        document.getElementById('username').required = true;
-                    }
-                }
+            <!-- Modal remains the same as before -->
+            <div class="modal fade" id="requirementsModal" tabindex="-1" role="dialog" aria-labelledby="requirementsModalLabel" aria-hidden="true" style="margin-top: 50px;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="requirementsModalLabel">Requirements</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                <li>F138 (CARD)</li>
+                                <li>Birth Certificate Xerox</li>
+                                <li>Good moral Certificate</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 
-                function validateForm() {
-                    var newStudent = document.getElementById('new_student').checked;
-                    var oldStudent = document.getElementById('old_student').checked;
-                    
-                    if (newStudent || oldStudent) {
-                        var password = document.getElementById('password').value;
-                        var confirmPassword = document.getElementById('confirm_password').value;
-                        if (password !== confirmPassword) {
-                            alert("Passwords do not match!");
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-            </script>
+    <script>
+        function toggleStudentType() {
+            var newStudent = document.getElementById('new_student').checked;
+            var oldStudent = document.getElementById('old_student').checked;
+            var studentDetails = document.getElementById('student_details');
+            var newStudentFields = document.getElementById('new_student_fields');
+            var oldStudentFields = document.getElementById('old_student_fields');
+            
+            // Show the main student details section
+            studentDetails.style.display = 'block';
+            
+            if (newStudent) {
+                newStudentFields.style.display = 'block';
+                oldStudentFields.style.display = 'none';
+                
+                // Make new student fields required and old student fields not required
+                document.getElementById('new_password').required = true;
+                document.getElementById('new_confirm_password').required = true;
+                document.getElementById('username').required = false;
+                document.getElementById('old_password').required = false;
+                document.getElementById('old_confirm_password').required = false;
+            } else if (oldStudent) {
+                newStudentFields.style.display = 'none';
+                oldStudentFields.style.display = 'block';
+                
+                // Make old student fields required and new student fields not required
+                document.getElementById('username').required = true;
+                document.getElementById('old_password').required = true;
+                document.getElementById('old_confirm_password').required = true;
+                document.getElementById('new_password').required = false;
+                document.getElementById('new_confirm_password').required = false;
+            }
+        }
+
+        function validateForm() {
+            var newStudent = document.getElementById('new_student').checked;
+            var oldStudent = document.getElementById('old_student').checked;
+            
+            if (!newStudent && !oldStudent) {
+                alert("Please select whether you are a new or old student.");
+                return false;
+            }
+            
+            var password, confirmPassword;
+            
+            if (newStudent) {
+                password = document.getElementById('new_password').value;
+                confirmPassword = document.getElementById('new_confirm_password').value;
+            } else if (oldStudent) {
+                password = document.getElementById('old_password').value;
+                confirmPassword = document.getElementById('old_confirm_password').value;
+            }
+            
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return false;
+            }
+            
+            return true;
+        }
+    </script>
         </div>
     </div>
 </div>

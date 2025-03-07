@@ -132,7 +132,7 @@ if(!isset($registrar_id)){
                                                 echo "<tr>";
                                                 echo "<td>" . $counter++ . "</td>";
                                                 echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-
+                                            
                                                 $hasGrades = isset($row['quarter1']) && isset($row['quarter2']) && isset($row['quarter3']) && isset($row['quarter4']);
                                                 if ($hasGrades) {
                                                     $quarter1 = intval($row['quarter1']);
@@ -141,17 +141,23 @@ if(!isset($registrar_id)){
                                                     $quarter4 = intval($row['quarter4']);
                                                     $finalGrade = ($quarter1 + $quarter2 + $quarter3 + $quarter4) / 4;
                                                     $remarks = ($finalGrade < 74) ? "Failed" : "Passed";
-
+                                            
                                                     echo "<td>$quarter1</td><td>$quarter2</td><td>$quarter3</td><td>$quarter4</td><td>" . number_format($finalGrade, 2) . "</td><td>$remarks</td>";
                                                 } else {
                                                     echo "<td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>";
                                                 }
+                                            
 
-                                                $status = isset($row['status']) ? $row['status'] : 'For Review';
-                                                echo "<td>" . htmlspecialchars($status) . "</td>";
+                                                if (isset($row['encodedgrades_id']) && $row['encodedgrades_id'] > 0) {
+                                                    $status = isset($row['status']) ? $row['status'] : 'For Review';
+                                                    echo "<td>" . htmlspecialchars($status) . "</td>";
+                                                } else {
+                                                    echo "<td></td>"; 
+                                                }
+                                                
                                                 echo "<td>";
                                                 $encodedgrades_id = isset($row['encodedgrades_id']) ? $row['encodedgrades_id'] : 0;
-                                                if ($encodedgrades_id && $status == 'For Review') {
+                                                if ($encodedgrades_id && isset($row['status']) && $row['status'] == 'For Review') {
                                                     echo "<button class='btn confirm-btn p-0' data-id='$encodedgrades_id' data-status='Approved' data-bs-toggle='tooltip' data-bs-placement='top' title='Approve'>
                                                             <i class='bi bi-check-circle-fill'></i>
                                                         </button>";
@@ -177,7 +183,7 @@ if(!isset($registrar_id)){
 
                                 <!-- Confirmation Modal -->
                                 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog">
-                                    <div class="modal-dialog" role="document">
+                                <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Confirm Action</h5>

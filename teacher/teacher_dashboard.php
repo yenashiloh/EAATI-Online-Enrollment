@@ -274,6 +274,72 @@ include 'header.php';
                     </div>
                 </div>
             </div>
+                    <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
+                            
+                    <div class="pd-20 d-flex justify-content-between align-items-center">
+                        <h4 class="h4 mb-0">Students List</h4>
+                        <a href="students.php" class="btn btn-primary">View All</a>
+                    </div>
+                        <?php
+                            if(isset($_GET['deleted']) && $_GET['deleted'] == 1){
+                                echo "<div class='alert alert-success'>Record Deleted Successfully!</div>";
+                            }
+                        ?>
+                    <div class="pb-20">
+                    <?php
+                        // Check if the 'deleted' parameter is set and equals to 1
+                        if(isset($_GET['verified']) && $_GET['verified'] == 1){
+                            echo "<div class='alert alert-success'>Record verified successfully.</div>";
+                        }
+                        ?>
+                    </div>
+                    <?php
+                    // Include config file
+                    require_once "config1.php";
+
+                    // Attempt select query execution
+                    $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id WHERE student.isVerified = 2";
+                    if($result = mysqli_query($link, $sql)){
+                        if(mysqli_num_rows($result) > 0){
+                            echo '<table class="data-table table stripe hover nowrap">';
+                                echo "<thead>";
+                                    echo "<tr>";                                      
+                                        echo "<th>Name</th>";
+                                        echo "<th>Date of Birth</th>";
+                                        echo "<th>Email</th>";
+                                        echo "<th>Action</th>";
+                                    echo "</tr>";
+                                echo "</thead>";
+                                echo "<tbody>";
+                                while($row = mysqli_fetch_array($result)){
+                                    echo "<tr>";
+                                        echo "<td>" . $row['name'] . "</td>";
+                                        echo "<td>" . $row['dob'] . "</td>";
+                                        echo "<td>" . $row['email'] . "</td>";
+                                        
+                                        echo "<td>";
+                                        
+                                        echo '<a href="view_record.php?id='.$row['student_id'].'" class="btn p-0 me-1" title="View Record"><span class="bi bi-eye-fill" style="font-size: 20px;"></span></a>';
+
+                                        echo "</td>";
+                                        
+                                    echo "</tr>";
+                                }
+                                echo "</tbody>";                            
+                            echo "</table>";
+                            // Free result set
+                            mysqli_free_result($result);
+                        } else{
+                            echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
+                        }
+                    } else{
+                        echo "Oops! Something went wrong. Please try again later.";
+                    }
+
+                    // Close connection
+                    mysqli_close($link);
+                    ?>
+                    </div>
         </div>
     </div>
 		<script src="../vendors/scripts/core.js"></script>

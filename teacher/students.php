@@ -182,28 +182,7 @@ if(!isset($teacher_id)){
                                         echo '<a href="view_record.php?id='.$row['student_id'].'" class="btn p-0 me-1" title="View Record"><span class="bi bi-eye-fill" style="font-size: 20px;"></span></a>';
 
                                         
-                                            echo '  ';
-                                            echo '<a href="#" class="btn p-1" data-bs-toggle="modal" data-bs-target="#deleteModal'.$row['id'].'" title="Delete Record" data-toggle="tooltip"><span class="bi bi-trash-fill" style="font-size: 18px;"></span></a>';
-
-                                            // Delete Modal
-                                            echo '
-                                            <div class="modal fade" id="deleteModal'.$row['id'].'" tabindex="-1" aria-labelledby="deleteModalLabel'.$row['id'].'" aria-hidden="true">
-                                              <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                  <div class="modal-header">
-                                                    <h5 class="modal-title" id="deleteModalLabel'.$row['id'].'">Confirm Delete</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                  </div>
-                                                  <div class="modal-body">
-                                                    Are you sure you want to delete this record?
-                                                  </div>
-                                                  <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                    <a href="delete.php?id='.$row['id'].'" class="btn btn-danger">Delete</a>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>';
+                                          
 
                                         echo "</td>";
                                         

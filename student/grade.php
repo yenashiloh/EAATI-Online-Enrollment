@@ -3,24 +3,38 @@ include 'config.php';
 
 session_start();
 
-	if (!isset($_SESSION['student_id'])) {
-		header('location:login.php');
-		exit;
-	}
+if (!isset($_SESSION['student_id'])) {
+    header('location:login.php');
+    exit;
+}
 
-	$user_id = $_SESSION['student_id']; 
+$user_id = $_SESSION['student_id']; 
 
-	$query = "SELECT student_id FROM student WHERE userid = :userid";
-	$stmt = $conn->prepare($query);
-	$stmt->bindParam(':userid', $user_id, PDO::PARAM_INT);
-	$stmt->execute();
+$query = "SELECT student_id FROM student WHERE userid = :userid";
+$stmt = $conn->prepare($query);
+$stmt->bindParam(':userid', $user_id, PDO::PARAM_INT);
+$stmt->execute();
 
-	if ($stmt->rowCount() > 0) {
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		$actual_student_id = $row['student_id'];
-	} else {
-		$actual_student_id = 0;
-	}
+if ($stmt->rowCount() > 0) {
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $actual_student_id = $row['student_id'];
+} else {
+    $actual_student_id = 0;
+}
+
+$has_grades = false;
+if ($actual_student_id > 0) {
+    $grades_query = "SELECT COUNT(*) as count FROM encodedgrades WHERE userid = :userid AND student_id = :student_id";
+    $grades_stmt = $conn->prepare($grades_query);
+    $grades_stmt->bindParam(':userid', $user_id, PDO::PARAM_INT);
+    $grades_stmt->bindParam(':student_id', $actual_student_id, PDO::PARAM_INT);
+    $grades_stmt->execute();
+    $grades_result = $grades_stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($grades_result['count'] > 0) {
+        $has_grades = true;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -107,9 +121,15 @@ session_start();
                     <div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
                         <div class="row">
                             <div class="col-md-12">
-							<div class="col-md-12">
-                                    <a href="view_card.php?id=<?php echo $actual_student_id; ?>" class="btn btn-primary btn-lg mr-3">View Grade</a>
-                                    <a href="view_card.php?id=<?php echo $actual_student_id; ?>&print=true" class="btn btn-secondary btn-lg">Print Grade</a>
+                                <div class="col-md-12">
+                                    <?php if ($has_grades): ?>
+                                        <a href="view_card.php?id=<?php echo $actual_student_id; ?>" class="btn btn-primary btn-lg mr-3">View Grade</a>
+                                        <a href="view_card.php?id=<?php echo $actual_student_id; ?>&print=true" class="btn btn-secondary btn-lg">Print Grade</a>
+                                    <?php else: ?>
+                                        <div class="alert alert-info">
+                                            No grades have been recorded for you yet. Please check back later.
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +137,7 @@ session_start();
                 </div>
             </div>
         </div>
-    </main><!-- End #main -->
+    </main>
 
     <!-- ======= Footer ======= -->
     <?php
