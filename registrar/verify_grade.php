@@ -64,17 +64,19 @@ if(!isset($registrar_id)){
 
                         // Attempt select query execution
                         $sql = "SELECT schedules.*,subjects.subject_name,sections.section_name,rooms.room_name, 
-                                    CONCAT(users.first_name, ' ', users.last_name) AS teacher_name, 
-                                    COUNT(encodedstudentsubjects.student_id) AS student_count 
-                                FROM schedules 
-                                INNER JOIN users ON schedules.teacher_id = users.id
-                                INNER JOIN sections ON sections.section_id = schedules.section_id
-                                INNER JOIN subjects ON subjects.subject_id = schedules.subject_id
-                                INNER JOIN gradelevel ON gradelevel.gradelevel_id = schedules.grade_level
-                                INNER JOIN rooms ON rooms.room_id = schedules.room_id
-                                LEFT JOIN encodedstudentsubjects ON encodedstudentsubjects.schedule_id = schedules.id
-                                GROUP BY schedules.id";
-
+                        CONCAT(users.first_name, ' ', users.last_name) AS teacher_name, 
+                        COUNT(encodedstudentsubjects.student_id) AS student_count,
+                        gradelevel.gradelevel_name
+                        FROM schedules 
+                        INNER JOIN users ON schedules.teacher_id = users.id
+                        INNER JOIN sections ON sections.section_id = schedules.section_id
+                        INNER JOIN subjects ON subjects.subject_id = schedules.subject_id
+                        INNER JOIN gradelevel ON gradelevel.gradelevel_id = schedules.grade_level
+                        INNER JOIN rooms ON rooms.room_id = schedules.room_id
+                        LEFT JOIN encodedstudentsubjects ON encodedstudentsubjects.schedule_id = schedules.id
+                        GROUP BY schedules.id
+                        ORDER BY SUBSTRING_INDEX(gradelevel.gradelevel_name, ' ', -1) + 0 ASC, sections.section_name ASC";
+                        
                         if ($result = mysqli_query($link, $sql)) {
                             if (mysqli_num_rows($result) > 0) {
                                 while ($row = mysqli_fetch_array($result)) {
@@ -83,7 +85,7 @@ if(!isset($registrar_id)){
                                         <div class="card">
                                             <div class="card-body">
                                                 <h5 class="card-title" hidden>#<?php echo $row['id']; ?></h5>
-                                                <h1 class="card-title">Grade <?php echo $row['grade_level']; ?> - <?php echo $row['section_name']; ?></h1>
+                                                <h1 class="card-title"><?php echo $row['gradelevel_name']; ?> - <?php echo $row['section_name']; ?></h1>
                                                 <p class="card-text">Subject: <?php echo $row['subject_name']; ?></p>
                                                 <p class="card-text">Enrolled Students: <?php echo $row['student_count']; ?></p>
                                                 

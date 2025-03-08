@@ -55,12 +55,6 @@
                     </a>
                 </li>
                 <li>
-                    <a href="form137.php" class="dropdown-toggle no-arrow <?= $is_approval_page ? 'active' : ''; ?>">
-                        <span class="micon bi bi-file-earmark-text"></span> <!-- Form 137 Icon -->
-                        <span class="mtext">Form 137</span>
-                    </a>
-                </li>
-                <li>
                     <div class="dropdown-divider"></div>
                 </li>
                 <li>

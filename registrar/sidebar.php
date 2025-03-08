@@ -167,6 +167,12 @@
                       <span class="mtext">Schedule of Enrollment</span>
                   </a>
               </li>
+              <li>
+                    <a href="form137.php" class="dropdown-toggle no-arrow">
+                        <span class="micon bi bi-file-earmark-text"></span>
+                        <span class="mtext">Form 137</span>
+                    </a>
+                </li>
                 <li>
                     <div class="dropdown-divider"></div>
                 </li>

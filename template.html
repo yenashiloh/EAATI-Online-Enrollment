@@ -3,112 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learner's Observed Values Report</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Learner Permanent Record for Elementary School (SF10-ES)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-          body {
+        body {
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
+            font-size: 14px;
         }
-        .container{
-             max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border: 2px solid #000;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
         }
-        .report-header {
+        .logo-left {
+            float: left;
+            max-width: 80px;
+        }
+        .logo-right {
+            float: right;
+            max-width: 80px;
+            margin-top: -90px;
+        }
+        .form-title {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .form-subtitle {
+            font-size: 13px;
+            font-style: italic;
+        }
+        .section-header {
+            background-color: #e0e0e0;
+            padding: 5px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        .underline {
+            border-bottom: 1px solid #000;
+            min-height: 20px;
+            position: relative;
+        }
+        .underline-data {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
             text-align: center;
             font-weight: bold;
-            margin-bottom: 20px;
-            margin-top: 20px;
         }
-        .core-values {
-            margin-bottom: 20px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .core-values h5 {
-            font-weight: bold;
-        }
-        .marking-table {
-        border-collapse: collapse;
-        width: 55%; 
-        margin-top: 10px;
-    }
-
- 
-        .grading-scale {
-            margin-bottom: 20px;
-        }
-        .grading-scale h5 {
-            font-weight: bold;
-        }
-        .remarks {
-            margin-bottom: 20px;
-        }
-        .remarks h5 {
-            font-weight: bold;
-        }
-        .signature-section {
-            margin-bottom: 20px;
-        }
-        .signature-section h5 {
-            font-weight: bold;
-        }
-        .attendance-table {
-            width: 60%;
-      
-        }
-        .attendance-table th, .attendance-table td {
+        table, th, td {
             border: 1px solid #000;
+        }
+        th, td {
+            padding: 5px;
             text-align: center;
         }
-        .attendance-table th {
-            writing-mode: vertical-rl; 
-            transform: rotate(180deg); 
-            white-space: nowrap;
-            padding: 10px;
-            text-align: center;
+        .left-align {
+            text-align: left;
         }
-
-        .table-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-    }
-
-    .core-table {
-        border-collapse: collapse;
-        width: 60%; /* Adjust width as needed */
-    }
-
-    .core-table th, .core-table td {
-        border: 1px solid #000;
-        padding: 8px;
-        text-align: left;
-    }
-
-    .core-table thead th {
-        text-align: center;
-    }
+        .form-check {
+            display: inline-block;
+        }
+        .print-button {
+            margin: 20px 0;
+        }
+        @media print {
+            .print-button, .btn {
+                display: none;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            @page {
+            size: landscape; 
+            margin: 10mm;
+        }
+        }
     </style>
 </head>
 <body>
-    
-    <div class="container">
-        <div class="report-header">
-            <h4>REPORT ON LEARNER'S OBSERVED VALUES</h4>
+    <div class="container mt-4">
+        <button class="btn btn-primary print-button" onclick="window.print()">Print Form</button>
+        
+        <div class="header">
+            <img src="asset/img/DepEd-logo.webp" class="logo-left" alt="DepEd Logo">
+            <div class="text-center">
+                <div>Republic of the Philippines</div>
+                <div>Department of Education</div>
+                <div class="form-title">Learner Permanent Record for Elementary School (SF10-ES)</div>
+                <div class="form-subtitle">(Formerly Form 137)</div>
+            </div>
+            <img src="asset/img/deped-logo-1.jpg" class="logo-right" alt="DepEd Logo">
         </div>
-        <div class="table-container">
-            <table class="core-table">
-                <thead>
+        
+        <div class="clearfix"></div>
+        
+        <!-- LEARNER'S PERSONAL INFORMATION -->
+        <div class="section-header">LEARNER'S PERSONAL INFORMATION</div>
+        
+        <div class="row mb-2">
+            <div class="col-3">
+                <label>LAST NAME:</label>
+                <div class="underline">
+                    <div class="underline-data">EUGENIO</div>
+                </div>
+            </div>
+            <div class="col-3">
+                <label>FIRST NAME:</label>
+                <div class="underline">
+                    <div class="underline-data">SHILOH</div>
+                </div>
+            </div>
+            <div class="col-3">
+                <label>NAME EXTN. (Jr./II):</label>
+                <div class="underline">
+                    <div class="underline-data"></div>
+                </div>
+            </div>
+            <div class="col-3">
+                <label>MIDDLE NAME:</label>
+                <div class="underline">
+                    <div class="underline-data">BASIO</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-2">
+            <div class="col-8">
+                <label>Learner Reference Number (LRN):</label>
+                <div class="underline">
+                    <div class="underline-data">136-7291-023</div>
+                </div>
+            </div>
+            <div class="col-2">
+                <label>Birthdate (mm/dd/yyyy):</label>
+                <div class="underline">
+                    <div class="underline-data">06/12/2015</div>
+                </div>
+            </div>
+            <div class="col-2">
+                <label>Sex:</label>
+                <div class="underline">
+                    <div class="underline-data">MALE</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ELIGIBILITY FOR ELEMENTARY SCHOOL ENROLLMENT -->
+        <div class="section-header">ELIGIBILITY FOR ELEMENTARY SCHOOL ENROLLMENT</div>
+        
+        <div class="row mb-2">
+            <div class="col-4">
+                <label>Credential Presented for Grade 1:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" checked>
+                    <label class="form-check-label">Kinder Progress Report</label>
+                </div>
+                <div class="form-check ml-3">
+                    <input class="form-check-input" type="checkbox" value="">
+                    <label class="form-check-label">ECCD Checklist</label>
+                </div>
+                <div class="form-check ml-3">
+                    <input class="form-check-input" type="checkbox" value="" checked>
+                    <label class="form-check-label">Kindergarten Certificate of Completion</label>
+                </div>
+            </div>
+            <div class="col-4">
+                <label>Name of School:</label>
+                <div class="underline">
+                    <div class="underline-data">RIZAL ELEMENTARY SCHOOL</div>
+                </div>
+                <label>School ID:</label>
+                <div class="underline">
+                    <div class="underline-data">301142</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <label>Address of School:</label>
+                <div class="underline">
+                    <div class="underline-data">RIZAL TAGUIG CITY</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-2">
+            <div class="col-3">
+                <label>Other Credential Presented:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="">
+                    <label class="form-check-label">PEPT Passer Rating:</label>
+                </div>
+                <div class="underline">
+                    <div class="underline-data"></div>
+                </div>
+            </div>
+            <div class="col-4">
+                <label>Date of Examination/Assessment (mm/dd/yyyy):</label>
+                <div class="underline">
+                    <div class="underline-data"></div>
+                </div>
+            </div>
+            <div class="col-5">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="">
+                    <label class="form-check-label">Others (Pls. Specify):</label>
+                </div>
+                <div class="underline">
+                    <div class="underline-data"></div>
+                </div>
+                <label>Remark:</label>
+                <div class="underline">
+                    <div class="underline-data"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <label>Name and Address of Testing Center:</label>
+                <div class="underline">
+                    <div class="underline-data"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SCHOLASTIC RECORD -->
+        <div class="section-header">SCHOLASTIC RECORD</div>
+        
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-6">
+                <div class="row mb-2">
+                    <div class="col-8">
+                        <label>School:</label>
+                        <div class="underline">
+                            <div class="underline-data">RIZAL ELEMENTARY SCHOOL</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <label>School ID:</label>
+                        <div class="underline">
+                            <div class="underline-data">301142</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4">
+                        <label>District:</label>
+                        <div class="underline">
+                            <div class="underline-data">1</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <label>Division:</label>
+                        <div class="underline">
+                            <div class="underline-data">TAGUIG CITY</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <label>Region:</label>
+                        <div class="underline">
+                            <div class="underline-data">NCR</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <label>Classified as Grade:</label>
+                        <div class="underline">
+                            <div class="underline-data">1</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <label>Section:</label>
+                        <div class="underline">
+                            <div class="underline-data">SAMPAGUITA</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label>School Year:</label>
+                        <div class="underline">
+                            <div class="underline-data">2022-2023</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8">
+                        <label>Name of Adviser/Teacher:</label>
+                        <div class="underline">
+                            <div class="underline-data">MS. MARIA REYES</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <label>Signature:</label>
+                        <div class="underline">
+                            <div class="underline-data"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grades Table -->
+                <table class="table table-bordered">
                     <tr>
-                        <th rowspan="2">Core Values</th>
-                        <th rowspan="2">Behavior Statements</th>
-                        <th colspan="4" style="text-align: center; width: 50%;">Quarter</th>
+                        <th rowspan="2" class="align-middle" style="width: 25%;">LEARNING AREAS</th>
+                        <th colspan="4">Quarterly Rating</th>
+                        <th rowspan="2" class="align-middle" style="width: 10%;">Final Rating</th>
+                        <th rowspan="2" class="align-middle" style="width: 15%;">Remarks</th>
                     </tr>
                     <tr>
                         <th>1</th>
@@ -116,200 +328,292 @@
                         <th>3</th>
                         <th>4</th>
                     </tr>
-                </thead>
-                <tbody>
                     <tr>
-                        <td>1. Maka-Diyos</td>
-                        <td> Expresses one's spiritual <br> beliefs while respecting <br> beliefs of others.</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td class="left-align">Mother Tongue</td>
+                        <td>85</td><td>86</td><td>87</td><td>88</td><td>87</td><td>PASSED</td>
                     </tr>
                     <tr>
-                        <td>2. Makatao </td>
-                        <td>Shows adherence to <br> ethical principles by <br> upholding truth. <br><hr style="height: 1px; background-color: black; border: none;">Is sensitive to individual, <br> social, and cultural <br> differences.</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td class="left-align">Filipino</td>
+                        <td>82</td><td>83</td><td>85</td><td>87</td><td>84</td><td>PASSED</td>
                     </tr>
                     <tr>
-                        <td>3. Maka-Kalikasan  </td>
-                        <td>Cares for the environment <br> and utilizes resources <br> wisely, judiciously, and <br> economically.</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td class="left-align">English</td>
+                        <td>84</td><td>86</td><td>88</td><td>90</td><td>87</td><td>PASSED</td>
                     </tr>
                     <tr>
-                        <td>4. Maka-Bansa</td>
-                        <td>Demonstrates pride in <br> being a Filipino; exercises <br> the rights and <br> responsibilities of a <br> Filipino citizen. <br> <hr style="height: 1px; background-color: black; border: none;">Demonstrates appropriate <br> behavior in carrying out <br> activities in the school, <br> community, and country</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="table-container">
-            <table class="marking-table">
-                <thead>
-                    <tr>
-                        <th>Marking</th>
-                        <th>Non-numerical Rating</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>AO</td>
-                        <td>Always Observed</td>
+                        <td class="left-align">Mathematics</td>
+                        <td>86</td><td>88</td><td>90</td><td>92</td><td>89</td><td>PASSED</td>
                     </tr>
                     <tr>
-                        <td>SO</td>
-                        <td>Sometimes Observed</td>
+                        <td class="left-align">Science</td>
+                        <td>84</td><td>85</td><td>87</td><td>89</td><td>86</td><td>PASSED</td>
                     </tr>
                     <tr>
-                        <td>RO</td>
-                        <td>Rarely Observed</td>
+                        <td class="left-align">Araling Panlipunan</td>
+                        <td>83</td><td>85</td><td>86</td><td>88</td><td>86</td><td>PASSED</td>
                     </tr>
                     <tr>
-                        <td>NO</td>
-                        <td>Not Observed</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <br>
-        <div class="table-container">
-            <table class="marking-table">
-                <thead>
-                    <tr>
-                        <th>Descriptors</th>
-                        <th>Grading Scale</th>
-                        <th>Remarks</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Outstanding</td>
-                        <td>90-100</td>
-                        <td>Passed</td>
+                        <td class="left-align">EPP / TLE</td>
+                        <td>85</td><td>87</td><td>89</td><td>91</td><td>88</td><td>PASSED</td>
                     </tr>
                     <tr>
-                        <td>Very Satisfactory </td>
-                        <td>85-89</td>
-                        <td>Passed</td>
+                        <td class="left-align">MAPEH</td>
+                        <td>86</td><td>88</td><td>89</td><td>90</td><td>88</td><td>PASSED</td>
                     </tr>
                     <tr>
-                        <td>Satisfactory</td>
-                        <td>80-84</td>
-                        <td>Passed</td>
+                        <td class="left-align">&nbsp;&nbsp;Music</td>
+                        <td>87</td><td>88</td><td>89</td><td>90</td><td>89</td><td>PASSED</td>
                     </tr>
                     <tr>
-                        <td>Fairly Satisfactory </td>
-                        <td>75-79</td>
-                        <td>Passed</td>
+                        <td class="left-align">&nbsp;&nbsp;Arts</td>
+                        <td>86</td><td>87</td><td>88</td><td>90</td><td>88</td><td>PASSED</td>
                     </tr>
                     <tr>
-                        <td>Did Not Meet Expectations</td>
-                        <td>Below 75</td>
-                        <td>Failed</td>
+                        <td class="left-align">&nbsp;&nbsp;Physical Education</td>
+                        <td>88</td><td>89</td><td>90</td><td>92</td><td>90</td><td>PASSED</td>
                     </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <h5 style="text-align: center;   font-weight: bold; margin-top: 40px;">Parent/Guardian's Signature</h5>
-        <div style="text-align: center; margin-bottom: 10px;">1<sup>st</sup> Quarter ______________________________________________________</div>
-        <div style="text-align: center; margin-bottom: 10px;">2<sup>nd</sup> Quarter ______________________________________________________</div>
-        <div style="text-align: center; margin-bottom: 10px;">3<sup>rd</sup> Quarter ______________________________________________________</div>
-        <div style="text-align: center; margin-bottom: 10px; ">4<sup>th</sup> Quarter ______________________________________________________</div>
-
-
-        <div style="text-align: center; margin-bottom: 10px; font-weight: bold;">Promoted to grade: _______________________________________________</div>
-        <div style="text-align: center; margin-bottom: 10px; font-weight: bold;">Eligible for Admission to Grade: ____________________________________</div>
-
-        <div style="text-align: center; margin-bottom: 10px; font-weight: bold; margin-right: 490px;">Approved:</div>
-        <div style="text-align: center; margin-right: 340px;  text-decoration: underline;">FE H. VERGARA</div>
-        <div style="text-align: center; margin-bottom: 10px; margin-right: 340px;  ">Principal</div>
-
-    <div class="table-container">
-        <table class="attendance-table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>August</th>
-                    <th>September</th>
-                    <th>October</th>
-                    <th>November</th>
-                    <th>December</th>
-                    <th>January</th>
-                    <th>February</th>
-                    <th>March</th>
-                    <th>April</th>
-                    <th>May</th>
-                    <th>June</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="text-align: left;">No. of <br> School Days</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td style="text-align: left;">No. of <br> Days Present</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td style="text-align: left;">No. of <br> Days Absent</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+                    <tr>
+                        <td class="left-align">&nbsp;&nbsp;Health</td>
+                        <td>85</td><td>86</td><td>87</td><td>89</td><td>87</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">Eduk. sa Pagpapakatao</td>
+                        <td>87</td><td>88</td><td>89</td><td>91</td><td>89</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">*Arabic Language</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">*Islamic Values Education</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">General Average</td>
+                        <td>85</td><td>87</td><td>88</td><td>90</td><td>87</td><td>PASSED</td>
+                    </tr>
+                </table>
                 
-            </tbody>
-        </table>
-    </div>
+                <!-- Remedial Classes -->
+                <table class="table table-bordered mt-2">
+                    <tr>
+                        <th colspan="6">Remedial Classes</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Conducted from:</td>
+                        <td colspan="2">to:</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 25%;">Learning Areas</th>
+                        <th style="width: 15%;">Final Rating</th>
+                        <th style="width: 15%;">Remedial Class Mark</th>
+                        <th style="width: 15%;">Recomputed Final Grade</th>
+                        <th style="width: 30%;">Remarks</th>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="col-6">
+                <div class="row mb-2">
+                    <div class="col-8">
+                        <label>School:</label>
+                        <div class="underline">
+                            <div class="underline-data">RIZAL ELEMENTARY SCHOOL</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <label>School ID:</label>
+                        <div class="underline">
+                            <div class="underline-data">301142</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4">
+                        <label>District:</label>
+                        <div class="underline">
+                            <div class="underline-data">1</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <label>Division:</label>
+                        <div class="underline">
+                            <div class="underline-data">TAGUIG CITY</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <label>Region:</label>
+                        <div class="underline">
+                            <div class="underline-data">NCR</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <label>Classified as Grade:</label>
+                        <div class="underline">
+                            <div class="underline-data">2</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <label>Section:</label>
+                        <div class="underline">
+                            <div class="underline-data">ROSAL</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label>School Year:</label>
+                        <div class="underline">
+                            <div class="underline-data">2023-2024</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-8">
+                        <label>Name of Adviser/Teacher:</label>
+                        <div class="underline">
+                            <div class="underline-data">MR. JOSE CRUZ</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <label>Signature:</label>
+                        <div class="underline">
+                            <div class="underline-data"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grades Table -->
+                <table class="table table-bordered">
+                    <tr>
+                        <th rowspan="2" class="align-middle" style="width: 25%;">Learning Areas</th>
+                        <th colspan="4">Quarterly Rating</th>
+                        <th rowspan="2" class="align-middle" style="width: 10%;">Final Rating</th>
+                        <th rowspan="2" class="align-middle" style="width: 15%;">Remarks</th>
+                    </tr>
+                    <tr>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                    </tr>
+                    <tr>
+                        <td class="left-align">Mother Tongue</td>
+                        <td>86</td><td>87</td><td>89</td><td>90</td><td>88</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">Filipino</td>
+                        <td>83</td><td>85</td><td>87</td><td>89</td><td>86</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">English</td>
+                        <td>85</td><td>87</td><td>89</td><td>91</td><td>88</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">Mathematics</td>
+                        <td>88</td><td>90</td><td>92</td><td>94</td><td>91</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">Science</td>
+                        <td>86</td><td>87</td><td>89</td><td>91</td><td>88</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">Araling Panlipunan</td>
+                        <td>85</td><td>87</td><td>88</td><td>90</td><td>88</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">EPP / TLE</td>
+                        <td>87</td><td>89</td><td>91</td><td>93</td><td>90</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">MAPEH</td>
+                        <td>88</td><td>90</td><td>91</td><td>92</td><td>90</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">&nbsp;&nbsp;Music</td>
+                        <td>89</td><td>90</td><td>91</td><td>92</td><td>91</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">&nbsp;&nbsp;Arts</td>
+                        <td>88</td><td>89</td><td>90</td><td>92</td><td>90</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">&nbsp;&nbsp;Physical Education</td>
+                        <td>90</td><td>91</td><td>92</td><td>94</td><td>92</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">&nbsp;&nbsp;Health</td>
+                        <td>87</td><td>88</td><td>89</td><td>91</td><td>89</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">Eduk. sa Pagpapakatao</td>
+                        <td>89</td><td>90</td><td>91</td><td>93</td><td>91</td><td>PASSED</td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">*Arabic Language</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">*Islamic Values Education</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td class="left-align">General Average</td>
+                        <td>87</td><td>89</td><td>90</td><td>92</td><td>89</td><td>PASSED</td>
+                    </tr>
+                </table>
+                
+                <!-- Remedial Classes -->
+                <table class="table table-bordered mt-2">
+                    <tr>
+                        <th colspan="6">Remedial Classes</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Conducted from:</td>
+                        <td colspan="2">to:</td>
+                    </tr>
+                    <tr>
+                        <th style="width: 25%;">Learning Areas</th>
+                        <th style="width: 15%;">Final Rating</th>
+                        <th style="width: 15%;">Remedial Class Mark</th>
+                        <th style="width: 15%;">Recomputed Final Grade</th>
+                        <th style="width: 30%;">Remarks</th>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

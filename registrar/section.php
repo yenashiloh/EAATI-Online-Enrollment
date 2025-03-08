@@ -13,9 +13,13 @@ if (!isset($registrar_id)) {
 
 try {
     // Fetch grade levels from the database
-    $stmt = $conn->prepare("SELECT gradelevel_id, gradelevel_name, gradelevel_description FROM gradelevel");
-    $stmt->execute();
-    $gradelevels = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $conn->prepare("
+    SELECT gradelevel_id, gradelevel_name, gradelevel_description 
+    FROM gradelevel 
+    ORDER BY CAST(SUBSTRING_INDEX(gradelevel_name, ' ', -1) AS UNSIGNED) ASC
+");
+$stmt->execute();
+$gradelevels = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
     exit;
@@ -97,15 +101,20 @@ try {
                         // Include config file
                         require_once "config1.php";
                         // Attempt select query execution
-                        $sql = "SELECT * from sections";
+                        $sql = "SELECT sections.*, gradelevel.gradelevel_name 
+                        FROM sections 
+                        JOIN gradelevel ON sections.gradelevel_id = gradelevel.gradelevel_id";
+                
                         if ($result = mysqli_query($link, $sql)) {
                             if (mysqli_num_rows($result) > 0) {
                                 echo '<table class="data-table table stripe hover nowrap">';
                                 echo "<thead>";
                                 echo "<tr>";
                                 echo "<th>No.</th>";
+                                echo "<th>Grade Level</th>";
                                 echo "<th>Section Name</th>";
                                 echo "<th>Section Description</th>";
+                                echo "<th>Section Capacity</th>";
                                 echo "<th>Action</th>";
                                 echo "</tr>";
                                 echo "</thead>";
@@ -114,38 +123,62 @@ try {
                                 while ($row = mysqli_fetch_array($result)) {
                                     echo "<tr>";
                                     echo "<td>" . $counter . "</td>"; 
+                                    echo "<td>" . $row['gradelevel_name'] . "</td>";
                                     echo "<td>" . $row['section_name'] . "</td>";
                                     echo "<td>" . $row['section_description'] . "</td>";
+                                    echo "<td>" . $row['sectionCapacity'] . "</td>";
                                     echo "<td>";
                                     echo '<a href="#" class="edit-btn" data-toggle="modal" data-target="#editSectionModal' . $row['section_id'] . '"><span class="bi bi-pencil-fill" style="font-size: 18px;"></span></a>';
-                                    // Edit Section Modal
+                                   // Here's the corrected Edit Section Modal code
                                     echo '<div class="modal fade" id="editSectionModal' . $row['section_id'] . '" tabindex="-1" role="dialog" aria-labelledby="editSectionModalLabel' . $row['section_id'] . '" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="myLargeModalLabel">Edit Section</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                    </div>
-                                                    <form method="post" action="edit_section.php">
-                                                        <div class="modal-body">
-                                                            <div class="mb-3">
-                                                                <label for="editSectionName" class="form-label">Section Name</label>
-                                                                <input type="text" class="form-control" id="editSectionName" name="editSectionName" value="' . $row['section_name'] . '" required>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label for="editSectionDescription" class="form-label">Section Description</label>
-                                                                <textarea class="form-control" id="editSectionDescription" name="editSectionDescription" rows="3" required>' . $row['section_description'] . '</textarea>
-                                                            </div>
-                                                            <input type="hidden" name="section_id" value="' . $row['section_id'] . '">
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                            <button type="submit" class="btn btn-primary">Save changes</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="myLargeModalLabel">Edit Section</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                                             </div>
-                                        </div>';
+                                            <form method="post" action="edit_section.php">
+                                                <div class="modal-body">';
+                                                
+                                    // Fetch grade levels for the dropdown - moved outside the echo statement
+                                    $grade_sql = "SELECT gradelevel_id, gradelevel_name FROM gradelevel ORDER BY CAST(SUBSTRING_INDEX(gradelevel_name, ' ', -1) AS UNSIGNED) ASC";
+                                    $grade_result = mysqli_query($link, $grade_sql);
+
+                                    echo '              <div class="mb-3">
+                                                    <label for="editGradelevelId' . $row['section_id'] . '" class="form-label">Grade Level</label>
+                                                    <select class="form-control" id="editGradelevelId' . $row['section_id'] . '" name="editGradelevelId" required>';
+                                                    
+                                    if ($grade_result) {
+                                    while ($grade_row = mysqli_fetch_array($grade_result)) {
+                                    $selected = ($grade_row['gradelevel_id'] == $row['gradelevel_id']) ? 'selected' : '';
+                                    echo '<option value="' . $grade_row['gradelevel_id'] . '" ' . $selected . '>' . $grade_row['gradelevel_name'] . '</option>';
+                                    }
+                                    }
+
+                                    echo '              </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editSectionName' . $row['section_id'] . '" class="form-label">Section Name</label>
+                                                    <input type="text" class="form-control" id="editSectionName' . $row['section_id'] . '" name="editSectionName" value="' . $row['section_name'] . '" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editSectionDescription' . $row['section_id'] . '" class="form-label">Section Description</label>
+                                                    <textarea class="form-control" id="editSectionDescription' . $row['section_id'] . '" name="editSectionDescription" rows="3" required>' . $row['section_description'] . '</textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editSectionCapacity' . $row['section_id'] . '" class="form-label">Section Capacity</label>
+                                                    <input type="number" class="form-control" id="editSectionCapacity' . $row['section_id'] . '" name="editSectionCapacity" value="' . $row['sectionCapacity'] . '" required>
+                                                </div>
+                                                <input type="hidden" name="section_id" value="' . $row['section_id'] . '">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    </div>
+                                    </div>';
                                     echo '<a href="#" data-toggle="modal" data-target="#deleteModal' . $row['section_id'] . '" title="Delete Record"><span class="bi bi-trash-fill ml-2" style="font-size: 18px;"></span></a>';
                                     // Delete Modal
                                     echo '<div class="modal fade" id="deleteModal' . $row['section_id'] . '" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel' . $row['section_id'] . '" aria-hidden="true">

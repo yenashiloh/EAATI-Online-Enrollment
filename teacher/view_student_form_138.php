@@ -56,8 +56,11 @@ if(!isset($teacher_id)){
                                         <li class="breadcrumb-item">
                                             <a href="teacher_dashboard.php">Menu</a>
                                         </li>
+                                        <li class="breadcrumb-item">
+                                            <a href="form138.php">Form 138</a>
+                                        </li>
                                         <li class="breadcrumb-item active" aria-current="page">
-                                            Form 138
+                                            View Students
                                         </li>
                                     </ol>
                                 </nav>
@@ -102,9 +105,9 @@ if(!isset($teacher_id)){
                                         echo "<td>" . $row['dob'] . "</td>";
                                         echo "<td>" . $row['email'] . "</td>";
                                         echo "<td>";
-                                        echo '<a href="view_card.php?id=' . $row['student_id'] . '" class="btno" title="View Record" data-bs-toggle="tooltip" data-bs-placement="top">
-                                                <span class="bi bi-eye-fill" style="font-size:20px;"></span>
-                                            </a>';
+                                        echo '<a href="view_card.php?id=' . $row['student_id'] . '&section_id=' . $_GET['section_id'] . '" class="btno" title="View Students" data-bs-toggle="tooltip" data-bs-placement="top">
+                                        <span class="bi bi-eye-fill" style="font-size:20px;"></span>
+                                      </a>';
                                         echo '  ';
                                         echo "</td>";
                                         echo "</tr>";

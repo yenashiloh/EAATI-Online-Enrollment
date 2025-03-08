@@ -84,7 +84,6 @@ if(!isset($registrar_id)){
                                     </div>
                                 </div>";
                         }
-
                         // Check if the section_id is provided in the URL
                         if (isset($_GET['section_id'])) {
                             $section_id = intval($_GET['section_id']);
@@ -100,16 +99,22 @@ if(!isset($registrar_id)){
 
                                 <div class="pb-20">
                                     <?php
-                                    $sql = "SELECT s.student_id, s.name, ess.encoded_id, ess.schedule_id, 
-                                                    eg.quarter1, eg.quarter2, eg.quarter3, eg.quarter4, eg.encodedgrades_id, eg.status
-                                            FROM student s
-                                            INNER JOIN encodedstudentsubjects ess ON s.student_id = ess.student_id
-                                            LEFT JOIN encodedgrades eg ON (s.student_id = eg.student_id AND ess.schedule_id = eg.schedule_id)
-                                            WHERE ess.schedule_id IN (
-                                                SELECT schedules.id FROM schedules WHERE schedules.section_id = $section_id
-                                            )
-                                            AND s.isVerified = 2
-                                            ORDER BY s.name";
+                                 $sql = "SELECT s.student_id, s.name, 
+                                 MAX(eg.quarter1) as quarter1, 
+                                 MAX(eg.quarter2) as quarter2, 
+                                 MAX(eg.quarter3) as quarter3, 
+                                 MAX(eg.quarter4) as quarter4, 
+                                 MAX(eg.encodedgrades_id) as encodedgrades_id, 
+                                 MAX(eg.status) as status
+                                 FROM student s
+                                 INNER JOIN encodedstudentsubjects ess ON s.student_id = ess.student_id
+                                 LEFT JOIN encodedgrades eg ON (s.student_id = eg.student_id AND ess.schedule_id = eg.schedule_id)
+                                 WHERE ess.schedule_id IN (
+                                     SELECT schedules.id FROM schedules WHERE schedules.section_id = $section_id
+                                 )
+                                 AND s.isVerified = 2
+                                 GROUP BY s.student_id, s.name
+                                 ORDER BY s.name";
 
                                     if ($result = mysqli_query($link, $sql)) {
                                         if (mysqli_num_rows($result) > 0) {

@@ -80,16 +80,24 @@ if(!isset($teacher_id)){
                                 echo "<h4 class='h4 mb-4'>Section " . htmlspecialchars($section_row['section_name']) . "</h4>";
                                 echo "<div class='pb-20'>";
 
-                                $sql = "SELECT s.student_id, s.name, s.userId, ess.encoded_id, ess.schedule_id, 
-                                        eg.quarter1, eg.quarter2, eg.quarter3, eg.quarter4, eg.encodedgrades_id, eg.status
-                                        FROM student s
-                                        INNER JOIN encodedstudentsubjects ess ON s.student_id = ess.student_id
-                                        LEFT JOIN encodedgrades eg ON (s.student_id = eg.student_id AND ess.schedule_id = eg.schedule_id)
-                                        WHERE ess.schedule_id IN (
-                                            SELECT schedules.id FROM schedules WHERE schedules.section_id = $section_id
-                                        )
-                                        AND s.isVerified = 2
-                                        ORDER BY s.name";
+                                $sql = "SELECT s.student_id, s.name, s.userId, 
+                                MAX(ess.encoded_id) as encoded_id, 
+                                MAX(ess.schedule_id) as schedule_id, 
+                                MAX(eg.quarter1) as quarter1, 
+                                MAX(eg.quarter2) as quarter2, 
+                                MAX(eg.quarter3) as quarter3, 
+                                MAX(eg.quarter4) as quarter4, 
+                                MAX(eg.encodedgrades_id) as encodedgrades_id, 
+                                MAX(eg.status) as status
+                                FROM student s
+                                INNER JOIN encodedstudentsubjects ess ON s.student_id = ess.student_id
+                                LEFT JOIN encodedgrades eg ON (s.student_id = eg.student_id AND ess.schedule_id = eg.schedule_id)
+                                WHERE ess.schedule_id IN (
+                                    SELECT schedules.id FROM schedules WHERE schedules.section_id = $section_id
+                                )
+                                AND s.isVerified = 2
+                                GROUP BY s.student_id, s.name, s.userId
+                                ORDER BY s.name";   
 
                                 if ($result = mysqli_query($link, $sql)) {
                                     if (mysqli_num_rows($result) > 0) {
@@ -145,43 +153,43 @@ if(!isset($teacher_id)){
 
                                             // Modal for each student
                                             echo '<div class="modal fade" id="encodeModal' . $encodedgrades_id . '" tabindex="-1" role="dialog" aria-labelledby="encodeModalLabel' . $encodedgrades_id . '" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="encodeModalLabel' . $encodedgrades_id . '">Encode Grade</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            </div>
-            <div class="modal-body">
-                <form action="save_grade.php" method="post" id="gradeForm' . $encodedgrades_id . '">
-                    <input type="hidden" name="scheduleId" value="' . $row['schedule_id'] . '">
-                    <input type="hidden" name="userId" value="' . $row['userId'] . '"> <!-- Add userId here -->
-                    <div class="form-group">
-                        <label for="firstQuarter">First Quarter Grade:</label>
-                        <input type="number" class="form-control" name="firstQuarter" min="0" max="100" value="' . ($hasGrades ? intval($row['quarter1']) : 0) . '">
-                    </div>
-                    <div class="form-group">
-                        <label for="secondQuarter">Second Quarter Grade:</label>
-                        <input type="number" class="form-control" name="secondQuarter" min="0" max="100" value="' . ($hasGrades ? intval($row['quarter2']) : 0) . '">
-                    </div>
-                    <div class="form-group">
-                        <label for="thirdQuarter">Third Quarter Grade:</label>
-                        <input type="number" class="form-control" name="thirdQuarter" min="0" max="100" value="' . ($hasGrades ? intval($row['quarter3']) : 0) . '">
-                    </div>
-                    <div class="form-group">
-                        <label for="fourthQuarter">Fourth Quarter Grade:</label>
-                        <input type="number" class="form-control" name="fourthQuarter" min="0" max="100" value="' . ($hasGrades ? intval($row['quarter4']) : 0) . '">
-                    </div>
-                    <input type="hidden" name="studentId" value="' . $row['student_id'] . '">
-                    <input type="hidden" name="encodedGradesId" value="' . $encodedgrades_id . '">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" form="gradeForm' . $encodedgrades_id . '" class="btn btn-primary">Save Grade</button>
-            </div>
-        </div>
-    </div>
-</div>';
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title" id="encodeModalLabel' . $encodedgrades_id . '">Encode Grade</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="save_grade.php" method="post" id="gradeForm' . $encodedgrades_id . '">
+                                                            <input type="hidden" name="scheduleId" value="' . $row['schedule_id'] . '">
+                                                            <input type="hidden" name="userId" value="' . $row['userId'] . '"> <!-- Add userId here -->
+                                                            <div class="form-group">
+                                                                <label for="firstQuarter">First Quarter Grade:</label>
+                                                                <input type="number" class="form-control" name="firstQuarter" min="0" max="100" value="' . ($hasGrades ? intval($row['quarter1']) : 0) . '">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="secondQuarter">Second Quarter Grade:</label>
+                                                                <input type="number" class="form-control" name="secondQuarter" min="0" max="100" value="' . ($hasGrades ? intval($row['quarter2']) : 0) . '">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="thirdQuarter">Third Quarter Grade:</label>
+                                                                <input type="number" class="form-control" name="thirdQuarter" min="0" max="100" value="' . ($hasGrades ? intval($row['quarter3']) : 0) . '">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="fourthQuarter">Fourth Quarter Grade:</label>
+                                                                <input type="number" class="form-control" name="fourthQuarter" min="0" max="100" value="' . ($hasGrades ? intval($row['quarter4']) : 0) . '">
+                                                            </div>
+                                                            <input type="hidden" name="studentId" value="' . $row['student_id'] . '">
+                                                            <input type="hidden" name="encodedGradesId" value="' . $encodedgrades_id . '">
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="submit" form="gradeForm' . $encodedgrades_id . '" class="btn btn-primary">Save Grade</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>';
                                         }
                                         echo "</tbody></table>";
                                         mysqli_free_result($result);

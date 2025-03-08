@@ -4,11 +4,11 @@ include 'config.php';
 
 session_start();
 
-$teacher_id = $_SESSION['teacher_id'];
+$registrar_id = $_SESSION['registrar_id'];
 
-if(!isset($teacher_id)){
+if(!isset($registrar_id)){
    header('location:../login.php');
-   exit;
+   exit; 
 }
 
 ?>
@@ -66,10 +66,6 @@ if(!isset($teacher_id)){
                     </div>
 
                     <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
-                        <div class="pd-20">
-                            <h4 class="h4 mb-1">Encoded Grades List</h4>
-                        </div>
-
                         <?php
                         if(isset($_GET['verified']) && $_GET['verified'] == 1){
                             echo "<div class='alert alert-success'>Record verified successfully.</div>";
@@ -102,7 +98,7 @@ if(!isset($teacher_id)){
                                         echo "<td>" . $row['dob'] . "</td>";
                                         echo "<td>" . $row['email'] . "</td>";
                                         echo "<td>";
-                                        echo '<a href="view_card.php?id=' . $row['student_id'] . '" class="btno" title="View Record" data-bs-toggle="tooltip" data-bs-placement="top">
+                                        echo '<a href="view_form_137.php?id=' . $row['student_id'] . '" class="btno" title="View Record" data-bs-toggle="tooltip" data-bs-placement="top">
                                                 <span class="bi bi-eye-fill" style="font-size:20px;"></span>
                                             </a>';
                                         echo '  ';

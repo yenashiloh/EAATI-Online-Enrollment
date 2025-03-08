@@ -15,19 +15,23 @@ if(!isset($registrar_id)){
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate form data
     $section_id = $_POST['section_id'];
+    $gradelevel_id = $_POST['editGradelevelId'];
     $sectionName = $_POST['editSectionName'];
     $sectionDescription = $_POST['editSectionDescription'];
+    $sectionCapacity = $_POST['editSectionCapacity'];
     
     // Prepare update statement
-    $sql = "UPDATE sections SET section_name=?, section_description=? WHERE section_id=?";
+    $sql = "UPDATE sections SET gradelevel_id=?, section_name=?, section_description=?, sectionCapacity=? WHERE section_id=?";
     
     if($stmt = mysqli_prepare($link, $sql)){
         // Bind variables to the prepared statement as parameters
-        mysqli_stmt_bind_param($stmt, "ssi", $param_sectionName, $param_sectionDescription, $param_section_id);
+        mysqli_stmt_bind_param($stmt, "issii", $param_gradelevel_id, $param_sectionName, $param_sectionDescription, $param_sectionCapacity, $param_section_id);
         
         // Set parameters
+        $param_gradelevel_id = $gradelevel_id;
         $param_sectionName = $sectionName;
         $param_sectionDescription = $sectionDescription;
+        $param_sectionCapacity = $sectionCapacity;
         $param_section_id = $section_id;
         
         // Attempt to execute the prepared statement
@@ -69,8 +73,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
                     
                     // Retrieve individual field value
+                    $gradelevel_id = $row["gradelevel_id"];
                     $sectionName = $row["section_name"];
                     $sectionDescription = $row["section_description"];
+                    $sectionCapacity = $row["sectionCapacity"];
                 } else{
                     // URL doesn't contain valid section_id parameter. Redirect to error page
                     header("location: error.php");

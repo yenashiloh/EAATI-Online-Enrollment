@@ -18,121 +18,112 @@ if(!isset($teacher_id)){
 	<head>
 		<!-- Basic Page Info -->
 		<meta charset="utf-8" />
-		<title>	Form 138</title>
+		<title>Form 138</title>
 
-       <?php
-         include 'link.php';
-       ?>
+        <?php
+            include 'link.php';
+        ?>
 
 	</head>
 	<body class="sidebar-light">
     <?php
-        include 'header.php';
-        include 'sidebar.php';
-
-        // Fetch user details for editing
-        if(isset($_GET['id'])) {
-            $id = $_GET['id'];
-            $sql = "SELECT * FROM schedules WHERE id = :id";
-            $query = $conn->prepare($sql);
-            $query->bindParam(':id', $id, PDO::PARAM_INT);
-            $query->execute();
-            $student = $query->fetch(PDO::FETCH_ASSOC);
-        }
+    include 'header.php';
+    include 'sidebar.php';
     ?>
 
-        <div class="mobile-menu-overlay"></div>
-        <div class="main-container">
-            <div class="pd-ltr-20 xs-pd-20-10">
-                <div class="min-height-200px">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="title">
-                                    <h4>Form 138</h4>
-                                </div>
-                                <nav aria-label="breadcrumb" role="navigation">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item">
-                                            <a href="teacher_dashboard.php">Menu</a>
-                                        </li>
-                                        <li class="breadcrumb-item active" aria-current="page">
-                                            Form 138
-                                        </li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
-
+<div class="mobile-menu-overlay"></div>
+		<div class="main-container">
+			<div class="pd-ltr-20 xs-pd-20-10">
+				<div class="min-height-200px">
+					<div class="page-header">
+						<div class="row">
+							<div class="col-md-12 col-sm-12">
+								<div class="title">
+									<h4>Form 138</h4>
+								</div>
+								<nav aria-label="breadcrumb" role="navigation">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="registrar_dashboard.php">Menu</a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">
+											Form 138
+										</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+		
                     <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
-                        <div class="pd-20">
-                            <h4 class="h4 mb-1">Encoded Grades List</h4>
-                        </div>
-
+                    <div class="pb-20">
+                        <div class="row">
                         <?php
-                        if(isset($_GET['verified']) && $_GET['verified'] == 1){
-                            echo "<div class='alert alert-success'>Record verified successfully.</div>";
-                        }
-                        ?>
-                        <div class="pb-20">
-                            <?php
-                            require_once "config1.php";
+                        // Include config file
+                        require_once "config1.php";
 
-                            $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id WHERE student.isVerified = 2";
-                            if ($result = mysqli_query($link, $sql)) {
-                                if (mysqli_num_rows($result) > 0) {
-                                    echo '<table class="data-table table stripe hover nowrap">';
-                                    echo "<thead>";
-                                    echo "<tr>";
-                                    echo "<th>No.</th>"; 
-                                    echo "<th>Name</th>";
-                                    echo "<th>Date of Birth</th>";
-                                    echo "<th>Email</th>";
-                                    echo "<th>Action</th>";
-                                    echo "</tr>";
-                                    echo "</thead>";
-                                    echo "<tbody>";
-
-                                    $counter = 1; 
-                                    while ($row = mysqli_fetch_array($result)) {
-                                        echo "<tr>";
-                                        echo "<td>" . $counter . "</td>"; 
-                                        echo "<td>" . $row['name'] . "</td>";
-                                        echo "<td>" . $row['dob'] . "</td>";
-                                        echo "<td>" . $row['email'] . "</td>";
-                                        echo "<td>";
-                                        echo '<a href="view_card.php?id=' . $row['student_id'] . '" class="btno" title="View Record" data-bs-toggle="tooltip" data-bs-placement="top">
-                                                <span class="bi bi-eye-fill" style="font-size:20px;"></span>
-                                            </a>';
-                                        echo '  ';
-                                        echo "</td>";
-                                        echo "</tr>";
-
-                                        $counter++;
-                                    }
-
-                                    echo "</tbody>";
-                                    echo "</table>";
-                                    mysqli_free_result($result);
-                                } else {
-                                    echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
+                        // Attempt select query execution
+                        $sql = "SELECT schedules.*,subjects.subject_name,sections.section_name,rooms.room_name, 
+                        CONCAT(users.first_name, ' ', users.last_name) AS teacher_name, 
+                        COUNT(encodedstudentsubjects.student_id) AS student_count,
+                        gradelevel.gradelevel_name
+                        FROM schedules 
+                        INNER JOIN users ON schedules.teacher_id = users.id
+                        INNER JOIN sections ON sections.section_id = schedules.section_id
+                        INNER JOIN subjects ON subjects.subject_id = schedules.subject_id
+                        INNER JOIN gradelevel ON gradelevel.gradelevel_id = schedules.grade_level
+                        INNER JOIN rooms ON rooms.room_id = schedules.room_id
+                        LEFT JOIN encodedstudentsubjects ON encodedstudentsubjects.schedule_id = schedules.id
+                        GROUP BY schedules.id
+                        ORDER BY SUBSTRING_INDEX(gradelevel.gradelevel_name, ' ', -1) + 0 ASC, sections.section_name ASC";
+                        
+                        if ($result = mysqli_query($link, $sql)) {
+                            if (mysqli_num_rows($result) > 0) {
+                                while ($row = mysqli_fetch_array($result)) {
+                                    ?>
+                                    <div class="col-lg-3 col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title" hidden>#<?php echo $row['id']; ?></h5>
+                                                <h1 class="card-title"><?php echo $row['gradelevel_name']; ?> - <?php echo $row['section_name']; ?></h1>
+                                                <p class="card-text">Subject: <?php echo $row['subject_name']; ?></p>
+                                                <p class="card-text">Enrolled Students: <?php echo $row['student_count']; ?></p>
+                                                
+                                                <div class="text-center">
+                                                    <a href="view_student_form_138.php?section_id=<?php echo $row['section_id']; ?>" class="btn btn-primary" title="View Students">
+                                                        <span class="bi bi-eye-fill"></span> View Students
+                                                    </a>
+                                                   
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php
                                 }
+                                // Free result set
+                                mysqli_free_result($result);
                             } else {
-                                echo "Oops! Something went wrong. Please try again later.";
+                                echo '<div class="col-lg-12"><div class="alert alert-danger"><em>No records were found.</em></div></div>';
                             }
-                            mysqli_close($link);
-                            ?>
-                        </div>
+                        } else {
+                            echo '<div class="col-lg-12"><div class="alert alert-danger"><em>Oops! Something went wrong. Please try again later.</em></div></div>';
+                        }
 
+                        // Close connection
+                        mysqli_close($link);
+                        ?>
+                        </div> <!-- End of row -->
                     </div>
+                </div>
+
                 </div>
             </div>
         </div>
 
 		<?php
-         include 'footer.php';
-       ?>
-
+            include 'footer.php';
+        ?>
+		<!-- End Google Tag Manager (noscript) -->
 	</body>
 </html>

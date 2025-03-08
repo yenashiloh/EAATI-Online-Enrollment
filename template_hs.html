@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learner's Permanent Academic Record for Junior High School</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+    }
+    .form-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+    .deped-logo {
+      width: 80px;
+      text-align: center;
+    }
+    .form-title {
+      text-align: center;
+      flex: 1;
+    }
+    .form-title h4 {
+      margin-bottom: 5px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .form-title h3 {
+      margin-bottom: 5px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .seal-logo {
+      width: 80px;
+      text-align: center;
+    }
+    .section-header {
+      background-color: #e6debc;
+      padding: 5px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .form-label {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .underline {
+      border-bottom: 1px solid #000;
+    }
+    .grades-table th, .grades-table td {
+      border: 1px solid #000;
+      padding: 4px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .grades-table {
+      margin-bottom: 10px;
+    }
+    .quarter-headers {
+      text-align: center;
+    }
+    .quarter-cols th {
+      width: 40px;
+    }
+    .remedial-table {
+      margin-top: 10px;
+    }
+    .checkbox-container {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border: 1px solid #000;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    .certification-box {
+      border: 1px solid #000;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .print-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    @media print {
+      .print-button {
+        display: none;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .container-fluid {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      @page {
+        size: landscape; /* This is the only change - setting page to landscape */
+        margin: 10mm;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button onclick="window.print()" class="btn btn-primary print-button">Print Form</button>
+  
+  <div class="container-fluid mt-3">
+    <!-- Form Header with Logos -->
+    <div class="form-header mb-3">
+      <div class="seal-logo">
+        <img src="asset/img/logo.png" alt="Philippines Seal" class="img-fluid">
+        <!-- <div style="font-size: 10px;">SF 10-JHS</div> -->
+      </div>
+      <div class="form-title">
+        <h4 class="m-0">Republic of the Philippines</h4>
+        <h4 class="m-0">Department of Education</h4>
+        <h3 class="m-0 mt-2">Learner's Permanent Academic Record for Junior High School (SF10-JHS)</h3>
+        <p class="m-0">(Formerly Form 137)</p>
+      </div>
+      <div class="deped-logo">
+        <img src="asset/img/DepEd-logo.webp" alt="DepEd Logo" class="img-fluid" style=" width: 160px; height: 100px;">
+      </div>
+    </div>
+
+    <!-- Learner's Information Section -->
+    <div class="mb-3">
+      <div class="section-header">LEARNER'S INFORMATION</div>
+      <div class="row g-2 mb-2">
+        <div class="col-4">
+          <span class="form-label">LAST NAME:</span>
+          <span class="underline w-100">______________________________</span>
+        </div>
+        <div class="col-4">
+          <span class="form-label">FIRST NAME:</span>
+          <span class="underline w-100">______________________________</span>
+        </div>
+        <div class="col-4">
+          <span class="form-label">MIDDLE NAME:</span>
+          <span class="underline w-100">______________________________</span>
+        </div>
+      </div>
+      <div class="row g-2">
+        <div class="col-4">
+          <span class="form-label">Learner Reference Number (LRN):</span>
+          <span class="underline w-100">__________________</span>
+        </div>
+        <div class="col-4">
+          <span class="form-label">Birthdate (mm/dd/yyyy):</span>
+          <span class="underline w-100">__________________</span>
+        </div>
+        <div class="col-4">
+          <span class="form-label">Sex:</span>
+          <span class="underline w-100">__________________</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Eligibility Section -->
+    <div class="mb-3">
+      <div class="section-header">ELIGIBILITY FOR JHS ENROLLMENT</div>
+      <div class="row g-2 mb-2">
+        <div class="col-6">
+          <div class="d-flex align-items-center">
+            <div class="checkbox-container me-1"></div>
+            <span>Elementary School Completer</span>
+          </div>
+          <div class="mt-1">
+            <span class="form-label">Name of Elementary School:</span>
+            <span class="underline w-100">______________________________</span>
+          </div>
+        </div>
+        <div class="col-3">
+          <span class="form-label">General Average:</span>
+          <span class="underline w-100">__________________</span>
+        </div>
+        <div class="col-3">
+          <span class="form-label">Citation (If Any):</span>
+          <span class="underline w-100">__________________</span>
+        </div>
+      </div>
+      <div class="row g-2 mb-2">
+        <div class="col-6">
+          <span class="form-label">School ID:</span>
+          <span class="underline w-100">______________________________</span>
+        </div>
+        <div class="col-6">
+          <span class="form-label">Address of School:</span>
+          <span class="underline w-100">______________________________</span>
+        </div>
+      </div>
+      
+      <div class="row g-2 mb-2">
+        <div class="col-4">
+          <div class="d-flex align-items-center">
+            <div class="checkbox-container me-1"></div>
+            <span>PEPT Passer</span>
+            <span class="ms-2">Rating:</span>
+            <span class="underline">__________</span>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="d-flex align-items-center">
+            <div class="checkbox-container me-1"></div>
+            <span>ALS A & E Passer</span>
+            <span class="ms-2">Rating:</span>
+            <span class="underline">__________</span>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="d-flex align-items-center">
+            <div class="checkbox-container me-1"></div>
+            <span>Others (Pls. Specify):</span>
+            <span class="underline">__________</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row g-2">
+        <div class="col-6">
+          <span class="form-label">Date of Examination/Assessment (mm/dd/yyyy):</span>
+          <span class="underline">__________________</span>
+        </div>
+        <div class="col-6">
+          <span class="form-label">Name and Address of Testing Center:</span>
+          <span class="underline">______________________________</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scholastic Record Section -->
+    <div class="mb-3">
+      <div class="section-header">SCHOLASTIC RECORD</div>
+      
+      <!-- First School Record -->
+      <div class="row g-2 mb-2">
+        <div class="col-3">
+          <span class="form-label">School:</span>
+          <span class="underline w-100">__________________</span>
+        </div>
+        <div class="col-2">
+          <span class="form-label">School ID:</span>
+          <span class="underline w-100">__________</span>
+        </div>
+        <div class="col-2">
+          <span class="form-label">District:</span>
+          <span class="underline w-100">__________</span>
+        </div>
+        <div class="col-2">
+          <span class="form-label">Division:</span>
+          <span class="underline w-100">__________</span>
+        </div>
+        <div class="col-3">
+          <span class="form-label">Region:</span>
+          <span class="underline w-100">__________________</span>
+        </div>
+      </div>
+      
+      <div class="row g-2 mb-2">
+        <div class="col-3">
+          <span class="form-label">Classified as Grade:</span>
+          <span class="underline">_____</span>
+        </div>
+        <div class="col-3">
+          <span class="form-label">Section:</span>
+          <span class="underline">___________</span>
+        </div>
+        <div class="col-3">
+          <span class="form-label">School Year:</span>
+          <span class="underline">___________</span>
+        </div>
+        <div class="col-3">
+          <span class="form-label">Name of Adviser/Teacher:</span>
+          <span class="underline">___________</span>
+        </div>
+      </div>
+      
+      <!-- Grades Table -->
+      <table class="table table-bordered grades-table">
+        <thead>
+          <tr>
+            <th rowspan="2">LEARNING AREAS</th>
+            <th colspan="4" class="quarter-headers">Quarterly Rating</th>
+            <th rowspan="2">FINAL RATING</th>
+            <th rowspan="2">REMARKS</th>
+          </tr>
+          <tr class="quarter-cols">
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Filipino</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>English</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Mathematics</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Science</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Araling Panlipunan (AP)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Edukasyon sa Pagpapakatao (EsP)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Technology and Livelihood Education (TLE)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>MAPEH</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;Music</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;Arts</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;Physical Education</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;Health</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="5" class="text-end pe-3">General Average</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <!-- Remedial Classes -->
+      <table class="table table-bordered remedial-table">
+        <thead>
+          <tr>
+            <th colspan="5">Remedial Classes</th>
+          </tr>
+          <tr>
+            <th>Learning Areas</th>
+            <th>Final Rating</th>
+            <th>Remedial Class Mark</th>
+            <th>Recomputed Final Grade</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <!-- Second School Record (Repeat) -->
+      <div class="row g-2 mb-2 mt-4">
+        <div class="col-3">
+          <span class="form-label">School:</span>
+          <span class="underline w-100">__________________</span>
+        </div>
+        <div class="col-2">
+          <span class="form-label">School ID:</span>
+          <span class="underline w-100">__________</span>
+        </div>
+        <div class="col-2">
+          <span class="form-label">District:</span>
+          <span class="underline w-100">__________</span>
+        </div>
+        <div class="col-2">
+          <span class="form-label">Division:</span>
+          <span class="underline w-100">__________</span>
+        </div>
+        <div class="col-3">
+          <span class="form-label">Region:</span>
+          <span class="underline w-100">__________________</span>
+        </div>
+      </div>
+      
+      <div class="row g-2 mb-2">
+        <div class="col-3">
+          <span class="form-label">Classified as Grade:</span>
+          <span class="underline">_____</span>
+        </div>
+        <div class="col-3">
+          <span class="form-label">Section:</span>
+          <span class="underline">___________</span>
+        </div>
+        <div class="col-3">
+          <span class="form-label">School Year:</span>
+          <span class="underline">___________</span>
+        </div>
+        <div class="col-3">
+          <span class="form-label">Name of Adviser/Teacher:</span>
+          <span class="underline">___________</span>
+        </div>
+      </div>
+      
+      <!-- Second Grades Table -->
+      <table class="table table-bordered grades-table">
+        <thead>
+          <tr>
+            <th rowspan="2">LEARNING AREAS</th>
+            <th colspan="4" class="quarter-headers">QUARTER</th>
+            <th rowspan="2">FINAL RATING</th>
+            <th rowspan="2">REMARKS</th>
+          </tr>
+          <tr class="quarter-cols">
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Filipino</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>English</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Mathematics</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Science</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Araling Panlipunan (AP)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Edukasyon sa Pagpapakatao (EsP)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Technology and Livelihood Education (TLE)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>MAPEH</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;Music</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;Arts</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;Physical Education</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;Health</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="5" class="text-end pe-3">General Average</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <!-- Second Remedial Classes -->
+      <table class="table table-bordered remedial-table">
+        <thead>
+          <tr>
+            <th colspan="5">Remedial Classes</th>
+          </tr>
+          <tr>
+            <th>Learning Areas</th>
+            <th>Final Rating</th>
+            <th>Remedial Class Mark</th>
+            <th>Recomputed Final Grade</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Certification Section -->
+    <div class="certification-box mb-3">
+      <div class="section-header">CERTIFICATION</div>
+      <p>I CERTIFY that this is a true record of _____________________________ with LRN _________________ and that he/she is eligible for admission to Grade _______.</p>
+      <div class="row mt-3">
+        <div class="col-4">
+          <span class="form-label">Name of School: _______________________</span>
+        </div>
+        <div class="col-3">
+          <span class="form-label">School ID: _______________________</span>
+        </div>
+        <div class="col-5">
+          <span class="form-label">Last School Year Attended: _______________________</span>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-3 text-center">
+          <span class="underline w-100">_______________________</span>
+          <div>Date</div>
+        </div>
+        <div class="col-6 text-center">
+          <span class="underline w-100">_______________________</span>
+          <div>Name of Principal/School Head over Printed Name</div>
+        </div>
+        <div class="col-3 text-center">
+          <span class="underline w-100">_______________________</span>
+          <div>(Affix School Seal here)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
