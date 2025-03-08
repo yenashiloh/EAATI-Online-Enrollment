@@ -19,21 +19,45 @@ if (isset($_GET['id'])) {
     $stmt->execute();
     $student = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    $grade_levels_query = "SELECT gl.gradelevel_id, gl.gradelevel_name,
+                          CAST(SUBSTRING(gl.gradelevel_name, 7) AS UNSIGNED) as grade_number
+                          FROM encodedgrades eg
+                          INNER JOIN schedules s ON eg.schedule_id = s.id
+                          INNER JOIN sections sec ON s.section_id = sec.section_id
+                          INNER JOIN gradelevel gl ON sec.gradelevel_id = gl.gradelevel_id
+                          WHERE eg.student_id = ?
+                          GROUP BY gl.gradelevel_id
+                          ORDER BY grade_number DESC";
+                          
+    $stmt = $conn->prepare($grade_levels_query);
+    $stmt->bindParam(1, $student_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $grade_levels = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    if (count($grade_levels) === 0) {
+        $latest_grade_id = null;
+        $grade_level = 'Not assigned';
+    } else {
+        $latest_grade_id = $grade_levels[0]['gradelevel_id'];
+        $grade_level = htmlspecialchars($grade_levels[0]['gradelevel_name']);
+    }
+
     $grades_query = "SELECT eg.*, s.subject_name, s.section_id 
                      FROM encodedgrades eg 
                      INNER JOIN schedules s ON eg.schedule_id = s.id 
-                     WHERE eg.student_id = ?";
+                     INNER JOIN sections sec ON s.section_id = sec.section_id
+                     WHERE eg.student_id = ? AND sec.gradelevel_id = ?";
     $stmt = $conn->prepare($grades_query);
     $stmt->bindParam(1, $student_id, PDO::PARAM_INT);
+    $stmt->bindParam(2, $latest_grade_id, PDO::PARAM_INT);
     $stmt->execute();
     $grades_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     if (count($grades_result) > 0) {
         $grade_row = $grades_result[0];
         $section_id = $grade_row['section_id'];
-        $section_query = "SELECT sections.section_name, gradelevel.gradelevel_name 
+        $section_query = "SELECT sections.section_name
                          FROM sections 
-                         INNER JOIN gradelevel ON sections.gradelevel_id = gradelevel.gradelevel_id 
                          WHERE sections.section_id = ?";
         $stmt = $conn->prepare($section_query);
         $stmt->bindParam(1, $section_id, PDO::PARAM_INT);
@@ -41,14 +65,12 @@ if (isset($_GET['id'])) {
         $section = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $section_name = htmlspecialchars($section['section_name'] ?? '');
-        $grade_level = htmlspecialchars($section['gradelevel_name'] ?? 'Not assigned');
     } else {
         $section_name = 'Not assigned';
-        $grade_level = 'Not assigned';
     }
-
 }
 ?>
+
 
 <?php
 if(isset($_GET['print']) && $_GET['print'] == 'true') {
@@ -66,7 +88,24 @@ if(isset($_GET['print']) && $_GET['print'] == 'true') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <title>Elementary School Report Card</title>
-    
+    <link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="../asset/img/logo.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="../asset/img/logo.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="../asset/img/logo.png"
+		/>
+
     <style>
         .container{
              max-width: 800px;
@@ -384,54 +423,38 @@ if(isset($_GET['print']) && $_GET['print'] == 'true') {
             </tr>
         </thead>
         <tbody>
-            <?php
-            // Use foreach instead of while with mysqli_fetch_assoc
-            foreach ($grades_result as $grade) {
-                // Calculate final grade (average of four quarters)
-                $quarter1 = floatval($grade['quarter1']);
-                $quarter2 = floatval($grade['quarter2']);
-                $quarter3 = floatval($grade['quarter3']);
-                $quarter4 = floatval($grade['quarter4']);
-                
-                $final_grade = round(($quarter1 + $quarter2 + $quarter3 + $quarter4) / 4, 2);
-            ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($grade['subject_name']); ?></td>
-                    <td><?php echo intval($grade['quarter1']) == $grade['quarter1'] ? intval($grade['quarter1']) : $grade['quarter1']; ?></td>
-                    <td><?php echo intval($grade['quarter2']) == $grade['quarter2'] ? intval($grade['quarter2']) : $grade['quarter2']; ?></td>
-                    <td><?php echo intval($grade['quarter3']) == $grade['quarter3'] ? intval($grade['quarter3']) : $grade['quarter3']; ?></td>
-                    <td><?php echo intval($grade['quarter4']) == $grade['quarter4'] ? intval($grade['quarter4']) : $grade['quarter4']; ?></td>
-                    <td><?php echo intval($final_grade) == $final_grade ? intval($final_grade) : $final_grade; ?></td>
-                </tr>
-            <?php } ?>
-                        
-            
-                <?php
-                $total_subjects = 0;
-                $total_grade = 0;
+        <?php
+        $total_subjects = 0;
+        $total_grade = 0;
 
-                // Calculate total grades without using mysqli_data_seek
-                foreach ($grades_result as $grade) {
-                    $final_grade = round(
-                        (floatval($grade['quarter1']) + 
-                        floatval($grade['quarter2']) + 
-                        floatval($grade['quarter3']) + 
-                        floatval($grade['quarter4'])) / 4, 
-                        2
-                    );
-                    
-                    $total_grade += $final_grade;
-                    $total_subjects++;
-                }
+        foreach ($grades_result as $grade) {
+            $quarter1 = floatval($grade['quarter1']);
+            $quarter2 = floatval($grade['quarter2']);
+            $quarter3 = floatval($grade['quarter3']);
+            $quarter4 = floatval($grade['quarter4']);
 
-                // Calculate General Weighted Average
-                $gwa = ($total_subjects > 0) ? round($total_grade / $total_subjects, 2) : 0;
-                ?>
-                <tr>
-                    <td colspan="5"><strong>GENERAL WEIGHTED AVERAGE</strong></td>
-                    <td><?php echo intval($gwa) == $gwa ? intval($gwa) : $gwa; ?></td>
-                </tr>
-            </tbody>
+            $final_grade = round(($quarter1 + $quarter2 + $quarter3 + $quarter4) / 4);
+            $total_grade += $final_grade;
+            $total_subjects++;
+        ?>
+            <tr>
+                <td><?php echo htmlspecialchars($grade['subject_name']); ?></td>
+                <td><?php echo round($quarter1); ?></td>
+                <td><?php echo round($quarter2); ?></td>
+                <td><?php echo round($quarter3); ?></td>
+                <td><?php echo round($quarter4); ?></td>
+                <td><?php echo round($final_grade); ?></td>
+            </tr>
+        <?php } ?>
+
+        <?php
+        $gwa = ($total_subjects > 0) ? round($total_grade / $total_subjects) : 0;
+        ?>
+        <tr>
+            <td colspan="5"><strong>GENERAL WEIGHTED AVERAGE</strong></td>
+            <td><?php echo round($gwa); ?></td>
+        </tr>
+    </tbody>
         </table>
     </div>
     </div>
