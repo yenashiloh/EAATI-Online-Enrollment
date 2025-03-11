@@ -153,6 +153,33 @@ $conn = null; // Close connection
                       <div class="login-title">
                           <h2 class="text-center text-primary">Sign In</h2>
                       </div>
+                      <?php
+
+                    // Check for success message
+                    if (isset($_SESSION['success_message'])) {
+                        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">';
+                        echo $_SESSION['success_message'];
+                        echo '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        echo '<span aria-hidden="true">&times;</span>';
+                        echo '</button>';
+                        echo '</div>';
+                        // Clear the success message from the session
+                        unset($_SESSION['success_message']);
+                    }
+
+                    // Also check for error messages (if you want to display them on login page)
+                    if (isset($_SESSION['error_message'])) {
+                        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
+                        echo $_SESSION['error_message'];
+                        echo '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        echo '<span aria-hidden="true">&times;</span>';
+                        echo '</button>';
+                        echo '</div>';
+                        // Clear the error message from the session
+                        unset($_SESSION['error_message']);
+                    }
+                    ?>
+
                       <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <?php if (isset($error_message)) { ?>
                           <div class="alert alert-danger"><?php echo $error_message; ?></div>

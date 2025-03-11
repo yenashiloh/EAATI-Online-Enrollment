@@ -10,7 +10,9 @@ $database = "enrollment";
 $conn = new mysqli($servername, $username, $password, $database);
 
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    $_SESSION['error_message'] = "Connection failed: " . $conn->connect_error;
+    header("Location: admission.php");
+    exit();
 }
 
 $student_type = $_POST['student_type'] ?? '';
@@ -28,18 +30,40 @@ if ($student_type === 'new') {
     $contact_number = $_POST['contact_number'];
     $role = "student";
 
+    // First check if the email/username already exists
+    $check_stmt = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
+    $check_stmt->bind_param("ss", $username, $email);
+    $check_stmt->execute();
+    $result = $check_stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        $_SESSION['error_message'] = "Email already exists. Please use a different email.";
+        header("Location: admission.php");
+        $check_stmt->close();
+        $conn->close();
+        exit();
+    }
+    $check_stmt->close();
+
     // Log the data for debugging
     error_log("New student registration - Email/Username: " . $username);
 
     $stmt = $conn->prepare("INSERT INTO users (username, password, role, first_name, last_name, contact_number, email) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssssss", $username, $hashed_password, $role, $first_name, $last_name, $contact_number, $email);
 
-    if ($stmt->execute()) {
-        $_SESSION['success_message'] = "Registration successful! Please login with your email and password.";
-        header("Location: login.php"); // Redirect to the login page
-    } else {
-        $_SESSION['error_message'] = "Error: " . $stmt->error;
+    try {
+        if ($stmt->execute()) {
+            // Store success message in session for the login page
+            $_SESSION['success_message'] = "Registration successful! Please login with your email and password.";
+            header("Location: login.php"); // Redirect to the login page
+            exit();
+        } else {
+            throw new Exception($stmt->error);
+        }
+    } catch (Exception $e) {
+        $_SESSION['error_message'] = "Error: " . $e->getMessage();
         header("Location: admission.php"); // Redirect back to the form with an error message
+        exit();
     }
 
     $stmt->close();
@@ -53,6 +77,21 @@ if ($student_type === 'new') {
     $contact_number = $_POST['contact_number'];
     $email = $_POST['email'];
     $role = "student";
+
+    // Check if email is already used by someone else
+    $check_stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND username != ?");
+    $check_stmt->bind_param("ss", $email, $username);
+    $check_stmt->execute();
+    $email_result = $check_stmt->get_result();
+    
+    if ($email_result->num_rows > 0) {
+        $_SESSION['error_message'] = "Error: This email is already registered with another account.";
+        header("Location: admission.php");
+        $check_stmt->close();
+        $conn->close();
+        exit();
+    }
+    $check_stmt->close();
 
     // Log the data for debugging
     error_log("Old student verification - LRN: " . $username);
@@ -69,20 +108,27 @@ if ($student_type === 'new') {
         $updateStmt->bind_param("ssssss", $hashed_password, $first_name, $last_name, $contact_number, $email, $username);
         
         if ($updateStmt->execute()) {
-            $_SESSION['success_message'] = "Information updated successfully! Please login with your LRN and new password.";
-            header("Location: login.php"); // Redirect to the login page
+            $_SESSION['success_message'] = "Registration updated successfully! Please log in with your LRN and password.";
+            header("Location: login.php"); // Redirect to login after success
+            exit();
         } else {
             $_SESSION['error_message'] = "Error updating information: " . $updateStmt->error;
-            header("Location: admission.php"); // Redirect back to the form with an error message
+            header("Location: admission.php"); // Redirect back with error
+            exit();
         }
         
         $updateStmt->close();
     } else {
         $_SESSION['error_message'] = "Student with LRN {$username} not found. Please register as a new student.";
-        header("Location: admission.php"); // Redirect back to the form with an error message
+        header("Location: admission.php");
+        exit();
     }
 
     $stmt->close();
+} else {
+    $_SESSION['error_message'] = "Invalid student type selected.";
+    header("Location: admission.php");
+    exit();
 }
 
 $conn->close();

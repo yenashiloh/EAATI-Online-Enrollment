@@ -1,14 +1,6 @@
 <?php
 session_start();
 
-// Check for error message from the previous submission
-if (isset($_SESSION['error_message'])) {
-  echo '<div class="alert alert-danger" role="alert">';
-  echo $_SESSION['error_message'];
-  echo '</div>';
-  // Clear the error message from the session
-  unset($_SESSION['error_message']);
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -153,6 +145,38 @@ if (isset($_SESSION['error_message'])) {
     <p>Admission</p>
 
       </div><!-- End Section Title -->
+    <?php
+    if (isset($_SESSION['error_message'])) {
+        echo '<div class="alert alert-danger" role="alert">';
+        echo $_SESSION['error_message'];
+        echo '</div>';
+        unset($_SESSION['error_message']);
+    }
+    ?>
+
+
+      <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <?php echo $_SESSION['error_message']; ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
+
+
+        <script>
+            setTimeout(function() {
+                let alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(() => alert.remove(), 500); 
+                });
+            }, 5000); // 5 seconds
+        </script>
+
 
       <div id="accordion" data-aos="fade-up">
     <div class="card">

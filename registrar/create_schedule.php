@@ -115,8 +115,8 @@ if (!isset($registrar_id)) {
                     
                     <div class="col-md-12">
                         <label for="grade_level" class="form-label">Grade Level</label>
-                        <select id="grade_level" class="custom-select col-12 mb-3" name="grade_level" required>
-                            <option selected>Select Grade Level</option>
+                        <select id="grade_level" class="custom-select col-12 mb-3" name="grade_level" required onchange="loadSections(this.value)">
+                            <option selected value="">Select Grade Level</option>
                             <?php
                             $sql = "SELECT * FROM gradelevel ORDER BY gradelevel_name ASC";
                             $result = $conn->query($sql);
@@ -125,12 +125,16 @@ if (!isset($registrar_id)) {
                             }
                             ?>
                         </select>
+                        <div id="no-section-message" class="alert alert-warning mt-2" style="display:none;">
+                            No sections available for this grade level.
+                        </div>
                     </div>
 
-                    <div class="col-md-12">
-                        <label for="section" class="form-label">Section</label>
-                        <select id="section" class="custom-select col-12 mb-3" name="section" required>
-                            <option selected>Select Section</option>
+
+                        <div class="col-md-12">
+                            <label for="section" class="form-label">Section</label>
+                            <select id="section" class="custom-select col-12 mb-3" name="section" required>
+                                <option selected value="">Select Section</option>
                             <?php
                             $sql = "SELECT * FROM sections";
                             $result = $conn->query($sql);
@@ -232,5 +236,50 @@ if (!isset($registrar_id)) {
       include 'footer.php';
     ?>
 	</body>
+
+    <script>
+    function loadSections(gradeLevel) {
+        const sectionDropdown = document.getElementById('section');
+        const noSectionMessage = document.getElementById('no-section-message');
+        
+        sectionDropdown.innerHTML = '<option selected value="">Select Section</option>';
+        
+        noSectionMessage.style.display = 'none';
+
+        sectionDropdown.disabled = true;
+        
+        if (!gradeLevel) {
+            return;
+        }
+        
+        fetch('get_sections.php?grade_level=' + gradeLevel)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result.count === 0) {
+                    noSectionMessage.style.display = 'block';
+                    sectionDropdown.disabled = true; 
+                } else {
+                    result.data.forEach(section => {
+                        const option = document.createElement('option');
+                        option.value = section.section_id;
+                        option.textContent = section.section_name;
+                        sectionDropdown.appendChild(option);
+                    });
+
+                    sectionDropdown.disabled = false; 
+                }
+            })
+            .catch(error => {
+                console.error('Error loading sections:', error);
+                alert('Failed to load sections. Please try again.');
+            });
+    }
+</script>
+
 </html>
 <?php } ?>
