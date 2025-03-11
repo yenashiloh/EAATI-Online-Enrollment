@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 11, 2025 at 08:32 PM
+-- Generation Time: Mar 12, 2025 at 12:38 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -297,7 +297,8 @@ INSERT INTO `schedules` (`id`, `grade_level`, `subject_name`, `teacher_id`, `sta
 (5, 2, 'Math', 15, '03:30:00', '16:33:00', 7, 2, 1, 'Tuesday'),
 (6, 12, 'Araling Panlipunan', 15, '16:00:00', '17:00:00', 6, 2, 8, 'Tuesday'),
 (7, 3, 'English', 15, '14:00:00', '15:00:00', 10, 2, 1, 'Friday'),
-(9, 2, 'Math', 15, '14:00:00', '15:00:00', 9, 5, 7, 'Tuesday');
+(11, 2, 'English', 26, '01:22:00', '14:24:00', 9, 4, 1, 'Monday'),
+(15, 8, 'Math', 15, '01:33:00', '04:36:00', 8, 2, 7, 'Monday');
 
 -- --------------------------------------------------------
 
@@ -442,7 +443,8 @@ INSERT INTO `users` (`id`, `username`, `password`, `role`, `first_name`, `last_n
 (26, 'teacher1', '$2y$10$WunjE3B/r0JPAgp8WRjyGezKSoU7O6w.BCGrqpxpWFn/FeKa35Rai', 'teacher', 'teacher1', 'teacher1', '123', 'teacher@gmail.com'),
 (27, 'louise', '$2y$10$aQVhXYY9PwLEiBEPxto3luB4lP.UafdroDhDn2ly3yHEHRM/YdyDC', 'student', 'lou', 'pon', '099999', 'knize.gaming@gmail.com'),
 (29, '098765432123', '$2y$10$YKJ9./xIL4O26.G1aF9afexuWx10u3XbB.Xd4faBixLKKpgvt/dUK', 'parent', 'louise ruzzele', 'ponciano', '09917139528', 'louiseruzzelep@gmail.com'),
-(30, 'k11833184', '$2y$10$j165vkr.LjmvwK35xDoa6.s2gJb4Q8MkN6bJ99z9GVg8dhmlK2r2a', 'student', 'Shiloh', 'Eugenio', '09168759399', 'shiloheugenio21@gmail.com');
+(30, 'k11833184', '$2y$10$u8b/XLblAg69C/TRkTts0usf7A0BIqK2LvvoH8wmxhldxIlly3k8a', 'student', 'Shiloh', 'Eugenio', '09168759399', 'shiloheugenio21@gmail.com'),
+(40, 'shiloheugenio21@gmail.com', '$2y$10$u8b/XLblAg69C/TRkTts0usf7A0BIqK2LvvoH8wmxhldxIlly3k8a', 'student', 'Jade', 'Bantilo', '09631158796', 'shiloheugenio21@gmail.com');
 
 --
 -- Indexes for dumped tables
@@ -630,7 +632,7 @@ ALTER TABLE `rooms`
 -- AUTO_INCREMENT for table `schedules`
 --
 ALTER TABLE `schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `sections`
@@ -660,7 +662,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- Constraints for dumped tables
