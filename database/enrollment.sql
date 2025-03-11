@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 08, 2025 at 03:15 AM
+-- Generation Time: Mar 11, 2025 at 08:32 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -77,7 +77,9 @@ CREATE TABLE `encodedgrades` (
 --
 
 INSERT INTO `encodedgrades` (`encodedgrades_id`, `userId`, `student_id`, `schedule_id`, `quarter1`, `quarter2`, `quarter3`, `quarter4`, `status`) VALUES
-(3, 30, 41, 5, 98.00, 99.00, 98.00, 98.00, 'Approved');
+(4, 30, 41, 7, 85.00, 89.00, 89.00, 88.00, 'Approved'),
+(6, 30, 41, 6, 79.00, 80.00, 76.00, 88.00, 'Approved'),
+(7, 30, 41, 9, 75.00, 76.00, 77.00, 78.00, 'For Review');
 
 -- --------------------------------------------------------
 
@@ -97,7 +99,10 @@ CREATE TABLE `encodedstudentsubjects` (
 
 INSERT INTO `encodedstudentsubjects` (`encoded_id`, `student_id`, `schedule_id`) VALUES
 (1, 41, 5),
-(2, 41, 2);
+(2, 41, 2),
+(3, 41, 6),
+(4, 41, 7),
+(5, 41, 9);
 
 -- --------------------------------------------------------
 
@@ -120,7 +125,7 @@ CREATE TABLE `enrollmentschedule` (
 INSERT INTO `enrollmentschedule` (`enrollmentschedule_id`, `gradelevel_id`, `start_date`, `end_date`, `status`) VALUES
 (1, 8, '2024-11-07', '2025-03-21', 'Approved'),
 (5, 1, '2002-03-05', '2024-11-30', 'Declined'),
-(6, 10, '2025-02-25', '2025-06-10', 'For Review');
+(6, 10, '2025-02-25', '2025-06-10', 'Approved');
 
 -- --------------------------------------------------------
 
@@ -288,8 +293,11 @@ CREATE TABLE `schedules` (
 --
 
 INSERT INTO `schedules` (`id`, `grade_level`, `subject_name`, `teacher_id`, `start_time`, `end_time`, `section_id`, `room_id`, `subject_id`, `day`) VALUES
-(2, 7, 'English', 15, '14:01:00', '15:02:00', 6, 4, 1, 'Monday'),
-(5, 10, 'Math', 15, '03:30:00', '16:33:00', 7, 2, 1, 'Tuesday');
+(2, 1, 'English', 15, '14:01:00', '15:02:00', 6, 4, 1, 'Monday'),
+(5, 2, 'Math', 15, '03:30:00', '16:33:00', 7, 2, 1, 'Tuesday'),
+(6, 12, 'Araling Panlipunan', 15, '16:00:00', '17:00:00', 6, 2, 8, 'Tuesday'),
+(7, 3, 'English', 15, '14:00:00', '15:00:00', 10, 2, 1, 'Friday'),
+(9, 2, 'Math', 15, '14:00:00', '15:00:00', 9, 5, 7, 'Tuesday');
 
 -- --------------------------------------------------------
 
@@ -310,8 +318,10 @@ CREATE TABLE `sections` (
 --
 
 INSERT INTO `sections` (`section_id`, `gradelevel_id`, `section_name`, `section_description`, `sectionCapacity`) VALUES
-(6, 12, 'Matulungin', 'Example Description', 50),
-(7, 10, 'Masiyahin', 'Masiyahin description', 50);
+(6, 12, 'Matulungin', 'Example Description', 51),
+(8, 8, 'Jose Rizal', 'Jose Rizal', 30),
+(9, 2, 'Sampaguita ', 'Sampaguita Description', 25),
+(10, 3, 'Banahaw ', 'Banahaw Description', 30);
 
 -- --------------------------------------------------------
 
@@ -368,7 +378,8 @@ CREATE TABLE `subjects` (
 
 INSERT INTO `subjects` (`subject_id`, `subject_name`, `subject_description`) VALUES
 (1, 'English', 'English'),
-(7, 'Math', 'Math Description ');
+(7, 'Math', 'Math Description '),
+(8, 'Araling Panlipunan', 'Araling Panlipunan');
 
 -- --------------------------------------------------------
 
@@ -424,15 +435,14 @@ INSERT INTO `users` (`id`, `username`, `password`, `role`, `first_name`, `last_n
 (1, 'superadmin', '$2y$10$69EojGWI.uqaTxg.aI9x6eS7yqjVV3ZLX1aFNLbzX1vWVDrK1FovC', 'superadmin', 'super', 'admin', NULL, NULL),
 (2, 'registrar', '$2y$10$RrsqT3vi7fYmnXN62Za6O.Ub.izlebiemWVAOyw.F1JMFPsvFGmgq', 'registrar', 'admin', 'registrar', NULL, NULL),
 (14, 'accounting', '$2y$10$5UZf2nJ4OSajZfGi7DZ.DOT6FHe1zmDA7W7HEAlYzefQVPLUwSgC2', 'accounting', 'sample', 'accounting', '123', 'sampleaccounting@gmail.com'),
-(15, 'teacher', '$2y$10$mjuZYXPx1OmqUZZxzQTTMum6B55TVCT7UbVQCrksbdMaB8tw6DC5a', 'teacher', 'sample', 'teacher', '123', '123@teacher.com'),
+(15, 'teacher', '$2y$10$mjuZYXPx1OmqUZZxzQTTMum6B55TVCT7UbVQCrksbdMaB8tw6DC5a', 'teacher', 'Maria ', 'Reyes', '123', '123@teacher.com'),
 (20, 'sample321', '$2y$10$Ci2VONYvbimQu7qUYPrGc.YSzbrCQgVHmfobnYO4jmg1kQRFjUy6W', 'parent', 'sample', 'sample', '123', 'louiseruzzelep@gmail.com'),
 (21, 'sample1', '$2y$10$mbiv2nTlVNqp65bCEFA1H.BdO4l158o6vr/n21PXwvw7/bDT6lx42', 'student', 'sample', 'sample', '123', '321@sample.com'),
 (25, '147', '$2y$10$7PkM/DEbTTVa1mFOEBzIu.3OskiU4MSsqSoUTu.IOMsfighH36Obe', 'accounting', '12313', '23123', '123213123', '213123@gmail.com'),
 (26, 'teacher1', '$2y$10$WunjE3B/r0JPAgp8WRjyGezKSoU7O6w.BCGrqpxpWFn/FeKa35Rai', 'teacher', 'teacher1', 'teacher1', '123', 'teacher@gmail.com'),
 (27, 'louise', '$2y$10$aQVhXYY9PwLEiBEPxto3luB4lP.UafdroDhDn2ly3yHEHRM/YdyDC', 'student', 'lou', 'pon', '099999', 'knize.gaming@gmail.com'),
 (29, '098765432123', '$2y$10$YKJ9./xIL4O26.G1aF9afexuWx10u3XbB.Xd4faBixLKKpgvt/dUK', 'parent', 'louise ruzzele', 'ponciano', '09917139528', 'louiseruzzelep@gmail.com'),
-(30, 'k11833184', '$2y$10$j165vkr.LjmvwK35xDoa6.s2gJb4Q8MkN6bJ99z9GVg8dhmlK2r2a', 'student', 'Shiloh', 'Eugenio', '09168759399', 'shiloheugenio21@gmail.com'),
-(38, 'arrianepamintuan@gmail.com', '$2y$10$y5alo4LY3pl/sH0dzjoxKuR3kykbbTSgZ3kenEv94b4cGFEYfR5ru', 'student', 'Arriane Camille', 'Pamintuan', '09631158796', 'arrianepamintuan@gmail.com');
+(30, 'k11833184', '$2y$10$j165vkr.LjmvwK35xDoa6.s2gJb4Q8MkN6bJ99z9GVg8dhmlK2r2a', 'student', 'Shiloh', 'Eugenio', '09168759399', 'shiloheugenio21@gmail.com');
 
 --
 -- Indexes for dumped tables
@@ -566,13 +576,13 @@ ALTER TABLE `approvalschedule`
 -- AUTO_INCREMENT for table `encodedgrades`
 --
 ALTER TABLE `encodedgrades`
-  MODIFY `encodedgrades_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `encodedgrades_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `encodedstudentsubjects`
 --
 ALTER TABLE `encodedstudentsubjects`
-  MODIFY `encoded_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `encoded_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `enrollmentschedule`
@@ -620,13 +630,13 @@ ALTER TABLE `rooms`
 -- AUTO_INCREMENT for table `schedules`
 --
 ALTER TABLE `schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `sections`
 --
 ALTER TABLE `sections`
-  MODIFY `section_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `section_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `student`
@@ -638,7 +648,7 @@ ALTER TABLE `student`
 -- AUTO_INCREMENT for table `subjects`
 --
 ALTER TABLE `subjects`
-  MODIFY `subject_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `subject_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `transactions`
@@ -650,7 +660,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- Constraints for dumped tables
