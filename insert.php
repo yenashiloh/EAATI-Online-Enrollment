@@ -37,7 +37,7 @@ if ($result->num_rows > 0) {
 }
 $check_stmt->close();
 
-// Handle file upload - UPDATED CODE BASED ON YOUR EXAMPLE
+// Handle file upload
 $image_path = '';
 if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
     $image_name = $_FILES['photo']['name'];
@@ -52,13 +52,17 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
     }
 }
 
+// Generate verification token
+$verification_token = bin2hex(random_bytes(32));
+$verification_expires = date('Y-m-d H:i:s', strtotime('+24 hours'));
+
 // Start transaction
 $conn->begin_transaction();
 
 try {
-    // 1. Insert into users table
-    $user_stmt = $conn->prepare("INSERT INTO users (username, password, role, first_name, last_name, contact_number, email) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $user_stmt->bind_param("sssssss", $username, $hashed_password, $role, $first_name, $last_name, $contact_number, $email);
+    // 1. Insert into users table with verification fields
+    $user_stmt = $conn->prepare("INSERT INTO users (username, password, role, first_name, last_name, contact_number, email, is_verified, verification_token, verification_expires) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?)");
+    $user_stmt->bind_param("sssssssss", $username, $hashed_password, $role, $first_name, $last_name, $contact_number, $email, $verification_token, $verification_expires);
     $user_stmt->execute();
     $userId = $conn->insert_id;
     $user_stmt->close();
@@ -71,21 +75,58 @@ try {
     $student_id = $row['max_id'] + 1;
     
     // Based on your database structure in Image 2, prepare the student insert statement
-    // Including all the necessary fields that are visible in the screenshot
     $full_name = $first_name . ' ' . $last_name;
     
     // Prepare the student insert statement
-    // We'll add the image_path to the student table directly
     $student_stmt = $conn->prepare("INSERT INTO student (student_id, userId, name, email, student_house_number, student_street, student_barangay, student_municipality, image_path) VALUES (?, ?, ?, ?, NULL, NULL, NULL, NULL, ?)");
     $student_stmt->bind_param("iisss", $student_id, $userId, $full_name, $email, $image_path);
     $student_stmt->execute();
     $student_stmt->close();
     
+    // Use PHPMailer to send verification email
+    // Make sure to include the PHPMailer library
+    require 'vendor/autoload.php'; // Path to PHPMailer autoload - adjust if needed
+
+    // Create a new PHPMailer instance
+    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+    
+    // Server settings
+    $mail->isSMTP();
+    $mail->Host       = 'smtp.gmail.com';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = 'c2217109@gmail.com'; // Your Gmail address
+    $mail->Password   = 'jrta kken mipg wvtd'; // Your app password
+    $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port       = 587;
+    
+    // Recipients
+    $mail->setFrom('c2217109@gmail.com', 'Eastern Achiever Academy of Taguig');
+    $mail->addAddress($email, $first_name . ' ' . $last_name);
+    
+    // Content
+    $mail->isHTML(true);
+    $mail->Subject = "Email Verification";
+    
+    // Create the verification URL
+    $verification_url = "http://" . $_SERVER['HTTP_HOST'] . "/onlineenrollment/verify.php?token=" . $verification_token;
+    
+    // Email body
+    $message = file_get_contents('verification_email.php');
+    $message = str_replace('{{name}}', $first_name . ' ' . $last_name, $message);
+    $message = str_replace('{{verification_url}}', $verification_url, $message);
+    
+    $mail->Body = $message;
+    
+    // Send email
+    if(!$mail->send()) {
+        throw new Exception("Failed to send verification email: " . $mail->ErrorInfo);
+    }
+    
     // Commit transaction
     $conn->commit();
     
-    $_SESSION['success_message'] = "Registration successful! Please login with your username and password.";
-    header("Location: login.php");
+    $_SESSION['success_message'] = "Registration successful! Please check your email to verify your account.";
+    header("Location: admission.php");
     exit();
     
 } catch (Exception $e) {

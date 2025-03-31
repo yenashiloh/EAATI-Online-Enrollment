@@ -149,6 +149,14 @@ session_start();
                     <p>Admission</p>
                 </div>
                 <!-- End Section Title -->
+                <?php if (isset($_SESSION['success_message'])): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= $_SESSION['success_message']; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php unset($_SESSION['success_message']); ?>
+                <?php endif; ?>
+
                 <?php
                 if (isset($_SESSION['error_message'])) {
                     echo '<div class="alert alert-danger" role="alert">';
@@ -204,7 +212,7 @@ session_start();
                         </div>
                         <div id="collapseTwo" class="collapse" data-parent="#accordion">
                             <div class="card-body">
-                                <form method="post" action="insert.php" onsubmit="return validateForm()" enctype="multipart/form-data">
+                                <form method="post" action="insert.php" onsubmit="return validateForm()" enctype="multipart/form-data" id="myForm">
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="first_name" class="form-label">First Name</label>
@@ -234,7 +242,7 @@ session_start();
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="contact_number" class="form-label">Contact Number</label>
-                                            <input type="text" id="contact_number" name="contact_number" class="form-control">
+                                            <input type="number" id="contact_number" name="contact_number" class="form-control">
                                             <small class="text-danger error-message" id="contact_number_error"></small>
                                         </div>
                                         <div class="col-md-6">
@@ -256,7 +264,7 @@ session_start();
                                             <small class="text-danger error-message" id="confirm_password_error"></small>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
                                 </form>
                             </div>
                         </div>
@@ -445,6 +453,11 @@ session_start();
         return isValid; // Ensure the function returns the validation result
     }
     
+    document.getElementById("myForm").addEventListener("submit", function() {
+        let submitBtn = document.getElementById("submitBtn");
+        submitBtn.innerHTML = 'Submitting...';
+        submitBtn.disabled = true; // Prevents multiple clicks
+    });
     
 
     </script>

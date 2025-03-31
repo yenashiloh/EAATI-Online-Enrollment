@@ -1,7 +1,7 @@
 <?php
 include 'config.php';
 
-session_start();
+session_start(); 
 error_reporting(E_ALL);
 
 if (!isset($_SESSION['student_id'])) {
@@ -17,7 +17,7 @@ $msg = "";
 $query = $conn->prepare("SELECT * FROM users WHERE id = :student_id");
 $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
 $query->execute();
-$user = $query->fetch(PDO::FETCH_ASSOC);
+$user = $query->fetch(PDO::FETCH_ASSOC); 
 
 // Combine first and last name
 $full_name = '';
@@ -31,9 +31,9 @@ if (isset($user['first_name'])) {
 // Get email from users table
 $student_email = isset($user['email']) ? $user['email'] : '';
 
+// UPDATE instead of INSERT for existing student
 if (isset($_POST['add_registration'])) {
-
-    // get student information from POST
+    // Get student information from POST
     $grade_level_id = $_POST['grade_level'];
     $dob = $_POST['dob'];
     $pob = $_POST['pob'];
@@ -48,7 +48,7 @@ if (isset($_POST['add_registration'])) {
     $school_address = $_POST['school_address'];
     $grade_level = $_POST['grade_level'];
 
-    // get father information from POST
+    // Get father information from POST
     $father_name = $_POST['father_name'];
     $telephone_father = $_POST['telephone_father'];
     $houseNo_father = $_POST['houseNo_father'];
@@ -56,7 +56,7 @@ if (isset($_POST['add_registration'])) {
     $barangay_father = $_POST['barangay_father'];
     $municipality_father = $_POST['municipality_father'];
 
-    // get mother information from POST
+    // Get mother information from POST
     $mother_name = $_POST['mother_name'];
     $telephone_mother = $_POST['telephone_mother'];
     $houseNo_mother = $_POST['houseNo_mother'];
@@ -64,20 +64,7 @@ if (isset($_POST['add_registration'])) {
     $barangay_mother = $_POST['barangay_mother'];
     $municipality_mother = $_POST['municipality_mother'];
 
-    // handle image upload
-    $uploaded_image_path = '';
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $image_name = $_FILES['image']['name'];
-        $image_tmp = $_FILES['image']['tmp_name'];
-        $image_destination = '../uploads/images/' . $image_name;
-        if (move_uploaded_file($image_tmp, $image_destination)) {
-            $uploaded_image_path = $image_destination;
-        } else {
-            $error = "Failed to move uploaded image file: $image_name";
-        }
-    }
-
-    // handle requirements upload
+    // Handle requirements upload
     $uploaded_files = [];
     if (isset($_FILES['requirements']) && is_array($_FILES['requirements']['name'])) {
         $file_count = count($_FILES['requirements']['name']);
@@ -107,71 +94,155 @@ if (isset($_POST['add_registration'])) {
         try {
             $conn->beginTransaction();
 
-            // insert student information
-            $sql = "INSERT INTO student (userId, name, dob, pob, age, gender, student_house_number, student_street, 
-            student_barangay, student_municipality, guardian, previous_school, school_address, grade_level_id, 
-            requirements, image_path, isVerified) 
-            VALUES (:student_id, :full_name, :dob, :pob, :age, :gender, :student_house_number, :student_street,
-            :student_barangay, :student_municipality, :guardian, :previous_school, :school_address, 
-            :grade_level_id, :requirements, :image_path, 0)";
+            // Check if student record already exists
+            $check_sql = "SELECT * FROM student WHERE userId = :student_id";
+            $check_query = $conn->prepare($check_sql);
+            $check_query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+            $check_query->execute();
+            $student_data = $check_query->fetch(PDO::FETCH_ASSOC);
+            $student_exists = $student_data ? true : false;
+            
+            // Get the student_id from the student table (not the id column)
+            $student_record_id = $student_exists && isset($student_data['student_id']) ? $student_data['student_id'] : 0;
 
-            $query = $conn->prepare($sql);
-            $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
-            $query->bindParam(':full_name', $full_name, PDO::PARAM_STR);
-            $query->bindParam(':dob', $dob, PDO::PARAM_STR);
-            $query->bindParam(':pob', $pob, PDO::PARAM_STR);
-            $query->bindParam(':age', $age, PDO::PARAM_INT);
-            $query->bindParam(':gender', $gender, PDO::PARAM_STR);
-            $query->bindParam(':student_house_number', $student_house_number, PDO::PARAM_STR);
-            $query->bindParam(':student_street', $student_street, PDO::PARAM_STR);
-            $query->bindParam(':student_barangay', $student_barangay, PDO::PARAM_STR);
-            $query->bindParam(':student_municipality', $student_municipality, PDO::PARAM_STR);
-            $query->bindParam(':guardian', $guardian, PDO::PARAM_STR);
-            $query->bindParam(':previous_school', $previous_school, PDO::PARAM_STR);
-            $query->bindParam(':school_address', $school_address, PDO::PARAM_STR);
-            $query->bindParam(':grade_level_id', $grade_level_id, PDO::PARAM_INT);
-            $query->bindParam(':requirements', json_encode($uploaded_files), PDO::PARAM_STR);
-            $query->bindParam(':image_path', $uploaded_image_path, PDO::PARAM_STR);
+            if ($student_exists) {
+                // UPDATE existing student record
+                $sql = "UPDATE student SET 
+                    name = :full_name, 
+                    dob = :dob, 
+                    pob = :pob, 
+                    age = :age, 
+                    gender = :gender, 
+                    student_house_number = :student_house_number, 
+                    student_street = :student_street, 
+                    student_barangay = :student_barangay, 
+                    student_municipality = :student_municipality, 
+                    guardian = :guardian, 
+                    previous_school = :previous_school, 
+                    school_address = :school_address, 
+                    grade_level_id = :grade_level_id";
+                
+                // Only update requirements if new files were uploaded
+                if (!empty($uploaded_files)) {
+                    $sql .= ", requirements = :requirements";
+                }
+                
+                $sql .= " WHERE userId = :student_id";
 
-            $query->execute();
-            $new_student_id = $conn->lastInsertId();
+                $query = $conn->prepare($sql);
+                $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+                $query->bindParam(':full_name', $full_name, PDO::PARAM_STR);
+                $query->bindParam(':dob', $dob, PDO::PARAM_STR);
+                $query->bindParam(':pob', $pob, PDO::PARAM_STR);
+                $query->bindParam(':age', $age, PDO::PARAM_INT);
+                $query->bindParam(':gender', $gender, PDO::PARAM_STR);
+                $query->bindParam(':student_house_number', $student_house_number, PDO::PARAM_STR);
+                $query->bindParam(':student_street', $student_street, PDO::PARAM_STR);
+                $query->bindParam(':student_barangay', $student_barangay, PDO::PARAM_STR);
+                $query->bindParam(':student_municipality', $student_municipality, PDO::PARAM_STR);
+                $query->bindParam(':guardian', $guardian, PDO::PARAM_STR);
+                $query->bindParam(':previous_school', $previous_school, PDO::PARAM_STR);
+                $query->bindParam(':school_address', $school_address, PDO::PARAM_STR);
+                $query->bindParam(':grade_level_id', $grade_level_id, PDO::PARAM_INT);
+                
+                if (!empty($uploaded_files)) {
+                    $query->bindParam(':requirements', json_encode($uploaded_files), PDO::PARAM_STR);
+                }
+                
+                $query->execute();
+            } else {
+                // Original INSERT code for new student
+                $sql = "INSERT INTO student (userId, name, dob, pob, age, gender, student_house_number, student_street, 
+                        student_barangay, student_municipality, guardian, previous_school, school_address, grade_level_id, 
+                        requirements, isVerified) 
+                        VALUES (:student_id, :full_name, :dob, :pob, :age, :gender, :student_house_number, :student_street,
+                        :student_barangay, :student_municipality, :guardian, :previous_school, :school_address, 
+                        :grade_level_id, :requirements, 0)";
 
-            // insert father information
-            $father_sql = "INSERT INTO father_information (student_id, father_name, telephone_father, houseNo_father, 
-                          street_father, barangay_father, municipality_father) 
-                          VALUES (:student_id, :father_name, :telephone_father, :houseNo_father, :street_father, 
-                          :barangay_father, :municipality_father)";
+                $query = $conn->prepare($sql);
+                $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+                $query->bindParam(':full_name', $full_name, PDO::PARAM_STR);
+                $query->bindParam(':dob', $dob, PDO::PARAM_STR);
+                $query->bindParam(':pob', $pob, PDO::PARAM_STR);
+                $query->bindParam(':age', $age, PDO::PARAM_INT);
+                $query->bindParam(':gender', $gender, PDO::PARAM_STR);
+                $query->bindParam(':student_house_number', $student_house_number, PDO::PARAM_STR);
+                $query->bindParam(':student_street', $student_street, PDO::PARAM_STR);
+                $query->bindParam(':student_barangay', $student_barangay, PDO::PARAM_STR);
+                $query->bindParam(':student_municipality', $student_municipality, PDO::PARAM_STR);
+                $query->bindParam(':guardian', $guardian, PDO::PARAM_STR);
+                $query->bindParam(':previous_school', $previous_school, PDO::PARAM_STR);
+                $query->bindParam(':school_address', $school_address, PDO::PARAM_STR);
+                $query->bindParam(':grade_level_id', $grade_level_id, PDO::PARAM_INT);
+                $query->bindParam(':requirements', json_encode($uploaded_files), PDO::PARAM_STR);
+                $query->execute();
+                
+                // Get the newly inserted student_id - need to query for it since it's likely auto-increment
+                $get_student_id_sql = "SELECT student_id FROM student WHERE userId = :user_id ORDER BY student_id DESC LIMIT 1";
+                $get_student_id_query = $conn->prepare($get_student_id_sql);
+                $get_student_id_query->bindParam(':user_id', $student_id, PDO::PARAM_INT);
+                $get_student_id_query->execute();
+                $new_student_data = $get_student_id_query->fetch(PDO::FETCH_ASSOC);
+                if ($new_student_data && isset($new_student_data['student_id'])) {
+                    $student_record_id = $new_student_data['student_id'];
+                } else {
+                    throw new PDOException("Failed to retrieve new student_id");
+                }
+            }
+            
+            // Only proceed if we have a valid student_id
+            if ($student_record_id > 0) {
+                // First delete any existing father information to avoid duplicates
+                $delete_father_sql = "DELETE FROM father_information WHERE student_id = :student_id";
+                $delete_father_query = $conn->prepare($delete_father_sql);
+                $delete_father_query->bindParam(':student_id', $student_record_id, PDO::PARAM_INT);
+                $delete_father_query->execute();
+                
+                // Insert father information
+                $father_sql = "INSERT INTO father_information (student_id, userId, father_name, telephone_father, houseNo_father, 
+                              street_father, barangay_father, municipality_father) 
+                              VALUES (:student_id, :user_id, :father_name, :telephone_father, :houseNo_father, :street_father, 
+                              :barangay_father, :municipality_father)";
 
-            $father_query = $conn->prepare($father_sql);
-            $father_query->bindParam(':student_id', $new_student_id, PDO::PARAM_INT);
-            $father_query->bindParam(':father_name', $father_name, PDO::PARAM_STR);
-            $father_query->bindParam(':telephone_father', $telephone_father, PDO::PARAM_STR);
-            $father_query->bindParam(':houseNo_father', $houseNo_father, PDO::PARAM_STR);
-            $father_query->bindParam(':street_father', $street_father, PDO::PARAM_STR);
-            $father_query->bindParam(':barangay_father', $barangay_father, PDO::PARAM_STR);
-            $father_query->bindParam(':municipality_father', $municipality_father, PDO::PARAM_STR);
+                $father_query = $conn->prepare($father_sql);
+                $father_query->bindParam(':student_id', $student_record_id, PDO::PARAM_INT);
+                $father_query->bindParam(':user_id', $student_id, PDO::PARAM_INT);
+                $father_query->bindParam(':father_name', $father_name, PDO::PARAM_STR);
+                $father_query->bindParam(':telephone_father', $telephone_father, PDO::PARAM_STR);
+                $father_query->bindParam(':houseNo_father', $houseNo_father, PDO::PARAM_STR);
+                $father_query->bindParam(':street_father', $street_father, PDO::PARAM_STR);
+                $father_query->bindParam(':barangay_father', $barangay_father, PDO::PARAM_STR);
+                $father_query->bindParam(':municipality_father', $municipality_father, PDO::PARAM_STR);
+                $father_query->execute();
 
-            $father_query->execute();
+                // First delete any existing mother information to avoid duplicates
+                $delete_mother_sql = "DELETE FROM mother_information WHERE student_id = :student_id";
+                $delete_mother_query = $conn->prepare($delete_mother_sql);
+                $delete_mother_query->bindParam(':student_id', $student_record_id, PDO::PARAM_INT);
+                $delete_mother_query->execute();
+                
+                // Insert mother information
+                $mother_sql = "INSERT INTO mother_information (student_id, userId, mother_name, telephone_mother, houseNo_mother, 
+                              street_mother, barangay_mother, municipality_mother) 
+                              VALUES (:student_id, :user_id, :mother_name, :telephone_mother, :houseNo_mother, :street_mother, 
+                              :barangay_mother, :municipality_mother)";
 
-            // insert mother information
-            $mother_sql = "INSERT INTO mother_information (student_id, mother_name, telephone_mother, houseNo_mother, 
-                          street_mother, barangay_mother, municipality_mother) 
-                          VALUES (:student_id, :mother_name, :telephone_mother, :houseNo_mother, :street_mother, 
-                          :barangay_mother, :municipality_mother)";
+                $mother_query = $conn->prepare($mother_sql);
+                $mother_query->bindParam(':student_id', $student_record_id, PDO::PARAM_INT);
+                $mother_query->bindParam(':user_id', $student_id, PDO::PARAM_INT);
+                $mother_query->bindParam(':mother_name', $mother_name, PDO::PARAM_STR);
+                $mother_query->bindParam(':telephone_mother', $telephone_mother, PDO::PARAM_STR);
+                $mother_query->bindParam(':houseNo_mother', $houseNo_mother, PDO::PARAM_STR);
+                $mother_query->bindParam(':street_mother', $street_mother, PDO::PARAM_STR);
+                $mother_query->bindParam(':barangay_mother', $barangay_mother, PDO::PARAM_STR);
+                $mother_query->bindParam(':municipality_mother', $municipality_mother, PDO::PARAM_STR);
+                $mother_query->execute();
 
-            $mother_query = $conn->prepare($mother_sql);
-            $mother_query->bindParam(':student_id', $new_student_id, PDO::PARAM_INT);
-            $mother_query->bindParam(':mother_name', $mother_name, PDO::PARAM_STR);
-            $mother_query->bindParam(':telephone_mother', $telephone_mother, PDO::PARAM_STR);
-            $mother_query->bindParam(':houseNo_mother', $houseNo_mother, PDO::PARAM_STR);
-            $mother_query->bindParam(':street_mother', $street_mother, PDO::PARAM_STR);
-            $mother_query->bindParam(':barangay_mother', $barangay_mother, PDO::PARAM_STR);
-            $mother_query->bindParam(':municipality_mother', $municipality_mother, PDO::PARAM_STR);
-
-            $mother_query->execute();
-
-            $conn->commit();
-            $msg = "";
+                $conn->commit();
+                $msg = "Registration successfully " . ($student_exists ? "updated" : "inserted");
+            } else {
+                throw new PDOException("Invalid student_id");
+            }
         } catch (PDOException $e) {
             $conn->rollBack();
             $error = "Registration failed: " . $e->getMessage();
@@ -296,50 +367,41 @@ if (isset($_POST['add_registration'])) {
 					</div>
 
                     <div class="pd-20 bg-white border-radius-4 box-shadow mb-30">
-                        <?php 
-                            try {
-                                $conn = new PDO("mysql:host=localhost;dbname=enrollment", "root", "");
-                                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                            } catch(PDOException $e) {
-                                die("Connection failed: " . $e->getMessage());
-                            }
+                    <?php 
+                        try {
+                            $conn = new PDO("mysql:host=localhost;dbname=enrollment", "root", "");
+                            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                        } catch(PDOException $e) {
+                            die("Connection failed: " . $e->getMessage());
+                        }
 
-                            if ($error) { ?>
-                                <div class="alert alert-danger" role="alert">
-                                    <strong>ERROR</strong>: <?php echo htmlentities($error); ?>
-                                </div>
-                            <?php } else if ($msg) { ?>
-                                <div class="alert alert-success" role="alert">
-                                    <strong>SUCCESS</strong>: <?php echo htmlentities($msg); ?>
-                                </div>
-                            <?php } 
+                        if ($error) { ?>
+                            <div class="alert alert-danger" role="alert">
+                                <strong>ERROR</strong>: <?php echo htmlentities($error); ?>
+                            </div>
+                        <?php } 
 
-                            try {
-                                $query = $conn->prepare("SELECT * FROM student WHERE userId = :student_id");
-                                $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
-                                $query->execute();
-                                $result = $query->fetch(PDO::FETCH_ASSOC);
-                                
-                                if ($result) {
-                                    if ($result['isVerified'] == 0) { ?>
-                                        <div class="alert alert-info text-center" style="font-size: 22px;">
-                                            Thank you for your submission. We have received your registration.<br>
-                                            Please be patient as our registrar verifies your information.<br>
-                                            Once your registration is verified, you will receive a confirmation email.<br>
-                                            If you have any further questions or concerns, please don't hesitate to reach out to us.
-                                        </div>
-                                    <?php } elseif ($result['isVerified'] == 1) { ?>
-                                        <div class="alert alert-success text-center" style="font-size: 22px;">
-                                            Verified. <br><a href="school_fees.php" >Click here to proceed to payment.</a>
-                                        </div>
-                                    <?php }
-                                }
-                            } catch(PDOException $e) {
-                                echo '<div class="alert alert-danger" role="alert">';
-                                echo '<strong>Database Error:</strong> ' . htmlentities($e->getMessage());
-                                echo '</div>';
-                            }
-                            ?>
+                        try {
+                            $query = $conn->prepare("SELECT * FROM student WHERE userId = :student_id");
+                            $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+                            $query->execute();
+                            $result = $query->fetch(PDO::FETCH_ASSOC);
+                            
+                            if ($result && !empty($result['grade_level_id'])) { ?>
+                                <div class="alert alert-info text-center" style="font-size: 22px;">
+                                    Thank you for your submission. We have received your registration.<br>
+                                    Please be patient as our registrar verifies your information.<br>
+                                    Once your registration is verified, you will receive a confirmation email.<br>
+                                    If you have any further questions or concerns, please don't hesitate to reach out to us.
+                                </div>
+                            <?php }
+                        } catch(PDOException $e) {
+                            echo '<div class="alert alert-danger" role="alert">';
+                            echo '<strong>Database Error:</strong> ' . htmlentities($e->getMessage());
+                            echo '</div>';
+                        }
+                        ?>
+
 
                                 <!-- Grade Level selection -->
 
@@ -361,17 +423,6 @@ if (isset($_POST['add_registration'])) {
                                     </div>
                                 
                                 <form method="post" name="add_registration" onSubmit="return valid();" enctype="multipart/form-data" id="registrationForm" style="display: none;">
-                                    <!-- Personal Information Section -->
-                                    <div class="row mb-3 justify-content-center">
-                                        <div class="col-md-12 text-center d-flex justify-content-center">
-                                            <div>
-                                                <img id="preview" src="../images/profile.jpg" alt="Profile Picture" class="img-fluid" style="width: 150px; height: 150px; cursor: pointer;" onclick="triggerFileUpload()">
-                                                <input type="file" accept="image/*" class="form-control" id="image" name="image" onchange="previewImage(event)" style="display: none;" required>
-                                                <label for="image" class="form-label mt-2">Upload Image (2x2)</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="sname" class="form-label">Name</label>
@@ -440,8 +491,8 @@ if (isset($_POST['add_registration'])) {
                                             <input type="text" class="form-control" id="father_name" name="father_name" required>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="telephone_father" class="form-label">Telephone (Father)</label>
-                                            <input type="tel" class="form-control" id="telephone_father" name="telephone_father" required>
+                                            <label for="telephone_father" class="form-label">Contact Number(Father)</label>
+                                            <input type="number" class="form-control" id="telephone_father" name="telephone_father" required>
                                         </div>
 
                                     </div>
@@ -478,7 +529,7 @@ if (isset($_POST['add_registration'])) {
                                         </div>
                                         <div class="col-md-6">
                                             <label for="telephone_mother" class="form-label">Telephone (Mother)</label>
-                                            <input type="tel" class="form-control" id="telephone_mother" name="telephone_mother" required>
+                                            <input type="number" class="form-control" id="telephone_mother" name="telephone_mother" required>
                                         </div>
                                     </div>
 
@@ -562,10 +613,9 @@ if (isset($_POST['add_registration'])) {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                     </div>
-                    
-			</div>
-		</div>
+                </div>
 
 		<!-- js -->
         <?php
@@ -587,13 +637,32 @@ if (isset($_POST['add_registration'])) {
                 })
                 .then(response => response.json())
                 .then(response => {
-                    if (response.status === 'For Review' || response.status === 'Declined' || !response.enrollmentExists) {
-                        var enrollmentModal = new bootstrap.Modal(document.getElementById('enrollmentModal'));
-                        enrollmentModal.show();
-                        registrationForm.style.display = 'none';
-                    } else {
+                    var enrollmentModal = new bootstrap.Modal(document.getElementById('enrollmentModal'));
+                    var modalBody = document.querySelector('#enrollmentModal .modal-body p');
+                    
+                    if (response.enrollmentExists && response.status === 'Approved') {
+                        // Valid enrollment period - show the registration form
                         registrationForm.style.display = 'block';
                         registrationForm.insertBefore(gradeLevelContainer, registrationForm.firstChild);
+                    } else {
+                        // No valid enrollment - show modal with appropriate message
+                        registrationForm.style.display = 'none';
+                        
+                        if (!response.enrollmentExists) {
+                            // No enrollment schedule exists
+                            modalBody.textContent = 'There is no enrollment schedule for today.';
+                        } else if (response.beforeStart) {
+                            // Current date is before start date
+                            modalBody.textContent = 'Enrollment for this grade level has not started yet.';
+                        } else if (response.afterEnd) {
+                            // Current date is after end date
+                            modalBody.textContent = 'Enrollment for this grade level has already ended.';
+                        } else if (response.status === 'For Review' || response.status === 'Declined') {
+                            // Status is not approved
+                            modalBody.textContent = 'Enrollment for this grade level is currently ' + response.status.toLowerCase() + '.';
+                        }
+                        
+                        enrollmentModal.show();
                     }
                 })
                 .catch(error => {

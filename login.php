@@ -1,41 +1,33 @@
 <?php
-// Database configuration
+session_start();
 $servername = "localhost";
-$username = "root"; // Replace with your MySQL username
-$password = ""; // Replace with your MySQL password
-$database = "enrollment"; // Replace with your database name
+$username = "root";
+$password = "";
+$database = "enrollment";
 
 try {
-  // Create connection
   $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
-  // Set the PDO error mode to exception
   $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
   echo "Connection failed: " . $e->getMessage();
 }
 
-// Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $username = $_POST["username"];
   $password = $_POST["password"];
 
   try {
-    // Prepare SQL statement to retrieve user data
     $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
     $stmt->execute([$username]);
     $row = $stmt->fetch();
 
-    // Check if user exists
     if ($row) {
       $hashed_password = $row["password"];
 
-      // Verify password
       if (password_verify($password, $hashed_password)) {
-        // Password is correct, start a new session
         session_start();
         $_SESSION["username"] = $row["username"];
         $_SESSION["role"] = $row["role"];
-        // Redirect based on user role
         if ($row["role"] == "superadmin") {
           $_SESSION['superadmin_id'] = $row['id'];
           header("Location:superadmin/superadmin_dashboard.php");
@@ -73,9 +65,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 
-$conn = null; // Close connection
+$conn = null;
 ?>
 
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Sign In</title>
+    <link href="asset/img/logo.png" rel="icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="asset/img/logo.png" />
+    <link rel="icon" type
 <!DOCTYPE html>
 <html>
 	<head>
@@ -154,31 +154,42 @@ $conn = null; // Close connection
                           <h2 class="text-center text-primary">Sign In</h2>
                       </div>
                       <?php
+// Start the session at the top of your file (if not already there)
+// session_start();
 
-                    // Check for success message
-                    if (isset($_SESSION['success_message'])) {
-                        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">';
-                        echo $_SESSION['success_message'];
-                        echo '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        echo '<span aria-hidden="true">&times;</span>';
-                        echo '</button>';
-                        echo '</div>';
-                        // Clear the success message from the session
-                        unset($_SESSION['success_message']);
-                    }
+// Use only one consistent way to check for messages
+if (isset($_SESSION['success_message'])) {
+    echo '<div class="alert alert-success alert-dismissible fade show" role="alert">';
+    echo $_SESSION['success_message'];
+    echo '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+    echo '<span aria-hidden="true">&times;</span>';
+    echo '</button>';
+    echo '</div>';
+    // Clear the success message from the session
+    unset($_SESSION['success_message']);
+}
 
-                    // Also check for error messages (if you want to display them on login page)
-                    if (isset($_SESSION['error_message'])) {
-                        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
-                        echo $_SESSION['error_message'];
-                        echo '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                        echo '<span aria-hidden="true">&times;</span>';
-                        echo '</button>';
-                        echo '</div>';
-                        // Clear the error message from the session
-                        unset($_SESSION['error_message']);
-                    }
-                    ?>
+// Check for error messages
+if (isset($_SESSION['error_message'])) {
+    echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
+    echo $_SESSION['error_message'];
+    echo '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+    echo '<span aria-hidden="true">&times;</span>';
+    echo '</button>';
+    echo '</div>';
+    // Clear the error message from the session
+    unset($_SESSION['error_message']);
+}
+?>
+
+          <!-- End Section Title -->
+          <?php if (isset($_SESSION['success_message'])): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= $_SESSION['success_message']; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php unset($_SESSION['success_message']); ?>
+                <?php endif; ?>
 
                       <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <?php if (isset($error_message)) { ?>

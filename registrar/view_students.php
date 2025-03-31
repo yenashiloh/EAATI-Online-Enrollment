@@ -67,8 +67,8 @@ if (!isset($registrar_id)) {
                         </div>
                     </div>
                     <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
-                    <div class="pd-20">
-                    <?php
+                        <div class="pd-20">
+                        <?php
                         require_once "config1.php";
                         // Check for success message in URL
                         if (isset($_GET['status_updated']) && isset($_GET['new_status'])) {
@@ -135,12 +135,13 @@ if (!isset($registrar_id)) {
                                                     </a>';
                                                 echo '  ';
 
-                                    if ($row['isVerified'] == 0) {
-                                        echo '<a href="students.php?verified=1&id=' . $row['student_id'] . '" class="btn btn-success" title="Verify">
-                                                <span class="bi bi-check-circle" style="font-size: 18px;"></span>
-                                            </a>';
-                                    }
-                                    echo '  ';
+                                                if ($row['isVerified'] == 0) {
+                                                    // Fixed link - Pass section_id and grade_level_id to maintain context after verification
+                                                    echo '<a href="view_students.php?verified=1&id=' . $row['student_id'] . '&section_id=' . $section_id . '&grade_level_id=' . $grade_level_id . '" title="Verify">
+                                                            <span class="bi bi-check-circle-fill" style="font-size: 16px;"></span>
+                                                        </a>';
+                                                }
+                                                echo '  ';
 
                                                 echo "</tr>";
                                             }
@@ -165,12 +166,13 @@ if (!isset($registrar_id)) {
                         }
                         mysqli_close($link);
                         ?>
+                        </div>
                     </div>
                 </div>
+                <?php
+                include 'footer.php';
+                ?>
             </div>
-            <?php
-            include 'footer.php';
-            ?>
         </div>
     </body>
 </html>
