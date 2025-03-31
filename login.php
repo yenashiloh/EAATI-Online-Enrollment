@@ -185,10 +185,10 @@ $conn = null; // Close connection
                           <div class="alert alert-danger"><?php echo $error_message; ?></div>
                         <?php } ?>
                           <div class="form-group">
-                              <label for="usernameOrLRN">Email or LRN</label>
+                              <label for="usernameOrLRN">Username</label>
                               <div class="input-group custom">
                                   <input type="text" id="usernameOrLRN" class="form-control form-control-lg" name="username"
-                                      placeholder="Enter Email or LRN" required />
+                                      placeholder="Enter Email Username" required />
                                   <div class="input-group-append custom">
                                       <span class="input-group-text">
                                           <i class="icon-copy dw dw-user1"></i>

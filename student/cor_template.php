@@ -271,9 +271,16 @@ $conn = null;
             <td>
               <?php 
               if (isset($schedule["start_time"]) && isset($schedule["end_time"])) {
-                  echo date("g:i A", strtotime($schedule["start_time"])) . ' - ' . 
-                       date("g:i A", strtotime($schedule["end_time"]));
+                  // Set timezone to Philippine time
+                  date_default_timezone_set('Asia/Manila');
                   
+                  // Format times to "g:i A" format (e.g., 8:00 AM) using the exact database values
+                  $start = new DateTime($schedule["start_time"]);
+                  $end = new DateTime($schedule["end_time"]);
+                  
+                  echo $start->format('g:i A') . ' - ' . $end->format('g:i A');
+                  
+                  // Add the day in parentheses if available
                   if (isset($schedule["day"]) && !empty($schedule["day"])) {
                       echo " (" . $schedule["day"] . ")";
                   }
@@ -293,10 +300,10 @@ $conn = null;
             ?>
           </td>
           <td><?php echo $gradelevel_name . " - " . ($student['gradelevel_id'] == 10 ? "Masiyahin" : "Section A"); ?></td>
-          <td>8:00 AM - 9:00 AM (Monday)</td>
+          <td></td>
           <td>
             <?php 
-            echo (in_array($student['gradelevel_id'], [4, 5]) ? "Room 105" : "Room 102"); 
+           
             ?>
           </td>
         </tr>

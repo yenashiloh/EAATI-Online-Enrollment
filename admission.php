@@ -199,191 +199,66 @@ session_start();
                     <div class="card">
                         <div class="card-header">
                             <a class="collapsed card-link" data-toggle="collapse" href="#collapseTwo">
-                                Student Registration
+                                Student Admission
                             </a>
                         </div>
                         <div id="collapseTwo" class="collapse" data-parent="#accordion">
                             <div class="card-body">
-                                <form method="post" action="insert.php" onsubmit="return validateForm()">
-                                    <div class="form-group mb-2">
-                                        <label>Are you a new or old student?</label>
-                                        <div>
-                                            <input type="radio" id="new_student" name="student_type" value="new" onclick="toggleStudentType()"> New
-                                            <input type="radio" id="old_student" name="student_type" value="old" onclick="toggleStudentType()"> Old
+                                <form method="post" action="insert.php" onsubmit="return validateForm()" enctype="multipart/form-data">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="first_name" class="form-label">First Name</label>
+                                            <input type="text" id="first_name" name="first_name" class="form-control">
+                                            <small class="text-danger error-message" id="first_name_error"></small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="last_name" class="form-label">Last Name</label>
+                                            <input type="text" id="last_name" name="last_name" class="form-control">
+                                            <small class="text-danger error-message" id="last_name_error"></small>
                                         </div>
                                     </div>
-
-                                    <div id="student_details" style="display: none;">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group mb-2">
-                                                    <label for="last_name">Last Name</label>
-                                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
-                                                    <small id="last_name_error" class="text-danger"></small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group mb-2">
-                                                    <label for="first_name">First Name</label>
-                                                    <input type="text" class="form-control" id="first_name" name="first_name" required>
-                                                    <small id="first_name_error" class="text-danger"></small>
-                                                </div>
-                                            </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="username" class="form-label">Username</label>
+                                            <input type="text" id="username" name="username" class="form-control">
+                                            <small class="text-danger error-message" id="username_error"></small>
                                         </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group mb-2">
-                                                    <label for="contact_number">Contact Number</label>
-                                                    <input type="text" class="form-control" id="contact_number" name="contact_number" required>
-                                                    <small id="contact_number_error" class="text-danger"></small>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <div class="form-group mb-2">
-                                                    <label for="email">Email</label>
-                                                    <input type="email" class="form-control" id="email" name="email" required>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div id="old_student_fields" style="display: none;">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group mb-2">
-                                                        <label for="username">Learner Reference Number (LRN)</label>
-                                                        <input type="text" class="form-control" id="username" name="username">
-                                                        <small class="form-text text-muted">For old students, please enter your LRN.</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group mb-2">
-                                                        <label for="old_password">Password</label>
-                                                        <input type="password" class="form-control" id="old_password" name="password">
-                                                        <small id="old_password_error" class="text-danger"></small>
-
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group mb-2">
-                                                        <label for="old_confirm_password">Confirm Password</label>
-                                                        <input type="password" class="form-control" id="old_confirm_password" name="confirm_password">
-                                                        <small id="old_confirm_password_error" class="text-danger"></small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div id="new_student_fields" style="display: none;">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group mb-2">
-                                                        <label for="new_password">Password</label>
-                                                        <input type="password" class="form-control" id="new_password" name="password">
-                                                        <small id="new_password_error" class="text-danger"></small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group mb-2">
-                                                        <label for="new_confirm_password">Confirm Password</label>
-                                                        <input type="password" class="form-control" id="new_confirm_password" name="confirm_password">
-                                                        <small id="new_confirm_password_error" class="text-danger"></small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="text-center mt-3">
-                                            <button type="submit" class="btn btn-primary">Submit</button>
-                                        </div>
-                                        <div class="text-center mt-2">
-                                            <medium><b><i>Note: Please login to submit your requirements.</i></b></medium>
+                                        <div class="col-md-6">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" id="email" name="email" class="form-control">
+                                            <small class="text-danger error-message" id="email_error"></small>
                                         </div>
                                     </div>
-
-                                    <div class="modal fade" id="requirementsModal" tabindex="-1" role="dialog" aria-labelledby="requirementsModalLabel" aria-hidden="true" style="margin-top: 50px;">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="requirementsModalLabel">Requirements</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <ul>
-                                                        <li>F138 (CARD)</li>
-                                                        <li>Birth Certificate Xerox</li>
-                                                        <li>Good moral Certificate</li>
-                                                    </ul>
-                                                </div>
-                                            </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="contact_number" class="form-label">Contact Number</label>
+                                            <input type="text" id="contact_number" name="contact_number" class="form-control">
+                                            <small class="text-danger error-message" id="contact_number_error"></small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="photo" class="form-label">Upload Photo (2x2)</label>
+                                            <input type="file" id="photo" name="photo" class="form-control">
+                                            <small class="text-danger error-message" id="photo_error"></small>
                                         </div>
                                     </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="password" class="form-label">Password</label>
+                                            <input type="password" id="password" name="password" class="form-control">
+                                            <small class="text-danger error-message" id="password_error"></small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                                            <input type="password" id="confirm_password" name="confirm_password" class="form-control">
+                                            <small class="text-danger error-message" id="confirm_password_error"></small>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
                                 </form>
                             </div>
-
-                            <script>
-                                function toggleStudentType() {
-                                    var newStudent = document.getElementById('new_student').checked;
-                                    var oldStudent = document.getElementById('old_student').checked;
-                                    var studentDetails = document.getElementById('student_details');
-                                    var newStudentFields = document.getElementById('new_student_fields');
-                                    var oldStudentFields = document.getElementById('old_student_fields');
-
-                                    studentDetails.style.display = 'block';
-
-                                    if (newStudent) {
-                                        newStudentFields.style.display = 'block';
-                                        oldStudentFields.style.display = 'none';
-
-                                        document.getElementById('new_password').required = true;
-                                        document.getElementById('new_confirm_password').required = true;
-                                        document.getElementById('username').required = false;
-                                        document.getElementById('old_password').required = false;
-                                        document.getElementById('old_confirm_password').required = false;
-                                    } else if (oldStudent) {
-                                        newStudentFields.style.display = 'none';
-                                        oldStudentFields.style.display = 'block';
-
-                                        document.getElementById('username').required = true;
-                                        document.getElementById('old_password').required = true;
-                                        document.getElementById('old_confirm_password').required = true;
-                                        document.getElementById('new_password').required = false;
-                                        document.getElementById('new_confirm_password').required = false;
-                                    }
-                                }
-
-                                function validateForm() {
-                                    var newStudent = document.getElementById('new_student').checked;
-                                    var oldStudent = document.getElementById('old_student').checked;
-
-                                    if (!newStudent && !oldStudent) {
-                                        alert("Please select whether you are a new or old student.");
-                                        return false;
-                                    }
-
-                                    var password, confirmPassword;
-
-                                    if (newStudent) {
-                                        password = document.getElementById('new_password').value;
-                                        confirmPassword = document.getElementById('new_confirm_password').value;
-                                    } else if (oldStudent) {
-                                        password = document.getElementById('old_password').value;
-                                        confirmPassword = document.getElementById('old_confirm_password').value;
-                                    }
-
-                                    if (password !== confirmPassword) {
-                                        alert("Passwords do not match!");
-                                        return false;
-                                    }
-
-                                    return true;
-                                }
-                            </script>
                         </div>
                     </div>
                 </div>
@@ -479,108 +354,98 @@ session_start();
             });
         });
 
-        document.addEventListener("DOMContentLoaded", function () {
-    function showError(inputId, message) {
-        document.getElementById(inputId + "_error").textContent = message;
+       //validation 
+       function validateForm() {
+    // Reset all error messages
+    const errorElements = document.getElementsByClassName('error-message');
+    for (let i = 0; i < errorElements.length; i++) {
+        errorElements[i].textContent = '';
     }
-
-    function clearError(inputId) {
-        document.getElementById(inputId + "_error").textContent = "";
+    
+    let isValid = true;
+    
+    // Validate first name
+    const firstName = document.getElementById('first_name').value.trim();
+    if (firstName === '') {
+        document.getElementById('first_name_error').textContent = 'First name is required';
+        isValid = false;
     }
-
-    // Restrict special characters and numbers in name fields
-    document.getElementById("last_name").addEventListener("input", function () {
-        this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
-        if (!/^[a-zA-Z\s]+$/.test(this.value)) {
-            showError("last_name", "Last name should only contain letters.");
-        } else {
-            clearError("last_name");
-        }
-    });
-
-    document.getElementById("first_name").addEventListener("input", function () {
-        this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
-        if (!/^[a-zA-Z\s]+$/.test(this.value)) {
-            showError("first_name", "First name should only contain letters.");
-        } else {
-            clearError("first_name");
-        }
-    });
-
-    // Ensure contact number is exactly 11 digits
-    document.getElementById("contact_number").addEventListener("input", function () {
-        this.value = this.value.replace(/\D/g, '').slice(0, 11);
-        if (this.value.length !== 11) {
-            showError("contact_number", "Contact number must be exactly 11 digits.");
-        } else {
-            clearError("contact_number");
-        }
-    });
-
-    // Password validation function
-    function validatePassword(passwordId, confirmPasswordId) {
-        let password = document.getElementById(passwordId).value;
-        let confirmPassword = document.getElementById(confirmPasswordId).value;
-        let passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/; // At least 8 characters, 1 uppercase, 1 lowercase, 1 special character
-
-        if (!passwordPattern.test(password)) {
-            showError(passwordId, "Password must be at least 8 characters, include an uppercase letter, a lowercase letter, and a special character.");
-            return false;
-        } else {
-            clearError(passwordId);
-        }
-
-        if (password !== confirmPassword) {
-            showError(confirmPasswordId, "Passwords do not match!");
-            return false;
-        } else {
-            clearError(confirmPasswordId);
-            return true;
+    
+    // Validate last name
+    const lastName = document.getElementById('last_name').value.trim();
+    if (lastName === '') {
+        document.getElementById('last_name_error').textContent = 'Last name is required';
+        isValid = false;
+    }
+    
+    // Validate username
+    const username = document.getElementById('username').value.trim();
+    if (username === '') {
+        document.getElementById('username_error').textContent = 'Username is required';
+        isValid = false;
+    } else if (username.length < 4) {
+        document.getElementById('username_error').textContent = 'Username must be at least 4 characters';
+        isValid = false;
+    }
+    
+    // Validate email
+    const email = document.getElementById('email').value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email === '') {
+        document.getElementById('email_error').textContent = 'Email is required';
+        isValid = false;
+    } else if (!emailRegex.test(email)) {
+        document.getElementById('email_error').textContent = 'Please enter a valid email address';
+        isValid = false;
+    }
+    
+    // Validate contact number
+    const contactNumber = document.getElementById('contact_number').value.trim();
+    if (contactNumber === '') {
+        document.getElementById('contact_number_error').textContent = 'Contact number is required';
+        isValid = false;
+    } else if (isNaN(contactNumber) || contactNumber.length < 10) {
+        document.getElementById('contact_number_error').textContent = 'Please enter a valid contact number';
+        isValid = false;
+    }
+    
+    // Validate photo (optional validation)
+    const photo = document.getElementById('photo').value;
+    if (photo === '') {
+        document.getElementById('photo_error').textContent = '2x2 Photo is required';
+        isValid = false;
+    } else {
+        const validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        const fileExtension = photo.split('.').pop().toLowerCase();
+        if (!validExtensions.includes(fileExtension)) {
+            document.getElementById('photo_error').textContent = 'Only JPG, JPEG, PNG & GIF files are allowed';
+            isValid = false;
         }
     }
-
-    document.getElementById("new_password").addEventListener("input", function () {
-        validatePassword("new_password", "new_confirm_password");
-    });
-
-    document.getElementById("new_confirm_password").addEventListener("input", function () {
-        validatePassword("new_password", "new_confirm_password");
-    });
-
-    document.getElementById("old_password").addEventListener("input", function () {
-        validatePassword("old_password", "old_confirm_password");
-    });
-
-    document.getElementById("old_confirm_password").addEventListener("input", function () {
-        validatePassword("old_password", "old_confirm_password");
-    });
-
-    // Form validation before submitting
-    window.validateForm = function () {
-        let isValid = true;
-
-        if (!/^[a-zA-Z\s]+$/.test(document.getElementById("last_name").value)) {
-            showError("last_name", "Last name should only contain letters.");
+    // Validate password
+    const password = document.getElementById('password').value;
+    if (password === '') {
+        document.getElementById('password_error').textContent = 'Password is required';
+        isValid = false;
+    } else if (password.length < 6) {
+        document.getElementById('password_error').textContent = 'Password must be at least 6 characters';
+        isValid = false;
+    }
+    
+        // Validate confirm password
+        const confirmPassword = document.getElementById('confirm_password').value;
+        if (confirmPassword === '') {
+            document.getElementById('confirm_password_error').textContent = 'Please confirm your password';
+            isValid = false;
+        } else if (password !== confirmPassword) {
+            document.getElementById('confirm_password_error').textContent = 'Passwords do not match';
             isValid = false;
         }
-
-        if (!/^[a-zA-Z\s]+$/.test(document.getElementById("first_name").value)) {
-            showError("first_name", "First name should only contain letters.");
-            isValid = false;
-        }
-
-        if (document.getElementById("contact_number").value.length !== 11) {
-            showError("contact_number", "Contact number must be exactly 11 digits.");
-            isValid = false;
-        }
-
-        if (!validatePassword("new_password", "new_confirm_password") || !validatePassword("old_password", "old_confirm_password")) {
-            isValid = false;
-        }
-
-        return isValid;
-    };
-});
+    
+        return isValid; // Ensure the function returns the validation result
+    }
+    
+    
 
     </script>
 

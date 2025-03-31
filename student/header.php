@@ -55,11 +55,14 @@
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            $userImage = !empty($user['image_path']) ? $user['image_path'] : '../asset/img/user.png';
+            // Ensure the image path includes "../"
+            $defaultImage = '../asset/img/user.png';
+            $userImage = !empty($user['image_path']) ? '../' . $user['image_path'] : $defaultImage;
+
             $firstName = isset($user['first_name']) ? ucwords(strtolower($user['first_name'])) : '';
             $lastName = isset($user['last_name']) ? ucwords(strtolower($user['last_name'])) : '';
             $userName = !empty($firstName) && !empty($lastName) ? "$firstName $lastName" : 'Guest User';
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             error_log("Database Error: " . $e->getMessage());
             $userImage = '../asset/img/user.png';
             $userName = 'Guest User';

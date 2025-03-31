@@ -147,27 +147,30 @@ if (!isset($student_id)) {
                 $result_student = mysqli_query($conn, $sql_student);
                 $student_data = mysqli_fetch_assoc($result_student);
                 ?>
+              <div class="profile-photo text-center">
+                  <!-- Profile Picture -->
+                  <img src="<?php echo !empty($student_data['image_path']) ? '../' . $student_data['image_path'] : '../asset/img/user.png'; ?>" 
+                      alt="Profile Picture" 
+                      class="avatar-photo rounded-circle" 
+                      width="150" 
+                      height="150" 
+                      data-toggle="modal" 
+                      data-target="#modal" 
+                      style="cursor:pointer;"
+                      onerror="this.src='../asset/img/user.png';">
 
-                <div class="profile-photo text-center">
-                    <!-- Profile Picture -->
-                    <img src="<?php echo !empty($student_data['image_path']) ? $student_data['image_path'] : '../asset/img/user.png'; ?>" 
-                        alt="Profile Picture" 
-                        class="avatar-photo rounded-circle" 
-                        width="150" 
-                        height="150" 
-                        data-toggle="modal" 
-                        data-target="#modal" 
-                        style="cursor:pointer;">
-                    
                     <!-- Modal -->
                     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-body pd-5">
                                     <div class="img-container text-center">
-                                        <img id="image" src="<?php echo !empty($student_data['image_path']) ? $student_data['image_path'] : '../asset/img/user.png'; ?>" 
-                                            alt="Profile Picture" 
-                                            class="img-fluid">
+                                    <img id="image" 
+                                    src="<?php echo !empty($student_data['image_path']) ? '../' . $student_data['image_path'] : '../asset/img/user.png'; ?>" 
+                                    alt="Profile Picture" 
+                                    class="img-fluid" 
+                                    onerror="this.src='../asset/img/user.png';">
+
                                     </div>
                                 </div>
                                 <div class="modal-footer">

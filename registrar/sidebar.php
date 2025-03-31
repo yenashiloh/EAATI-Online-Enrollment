@@ -132,21 +132,15 @@
                   </a>
               </li>
               <li>
-                  <a href="schedule.php" class="dropdown-toggle no-arrow">
-                      <span class="micon bi bi-calendar-week"></span> 
-                      <span class="mtext">Schedule</span>
-                  </a>
-              </li>
-              <li>
-                  <a href="verify_grade.php" class="dropdown-toggle no-arrow">
-                      <span class="micon bi bi-check2-circle"></span> 
-                      <span class="mtext">Verify Grade</span>
-                  </a>
-              </li>
-              <li>
                   <a href="subject.php" class="dropdown-toggle no-arrow">
                       <span class="micon bi bi-book"></span> 
                       <span class="mtext">Subject</span>
+                  </a>
+              </li>
+              <li>
+                  <a href="schedule.php" class="dropdown-toggle no-arrow">
+                      <span class="micon bi bi-calendar-week"></span> 
+                      <span class="mtext">Schedule</span>
                   </a>
               </li>
               <li>
@@ -167,7 +161,12 @@
                       <span class="mtext">Room</span>
                   </a>
               </li>
-             
+              <li>
+                  <a href="verify_grade.php" class="dropdown-toggle no-arrow">
+                      <span class="micon bi bi-check2-circle"></span> 
+                      <span class="mtext">Verify Grade</span>
+                  </a>
+              </li>
               <li>
                     <a href="form137.php" class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-file-earmark-text"></span>
