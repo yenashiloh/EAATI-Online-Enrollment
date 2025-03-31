@@ -113,10 +113,18 @@ $grades = $query_grades->fetchAll(PDO::FETCH_ASSOC);
                                             <input type="text" class="form-control" id="sname" name="sname" value="<?php echo htmlspecialchars($student['name'] ?? ''); ?>" disabled>
                                         </div>
                                         <div class="col-md-3 text-center">
-                                            <img id="preview" src="<?php echo htmlspecialchars($student['image_path'] ?? '../images/profile.jpg'); ?>" alt="Profile Picture" class="mx-auto d-block" style="width: 200px; height: 200px; cursor: pointer;" onclick="triggerFileUpload()">
+                                            <?php
+                                            $imagePath = !empty($student['image_path']) ? '../' . ltrim($student['image_path'], './') : '../images/profile.jpg';
+                                            ?>
+                                            <img id="preview" src="<?php echo htmlspecialchars($imagePath); ?>" 
+                                                alt="Profile Picture" 
+                                                class="mx-auto d-block" 
+                                                style="width: 200px; height: 200px; cursor: pointer;" 
+                                                onclick="triggerFileUpload()">
                                             <input type="file" accept="image/*" class="form-control" id="image" name="image" onchange="previewImage(event)" style="display: none;" disabled>
                                             <label for="image" class="form-label">Profile</label>
                                         </div>
+
                                     </div>
 
                                     <div class="row mb-3">

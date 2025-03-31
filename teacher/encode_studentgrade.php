@@ -95,7 +95,7 @@ if(!isset($teacher_id)){
                                 WHERE ess.schedule_id IN (
                                     SELECT schedules.id FROM schedules WHERE schedules.section_id = $section_id
                                 )
-                                AND s.isVerified = 2
+                         
                                 GROUP BY s.student_id, s.name, s.userId
                                 ORDER BY s.name";   
 

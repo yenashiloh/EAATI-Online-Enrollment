@@ -294,15 +294,6 @@ include 'header.php';
                                     echo '<a href="view_record.php?id=' . $row['student_id'] . '" title="View Student" data-toggle="tooltip">
                                             <span class="bi bi-eye-fill" style="font-size: 20px;"></span>
                                         </a>';
-                                    echo '  ';
-
-                                    if ($row['isVerified'] == 0) {
-                                        echo '<a href="students.php?verified=1&id=' . $row['student_id'] . '" class="btn btn-success" title="Verify">
-                                                <span class="bi bi-check-circle" style="font-size: 18px;"></span>
-                                            </a>';
-                                    }
-                                    echo '  ';
-
                                     // Delete Confirmation Modal
                                     echo '
                                     <div class="modal fade" id="Medium-modal' . $row['id'] . '" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel' . $row['id'] . '" aria-hidden="true">

@@ -298,7 +298,7 @@ include 'header.php';
                     require_once "config1.php";
 
                     // Attempt select query execution
-                    $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id WHERE student.isVerified = 2";
+                    $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id ";
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
                             echo '<table class="data-table table stripe hover nowrap">';

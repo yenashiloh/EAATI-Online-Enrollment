@@ -215,12 +215,12 @@ session_start();
                                 <form method="post" action="insert.php" onsubmit="return validateForm()" enctype="multipart/form-data" id="myForm">
                                     <div class="row mb-3">
                                         <div class="col-md-6">
-                                            <label for="first_name" class="form-label">First Name</label>
+                                            <label for="first_name" class="form-label">First Name <span style="color: red;">*</span></label>
                                             <input type="text" id="first_name" name="first_name" class="form-control">
                                             <small class="text-danger error-message" id="first_name_error"></small>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="last_name" class="form-label">Last Name</label>
+                                            <label for="last_name" class="form-label">Last Name <span style="color: red;">*</span></label>
                                             <input type="text" id="last_name" name="last_name" class="form-control">
                                             <small class="text-danger error-message" id="last_name_error"></small>
                                         </div>
@@ -228,12 +228,12 @@ session_start();
                                     
                                     <div class="row mb-3">
                                         <div class="col-md-6">
-                                            <label for="username" class="form-label">Username</label>
+                                            <label for="username" class="form-label">Username <span style="color: red;">*</span></label>
                                             <input type="text" id="username" name="username" class="form-control">
                                             <small class="text-danger error-message" id="username_error"></small>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="email" class="form-label">Email</label>
+                                            <label for="email" class="form-label">Email <span style="color: red;">*</span></label>
                                             <input type="email" id="email" name="email" class="form-control">
                                             <small class="text-danger error-message" id="email_error"></small>
                                         </div>
@@ -241,12 +241,12 @@ session_start();
                                     
                                     <div class="row mb-3">
                                         <div class="col-md-6">
-                                            <label for="contact_number" class="form-label">Contact Number</label>
+                                            <label for="contact_number" class="form-label">Contact Number <span style="color: red;">*</span></label>
                                             <input type="number" id="contact_number" name="contact_number" class="form-control">
                                             <small class="text-danger error-message" id="contact_number_error"></small>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="photo" class="form-label">Upload Photo (2x2)</label>
+                                            <label for="photo" class="form-label">Upload Photo (2x2) <span style="color: red;">*</span></label>
                                             <input type="file" id="photo" name="photo" class="form-control">
                                             <small class="text-danger error-message" id="photo_error"></small>
                                         </div>
@@ -254,12 +254,12 @@ session_start();
                                     
                                     <div class="row mb-3">
                                         <div class="col-md-6">
-                                            <label for="password" class="form-label">Password</label>
+                                            <label for="password" class="form-label">Password <span style="color: red;">*</span></label>
                                             <input type="password" id="password" name="password" class="form-control">
                                             <small class="text-danger error-message" id="password_error"></small>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                                            <label for="confirm_password" class="form-label">Confirm Password <span style="color: red;">*</span></label>
                                             <input type="password" id="confirm_password" name="confirm_password" class="form-control">
                                             <small class="text-danger error-message" id="confirm_password_error"></small>
                                         </div>
@@ -362,104 +362,108 @@ session_start();
             });
         });
 
-       //validation 
-       function validateForm() {
-    // Reset all error messages
-    const errorElements = document.getElementsByClassName('error-message');
-    for (let i = 0; i < errorElements.length; i++) {
-        errorElements[i].textContent = '';
-    }
-    
-    let isValid = true;
-    
-    // Validate first name
-    const firstName = document.getElementById('first_name').value.trim();
-    if (firstName === '') {
-        document.getElementById('first_name_error').textContent = 'First name is required';
-        isValid = false;
-    }
-    
-    // Validate last name
-    const lastName = document.getElementById('last_name').value.trim();
-    if (lastName === '') {
-        document.getElementById('last_name_error').textContent = 'Last name is required';
-        isValid = false;
-    }
-    
-    // Validate username
-    const username = document.getElementById('username').value.trim();
-    if (username === '') {
-        document.getElementById('username_error').textContent = 'Username is required';
-        isValid = false;
-    } else if (username.length < 4) {
-        document.getElementById('username_error').textContent = 'Username must be at least 4 characters';
-        isValid = false;
-    }
-    
-    // Validate email
-    const email = document.getElementById('email').value.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email === '') {
-        document.getElementById('email_error').textContent = 'Email is required';
-        isValid = false;
-    } else if (!emailRegex.test(email)) {
-        document.getElementById('email_error').textContent = 'Please enter a valid email address';
-        isValid = false;
-    }
-    
-    // Validate contact number
-    const contactNumber = document.getElementById('contact_number').value.trim();
-    if (contactNumber === '') {
-        document.getElementById('contact_number_error').textContent = 'Contact number is required';
-        isValid = false;
-    } else if (isNaN(contactNumber) || contactNumber.length < 10) {
-        document.getElementById('contact_number_error').textContent = 'Please enter a valid contact number';
-        isValid = false;
-    }
-    
-    // Validate photo (optional validation)
-    const photo = document.getElementById('photo').value;
-    if (photo === '') {
-        document.getElementById('photo_error').textContent = '2x2 Photo is required';
-        isValid = false;
-    } else {
-        const validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-        const fileExtension = photo.split('.').pop().toLowerCase();
-        if (!validExtensions.includes(fileExtension)) {
-            document.getElementById('photo_error').textContent = 'Only JPG, JPEG, PNG & GIF files are allowed';
-            isValid = false;
-        }
-    }
-    // Validate password
-    const password = document.getElementById('password').value;
-    if (password === '') {
-        document.getElementById('password_error').textContent = 'Password is required';
-        isValid = false;
-    } else if (password.length < 6) {
-        document.getElementById('password_error').textContent = 'Password must be at least 6 characters';
-        isValid = false;
-    }
-    
-        // Validate confirm password
-        const confirmPassword = document.getElementById('confirm_password').value;
-        if (confirmPassword === '') {
-            document.getElementById('confirm_password_error').textContent = 'Please confirm your password';
-            isValid = false;
-        } else if (password !== confirmPassword) {
-            document.getElementById('confirm_password_error').textContent = 'Passwords do not match';
-            isValid = false;
-        }
-    
-        return isValid; // Ensure the function returns the validation result
-    }
-    
-    document.getElementById("myForm").addEventListener("submit", function() {
-        let submitBtn = document.getElementById("submitBtn");
-        submitBtn.innerHTML = 'Submitting...';
-        submitBtn.disabled = true; // Prevents multiple clicks
-    });
-    
+        // Validation
+        function validateForm() {
+            // Reset all error messages
+            const errorElements = document.getElementsByClassName('error-message');
+            for (let i = 0; i < errorElements.length; i++) {
+                errorElements[i].textContent = '';
+            }
 
+            let isValid = true;
+
+            // Validate first name
+            const firstName = document.getElementById('first_name').value.trim();
+            if (firstName === '') {
+                document.getElementById('first_name_error').textContent = 'First name is required';
+                isValid = false;
+            }
+
+            // Validate last name
+            const lastName = document.getElementById('last_name').value.trim();
+            if (lastName === '') {
+                document.getElementById('last_name_error').textContent = 'Last name is required';
+                isValid = false;
+            }
+
+            // Validate username
+            const username = document.getElementById('username').value.trim();
+            if (username === '') {
+                document.getElementById('username_error').textContent = 'Username is required';
+                isValid = false;
+            } else if (username.length < 4) {
+                document.getElementById('username_error').textContent = 'Username must be at least 4 characters';
+                isValid = false;
+            }
+
+            // Validate email
+            const email = document.getElementById('email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email === '') {
+                document.getElementById('email_error').textContent = 'Email is required';
+                isValid = false;
+            } else if (!emailRegex.test(email)) {
+                document.getElementById('email_error').textContent = 'Please enter a valid email address';
+                isValid = false;
+            }
+
+            // Validate contact number
+            const contactNumber = document.getElementById('contact_number').value.trim();
+            if (contactNumber === '') {
+                document.getElementById('contact_number_error').textContent = 'Contact number is required';
+                isValid = false;
+            } else if (isNaN(contactNumber) || contactNumber.length < 10) {
+                document.getElementById('contact_number_error').textContent = 'Please enter a valid contact number';
+                isValid = false;
+            }
+
+            // Validate photo (optional validation)
+            const photo = document.getElementById('photo').value;
+            if (photo === '') {
+                document.getElementById('photo_error').textContent = '2x2 Photo is required';
+                isValid = false;
+            } else {
+                const validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                const fileExtension = photo.split('.').pop().toLowerCase();
+                if (!validExtensions.includes(fileExtension)) {
+                    document.getElementById('photo_error').textContent = 'Only JPG, JPEG, PNG & GIF files are allowed';
+                    isValid = false;
+                }
+            }
+
+            // Validate password
+            const password = document.getElementById('password').value;
+            if (password === '') {
+                document.getElementById('password_error').textContent = 'Password is required';
+                isValid = false;
+            } else if (password.length < 6) {
+                document.getElementById('password_error').textContent = 'Password must be at least 6 characters';
+                isValid = false;
+            }
+
+            // Validate confirm password
+            const confirmPassword = document.getElementById('confirm_password').value;
+            if (confirmPassword === '') {
+                document.getElementById('confirm_password_error').textContent = 'Please confirm your password';
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                document.getElementById('confirm_password_error').textContent = 'Passwords do not match';
+                isValid = false;
+            }
+
+            return isValid; // Ensure the function returns the validation result
+        }
+
+        document.getElementById("myForm").addEventListener("submit", function(event) {
+            if (!validateForm()) {
+                event.preventDefault(); // Prevent form submission if validation fails
+                return;
+            }
+
+            let submitBtn = document.getElementById("submitBtn");
+            submitBtn.innerHTML = "Submitting...";
+            submitBtn.disabled = true; // Prevents multiple clicks
+        });
     </script>
 
 </body>
