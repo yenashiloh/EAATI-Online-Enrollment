@@ -14,12 +14,12 @@ if (!isset($registrar_id)) {
 try {
     // Fetch grade levels from the database
     $stmt = $conn->prepare("
-    SELECT gradelevel_id, gradelevel_name, gradelevel_description 
-    FROM gradelevel 
-    ORDER BY CAST(SUBSTRING_INDEX(gradelevel_name, ' ', -1) AS UNSIGNED) ASC
-");
-$stmt->execute();
-$gradelevels = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        SELECT gradelevel_id, gradelevel_name, gradelevel_description 
+        FROM gradelevel 
+        ORDER BY CAST(SUBSTRING_INDEX(gradelevel_name, ' ', -1) AS UNSIGNED) ASC
+    ");
+    $stmt->execute();
+    $gradelevels = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
     exit;
@@ -28,15 +28,15 @@ $gradelevels = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <style>
     .modal-body {
-    max-height: 400px; /* Adjust this value based on your needs */
-    overflow-y: auto;
-}
+        max-height: 400px; /* Adjust this value based on your needs */
+        overflow-y: auto;
+    }
 </style>
 <!DOCTYPE html>
 <html>
-	<head>
-		<!-- Basic Page Info -->
-		<meta charset="utf-8" />
+    <head>
+        <!-- Basic Page Info -->
+        <meta charset=
 		<title>Section</title>
 
         <?php
@@ -93,6 +93,13 @@ $gradelevels = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         echo "<div class='alert alert-success'>Updated Successfully!</div>";
                     }
                     ?>
+                
+                    <?php
+                    if (isset($_GET['error']) && $_GET['error'] == 1) {
+                        echo "<div class='alert alert-danger'>Section already exists for this grade level!</div>";
+                    }
+                    ?>
+
                                         
                     <button type="button" class="btn btn-success mb-4" data-toggle="modal" data-target="#addSubjectModal">
                         <i class="fa fa-plus"></i> Add Section
@@ -242,7 +249,7 @@ $gradelevels = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </div>
                                     <div class="mb-3">
                                         <label for="sectionName" class="form-label">Section Name</label>
-                                        <input type="text" class="form-control" id="sectionName" name="sectionName" required>
+                                        <input type="text" class="form-control" id="sectionName" name="sectionName" value="Section 1" >
                                     </div>
                                     <div class="mb-3">
                                         <label for="sectionDescription" class="form-label">Section Description</label>

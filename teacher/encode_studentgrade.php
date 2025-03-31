@@ -45,7 +45,7 @@ if(!isset($teacher_id)){
                             <nav aria-label="breadcrumb" role="navigation">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="teacher_dashboard.php">Menu</a></li>
-                                    <li class="breadcrumb-item"><a href="verify_grade.php">Verify Grades</a></li>
+                                    <li class="breadcrumb-item"><a href="encodegrade.php"> Encode Grades</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">Encoded Student Grade</li>
                                 </ol>
                             </nav>

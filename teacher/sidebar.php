@@ -39,7 +39,7 @@
                 <li>
                     <a href="students.php" class="dropdown-toggle no-arrow <?= $is_approval_page ? 'active' : ''; ?>">
                         <span class="micon bi bi-person-bounding-box"></span> <!-- Students Icon -->
-                        <span class="mtext">Students</span>
+                        <span class="mtext">Class List</span>
                     </a>
                 </li>
                 <li>

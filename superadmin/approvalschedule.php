@@ -1,18 +1,27 @@
 <?php
-include 'config.php'; 
-
+include 'config.php';
 session_start();
 
-$superadmin_id = $_SESSION['superadmin_id'];
-
-if (!isset($superadmin_id)) {
-    header('location:../login.php');
-    exit; 
+if (!isset($_SESSION['superadmin_id'])) {
+    header('location: ../login.php');
+    exit;
 }
+
+$superadmin_id = $_SESSION['superadmin_id'];
+$message = "";
+$alert_class = "";
+
+// Define the same grade groups as in your display page
+$gradeGroups = [
+    '1-3' => ['Grade 1', 'Grade 2', 'Grade 3'],
+    '4-6' => ['Grade 4', 'Grade 5', 'Grade 6'],
+    '7-8' => ['Grade 7', 'Grade 8'],
+    '9-10' => ['Grade 9', 'Grade 10']
+];
 
 if (isset($_GET['action']) && isset($_GET['id'])) {
     $action = $_GET['action'];
-    $enrollmentschedule_id = $_GET['id'];
+    $enrollmentschedule_id = intval($_GET['id']); // Ensure it's an integer
 
     if ($action == 'approve') {
         $status = 'Approved';
@@ -21,21 +30,89 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     }
 
     if (isset($status)) {
-        $sql = "UPDATE enrollmentschedule SET status = :status WHERE enrollmentschedule_id = :enrollmentschedule_id";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':status', $status);
-        $stmt->bindParam(':enrollmentschedule_id', $enrollmentschedule_id, PDO::PARAM_INT);
+        try {
+            $conn->beginTransaction();
 
-        if ($stmt->execute()) {
-            $message = "Schedule Status Updated to $status!";
-            $alert_class = "alert-success"; 
-        } else {
-            $message = "Error updating status: " . $stmt->errorInfo()[2];
+            // Fetch the grade level name for the given enrollmentschedule_id
+            $sql = "SELECT gl.gradelevel_name 
+                    FROM enrollmentschedule es
+                    JOIN gradelevel gl ON es.gradelevel_id = gl.gradelevel_id
+                    WHERE es.enrollmentschedule_id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':id', $enrollmentschedule_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$row) {
+                throw new Exception("Schedule not found.");
+            }
+
+            $gradeName = $row['gradelevel_name'];
+            
+            // Find which group this grade belongs to
+            $targetGroup = null;
+            foreach ($gradeGroups as $groupName => $grades) {
+                if (in_array($gradeName, $grades)) {
+                    $targetGroup = $grades;
+                    break;
+                }
+            }
+            
+            if (empty($targetGroup)) {
+                throw new Exception("Grade group not found for $gradeName.");
+            }
+
+            // Get all gradelevel_ids in the same group
+            $placeholders = str_repeat('?,', count($targetGroup) - 1) . '?';
+            $gradeIdSql = "SELECT gradelevel_id FROM gradelevel WHERE gradelevel_name IN ($placeholders)";
+            $gradeIdStmt = $conn->prepare($gradeIdSql);
+            
+            // Bind the grade names as parameters
+            foreach ($targetGroup as $index => $grade) {
+                $gradeIdStmt->bindValue($index + 1, $grade);
+            }
+            
+            $gradeIdStmt->execute();
+            $gradeIds = $gradeIdStmt->fetchAll(PDO::FETCH_COLUMN);
+
+            if (empty($gradeIds)) {
+                throw new Exception("No matching grade levels found in database.");
+            }
+
+            // Update all schedules in the group
+            $idPlaceholders = str_repeat('?,', count($gradeIds) - 1) . '?';
+            $updateSql = "UPDATE enrollmentschedule SET status = ? WHERE gradelevel_id IN ($idPlaceholders)";
+            $updateStmt = $conn->prepare($updateSql);
+            
+            // Bind the status as the first parameter
+            $updateStmt->bindValue(1, $status);
+            
+            // Bind the grade IDs as the remaining parameters
+            foreach ($gradeIds as $index => $id) {
+                $updateStmt->bindValue($index + 2, $id);
+            }
+
+            if ($updateStmt->execute()) {
+                $conn->commit();
+                $message = "Schedule status updated to $status for all grades in the group!";
+                $alert_class = "alert-success";
+            } else {
+                throw new Exception("Failed to update schedules.");
+            }
+        } catch (Exception $e) {
+            $conn->rollBack();
+            $message = "Error: " . $e->getMessage();
             $alert_class = "alert-danger";
         }
     }
 }
+
+// Display message inside the view
+if (!empty($message)) {
+    echo "<div class='alert $alert_class'>$message</div>";
+}
 ?>
+
 
 
 <!DOCTYPE html>
@@ -172,59 +249,84 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                             </div>
                         <?php endif; ?>
 
-                        <?php
-                        $sql = "SELECT enrollmentschedule.*, gradelevel.gradelevel_name 
-                                FROM enrollmentschedule 
-                                INNER JOIN gradelevel ON enrollmentschedule.gradelevel_id = gradelevel.gradelevel_id";
+						<?php
+						include_once 'config1.php';
 
-                        $stmt = $conn->prepare($sql);
-                        $stmt->execute();
+						$gradeGroups = [
+							'1-3' => ['Grade 1', 'Grade 2', 'Grade 3'],
+							'4-6' => ['Grade 4', 'Grade 5', 'Grade 6'],
+							'7-8' => ['Grade 7', 'Grade 8'],
+							'9-10' => ['Grade 9', 'Grade 10']
+						];
 
-                        if ($stmt->rowCount() > 0) {
-                        ?>
-                            <table class="data-table table stripe hover nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>No.</th>
-                                        <th>Grade Level</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <?php
-                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                    echo "<tr>";
-                                    echo "<td>" . $row['enrollmentschedule_id'] . "</td>";
-                                    echo "<td>" . $row['gradelevel_name'] . "</td>";
-                                    echo "<td>" . $row['start_date'] . "</td>";
-                                    echo "<td>" . $row['end_date'] . "</td>";
-                                    echo "<td>" . $row['status'] . "</td>";
-                                    echo "<td>";
+						echo '<table class="table table-striped">
+							<thead>
+								<tr>
+								<th>Grade Group</th>
+								<th>Start Date</th>
+								<th>End Date</th>
+								<th>Status</th>
+								<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>';
 
-                                    if ($row['status'] == 'For Review') {
-                                        echo '<a href="approvalschedule.php?action=approve&id=' . $row['enrollmentschedule_id'] . '" class="m-2" title="Approve Record" data-toggle="tooltip"><span class="bi bi-check-circle-fill"></span></a>';
-                                        echo '<a href="approvalschedule.php?action=decline&id=' . $row['enrollmentschedule_id'] . '" class="m-2" title="Decline Record" data-toggle="tooltip"><span class="bi bi-x-circle-fill"></span></a>';
-                                    } elseif ($row['status'] == 'Approved') {
-                                        echo '<a href="approvalschedule.php?action=decline&id=' . $row['enrollmentschedule_id'] . '" class="m-2" title="Decline Record" data-toggle="tooltip"><span class="bi bi-x-circle-fill"></span></a>';
-                                    } elseif ($row['status'] == 'Declined') {
-                                        echo '<a href="approvalschedule.php?action=approve&id=' . $row['enrollmentschedule_id'] . '" class="m-2" title="Approve Record" data-toggle="tooltip"><span class="bi bi-check-circle-fill"></span></a>';
-                                    }
-                                    
+						foreach ($gradeGroups as $groupName => $grades) {
+							echo '<tr>';
+							echo '<td>Grades ' . htmlspecialchars($groupName) . '</td>';
 
-                                    echo "</td>";
-                                    echo "</tr>";
-                                }
-                                ?>
-                                </tbody>
-                            </table>
-                        <?php
-                        } else {
-                            echo '<div class="alert alert-info">No records found.</div>';
-                        }
-                        ?>
+							$gradeNamesStr = "'" . implode("', '", $grades) . "'";
+							$sql = "SELECT es.enrollmentschedule_id, gl.gradelevel_name, es.start_date, es.end_date, es.status 
+									FROM enrollmentschedule es
+									JOIN gradelevel gl ON es.gradelevel_id = gl.gradelevel_id
+									WHERE gl.gradelevel_name IN ($gradeNamesStr)
+									GROUP BY gl.gradelevel_name";
+
+							$result = mysqli_query($link, $sql);
+
+							if (mysqli_num_rows($result) > 0) {
+								$firstRow = mysqli_fetch_assoc($result);
+								$allSame = true;
+								$startDate = $firstRow['start_date'];
+								$endDate = $firstRow['end_date'];
+								$status = $firstRow['status'];
+
+								mysqli_data_seek($result, 0);
+								while ($row = mysqli_fetch_assoc($result)) {
+									if ($row['start_date'] != $startDate || $row['end_date'] != $endDate || $row['status'] != $status) {
+										$allSame = false;
+										break;
+									}
+								}
+
+								if ($allSame) {
+									echo '<td>' . date('M d, Y', strtotime($startDate)) . '</td>';
+									echo '<td>' . date('M d, Y', strtotime($endDate)) . '</td>';
+									echo '<td>' . htmlspecialchars($status) . '</td>';
+									echo '<td>';
+									
+									if ($status == 'For Review') {
+										echo '<a href="approvalschedule.php?action=approve&id=' . $firstRow['enrollmentschedule_id'] . '" class="m-2" title="Approve Record"><span class="bi bi-check-circle-fill"></span></a>';
+										echo '<a href="approvalschedule.php?action=decline&id=' . $firstRow['enrollmentschedule_id'] . '" class="m-2" title="Decline Record"><span class="bi bi-x-circle-fill"></span></a>';
+									} elseif ($status == 'Approved') {
+										echo '<a href="approvalschedule.php?action=decline&id=' . $firstRow['enrollmentschedule_id'] . '" class="m-2" title="Decline Record"><span class="bi bi-x-circle-fill"></span></a>';
+									} elseif ($status == 'Declined') {
+										echo '<a href="approvalschedule.php?action=approve&id=' . $firstRow['enrollmentschedule_id'] . '" class="m-2" title="Approve Record"><span class="bi bi-check-circle-fill"></span></a>';
+									}
+
+									echo '</td>';
+								}
+							} else {
+								echo '<td colspan="3"><span class="badge badge-secondary">Not Scheduled</span></td>';
+								echo '<td></td>';
+							}
+
+							echo '</tr>';
+						}
+
+						echo '</tbody></table>';
+						?>
+
                     </div>
 				</div>
         	</div>

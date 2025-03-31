@@ -17,7 +17,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])){
         // Attempt to execute the prepared statement
         if($stmt->execute()){
             // Records deleted successfully. Redirect to landing page
-            header("location: enrollment.php?deleted=1");
+            header("location: enrollmentschedule.php?deleted=1");
             exit();
         } else{
             echo "Oops! Something went wrong. Please try again later.";

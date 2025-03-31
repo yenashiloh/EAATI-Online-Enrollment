@@ -28,7 +28,7 @@
                     <li>
                         <a href="student_registration.php" class="dropdown-toggle no-arrow">
                             <span class="micon bi bi-person-plus"></span>
-                            <span class="mtext">Student Registration</span>
+                            <span class="mtext">Student Enrollment</span>
                         </a>
                     </li>
                     <li>

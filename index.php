@@ -91,6 +91,98 @@
 
     </section><!-- /Hero Section -->
 
+    <?php
+    require_once "config.php";
+
+    $gradeGroups = [
+      'Grades 1-3' => [1, 2, 3],
+      'Grades 4-6' => [4, 5, 6],
+      'Grades 7-8' => [7, 8],
+      'Grades 9-10' => [9, 10]
+    ];
+
+    $enrollmentData = [];
+
+    $sql = "SELECT * FROM enrollmentschedule WHERE status = 'Approved' ORDER BY start_date";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+
+    if ($stmt->rowCount() > 0) {
+      while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        foreach ($gradeGroups as $groupName => $grades) {
+          if (in_array($row['gradelevel_id'], $grades)) {
+            $startDate = date("M d, Y", strtotime($row['start_date']));
+            $endDate = date("M d, Y", strtotime($row['end_date']));
+            
+            if (!isset($enrollmentData[$groupName])) {
+              $enrollmentData[$groupName] = [
+                'start_date' => $startDate,
+                'end_date' => $endDate
+              ];
+            }
+            break;
+          }
+        }
+      }
+    }
+    ?>
+    <section id="enrollment" class="about section">
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Secure Your Spot</h2>
+            <p>Enrollment Schedule</p>
+        </div><!-- End Section Title -->
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-12 col-md-10 " data-aos="fade-up" data-aos-delay="100">
+                    <div class="card">
+                        <div class="card-body">
+                      
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Grade Level</th>
+                    
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  <?php
+                                  // Query to get only the "Approved" enrollment schedules
+                                  $query = "SELECT es.*, 
+                                            CASE 
+                                              WHEN gl.gradelevel_id IN (2, 3, 4) THEN 'Grades 1-3'
+                                              WHEN gl.gradelevel_id IN (7, 8, 9) THEN 'Grades 4-6'
+                                              WHEN gl.gradelevel_id IN (10, 12) THEN 'Grades 7-8'
+                                              WHEN gl.gradelevel_id IN (16, 17) THEN 'Grades 9-10'
+                                            END AS grade_group
+                                            FROM enrollmentschedule es
+                                            JOIN gradelevel gl ON es.gradelevel_id = gl.gradelevel_id
+                                            WHERE es.status = 'Approved'  
+                                            GROUP BY grade_group";
+
+                                  $result = $conn->query($query);
+
+                                  if ($result->rowCount() > 0) {
+                                      while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                          $date_range = date('F d, Y', strtotime($row['start_date'])) . " - " . date('F d, Y', strtotime($row['end_date']));
+                                          echo '<tr>';
+                                          echo '<td>' . $date_range . '</td>';
+                                          echo '<td>' . $row['grade_group'] . '</td>';
+                                          echo '</tr>';
+                                      }
+                                  } else {
+                                      echo '<tr><td colspan="2" class="text-center">To be Announce</td></tr>';
+                                  }
+                                  ?>
+                              </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
     <!-- About Section -->
     <section id="about" class="about section">
       <div class="container section-title" data-aos="fade-up">
@@ -245,24 +337,6 @@
   </main>
 
   <footer id="footer" class="footer position-relative light-background">
-
-    <!-- <div class="container footer-top">
-      <div class="row gy-4">
-        <div class="col-lg-4 col-md-6 footer-about">
-          <a href="index.php" class="logo d-flex align-items-center">
-           
-            <h5 class="fw-bold">Easter Achiever Academy <br> of Taguig Inc.</h5>
-          </a>
-          <div class="footer-contact pt-3">
-            <p>Carlos, P. Garcia Avenue, Taguig,</p>
-            <p>1632 Metro Manila</p>
-            <p class="mt-3"><strong>Phone:</strong> <span>(02) 3489 4692</span></p>
-            <p><strong>Email:</strong> <span>info@eaati.edu.ph</span></p>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
     <div class="container copyright text-center mt-4">
       <p><span>Copyright</span> © 2024<strong class="px-1 sitename"> Eastern Achiever Academy of Taguig Inc.</strong> <span>All Rights Reserved</span></p>
      

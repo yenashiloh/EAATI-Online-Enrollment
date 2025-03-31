@@ -169,19 +169,30 @@ if (!isset($registrar_id)) {
                             </thead>
                             <tbody>
                                 <?php
+                                // Get the grade level of the current schedule
+                                $sql = "SELECT grade_level FROM schedules WHERE id = :schedule_id";
+                                $query = $conn->prepare($sql);
+                                $query->bindParam(':schedule_id', $id, PDO::PARAM_INT);
+                                $query->execute();
+                                $schedule_grade_level = $query->fetchColumn();
+
+                                // Get already associated students
                                 $sql = "SELECT student_id FROM encodedstudentsubjects WHERE schedule_id = :schedule_id";
                                 $query = $conn->prepare($sql);
                                 $query->bindParam(':schedule_id', $id, PDO::PARAM_INT);
                                 $query->execute();
                                 $associated_students = $query->fetchAll(PDO::FETCH_COLUMN);
-                                
+
+                                // Get students from the same grade level as the schedule
                                 $sql = "SELECT s.*, g.gradelevel_name 
                                         FROM student s 
-                                        LEFT JOIN gradelevel g ON s.grade_level_id = g.gradelevel_id";
+                                        LEFT JOIN gradelevel g ON s.grade_level_id = g.gradelevel_id
+                                        WHERE g.gradelevel_id = :grade_level_id";
                                 $query = $conn->prepare($sql);
+                                $query->bindParam(':grade_level_id', $schedule_grade_level, PDO::PARAM_INT);
                                 $query->execute();
                                 $students = $query->fetchAll(PDO::FETCH_ASSOC);
-                                
+
                                 if (empty($students) || count($students) == count($associated_students)) {
                                     echo '<tr><td colspan="3" class="text-center">No students available to add to this class.</td></tr>';
                                 } else {

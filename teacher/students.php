@@ -6,9 +6,9 @@ session_start();
 
 $teacher_id = $_SESSION['teacher_id'];
 
-if(!isset($teacher_id)){
-   header('location:../login.php');
-   exit;
+if (!isset($teacher_id)) {
+	header('location:../login.php');
+	exit;
 }
 
 ?>
@@ -18,10 +18,10 @@ if(!isset($teacher_id)){
 	<head>
 		<!-- Basic Page Info -->
 		<meta charset="utf-8" />
-		<title>Students</title>
+		<title>Class List</title>
 
-        <!-- Site favicon -->
-        <link
+		<!-- Site favicon -->
+		<link
 			rel="apple-touch-icon"
 			sizes="180x180"
 			href="../asset/img/logo.png"
@@ -105,10 +105,10 @@ if(!isset($teacher_id)){
 
 	</head>
 	<body class="sidebar-light">
-    <?php
-    include 'header.php';
-    include 'sidebar.php';
-    ?>
+		<?php
+		include 'header.php';
+		include 'sidebar.php';
+		?>
 
 		<div class="mobile-menu-overlay"></div>
 		<div class="main-container">
@@ -118,7 +118,7 @@ if(!isset($teacher_id)){
 						<div class="row">
 							<div class="col-md-12 col-sm-12">
 								<div class="title">
-									<h4>Students</h4>
+									<h4>Class List</h4>
 								</div>
 								<nav aria-label="breadcrumb" role="navigation">
 									<ol class="breadcrumb">
@@ -126,7 +126,7 @@ if(!isset($teacher_id)){
 											<a href="teacher_dashboard.php">Menu</a>
 										</li>
 										<li class="breadcrumb-item active" aria-current="page">
-											Students
+											Class List
 										</li>
 									</ol>
 								</nav>
@@ -134,81 +134,72 @@ if(!isset($teacher_id)){
 						</div>
 					</div>
 		
-						<div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
-					
-						<div class="pd-20">
-                        <h4 class="h4 mb-1">Students List</h4>
+					<div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
+						<div class="pb-20">
+							<div class="row">
+								<?php
+								// Include config file
+								require_once "config1.php";
+
+								// Modified query to group by grade level and section only, without subject details
+								$sql = "SELECT 
+									sections.section_id,
+									sections.section_name,
+									sections.section_description,
+									sections.sectionCapacity,
+									gradelevel.gradelevel_id,
+									gradelevel.gradelevel_name,
+									COUNT(DISTINCT encodedstudentsubjects.student_id) AS student_count
+								FROM sections 
+								INNER JOIN gradelevel ON gradelevel.gradelevel_id = sections.gradelevel_id
+								INNER JOIN schedules ON schedules.section_id = sections.section_id
+								LEFT JOIN encodedstudentsubjects ON encodedstudentsubjects.schedule_id = schedules.id
+								WHERE schedules.teacher_id = '$teacher_id'
+								GROUP BY sections.section_id, sections.section_name, sections.section_description, 
+										 sections.sectionCapacity, gradelevel.gradelevel_id, gradelevel.gradelevel_name
+								ORDER BY gradelevel.gradelevel_name ASC, sections.section_name ASC";
+
+								if ($result = mysqli_query($link, $sql)) {
+									if (mysqli_num_rows($result) > 0) {
+										while ($row = mysqli_fetch_array($result)) {
+											?>
+											<div class="col-lg-3 col-md-6 mb-4">
+												<div class="card">
+													<div class="card-body">
+														<h1 class="card-title"><?php echo $row['gradelevel_name']; ?> - <?php echo $row['section_name']; ?></h1>
+														<p class="card-text">Enrolled Students: <?php echo $row['student_count']; ?></p>
+
+														<div class="text-center">
+															<a href="view_students.php?section_id=<?php echo $row['section_id']; ?>&grade_level_id=<?php echo $row['gradelevel_id']; ?>" class="btn btn-primary" title="View Students">
+																<span class="bi bi-eye-fill"></span> View Students
+															</a>
+														</div>
+													</div>
+												</div>
+											</div>
+											<?php
+										}
+										// Free result set
+										mysqli_free_result($result);
+									} else {
+										echo '<div class="col-lg-12"><div class="alert alert-danger"><em>No records were found.</em></div></div>';
+									}
+								} else {
+									echo '<div class="col-lg-12"><div class="alert alert-danger"><em>Oops! Something went wrong. Please try again later.</em></div></div>';
+								}
+
+								// Close connection
+								mysqli_close($link);
+								?>
+							</div> <!-- End of row -->
 						</div>
-
-                        <?php
-                            if(isset($_GET['deleted']) && $_GET['deleted'] == 1){
-                                echo "<div class='alert alert-success'>Record Deleted Successfully!</div>";
-                            }
-                        ?>
-                    <div class="pb-20">
-                    <?php
-                        // Check if the 'deleted' parameter is set and equals to 1
-                        if(isset($_GET['verified']) && $_GET['verified'] == 1){
-                            echo "<div class='alert alert-success'>Record verified successfully.</div>";
-                        }
-                        ?>
-                    </div>
-                    <?php
-                    // Include config file
-                    require_once "config1.php";
-
-                    // Attempt select query execution
-                    $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id WHERE student.isVerified = 2";
-                    if($result = mysqli_query($link, $sql)){
-                        if(mysqli_num_rows($result) > 0){
-                            echo '<table class="data-table table stripe hover nowrap">';
-                                echo "<thead>";
-                                    echo "<tr>";                                      
-                                        echo "<th>Name</th>";
-                                        echo "<th>Date of Birth</th>";
-                                        echo "<th>Email</th>";
-                                        echo "<th>Action</th>";
-                                    echo "</tr>";
-                                echo "</thead>";
-                                echo "<tbody>";
-                                while($row = mysqli_fetch_array($result)){
-                                    echo "<tr>";
-                                        echo "<td>" . $row['name'] . "</td>";
-                                        echo "<td>" . $row['dob'] . "</td>";
-                                        echo "<td>" . $row['email'] . "</td>";
-                                        
-                                        echo "<td>";
-                                        
-                                        echo '<a href="view_record.php?id='.$row['student_id'].'" class="btn p-0 me-1" title="View Record"><span class="bi bi-eye-fill" style="font-size: 20px;"></span></a>';
-
-                                        
-                                          
-
-                                        echo "</td>";
-                                        
-                                    echo "</tr>";
-                                }
-                                echo "</tbody>";                            
-                            echo "</table>";
-                            // Free result set
-                            mysqli_free_result($result);
-                        } else{
-                            echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
-                        }
-                    } else{
-                        echo "Oops! Something went wrong. Please try again later.";
-                    }
-
-                    // Close connection
-                    mysqli_close($link);
-                    ?>
-                    </div>
-                </div>
-            </div>
-        </div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<!-- js -->
-    	<script src="../vendors/scripts/core.js"></script>
+		<script src="../vendors/scripts/core.js"></script>
 		<script src="../vendors/scripts/script.min.js"></script>
 		<script src="../vendors/scripts/process.js"></script>
 		<script src="../src/plugins/datatables/js/jquery.dataTables.min.js"></script>
@@ -226,14 +217,14 @@ if(!isset($teacher_id)){
 		<!-- Datatable Setting js -->
 		<script src="../vendors/scripts/datatable-setting.js"></script>
 		<!-- Google Tag Manager (noscript) -->
-		<noscript
-			><iframe
+		<noscript>
+			<iframe
 				src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS"
 				height="0"
 				width="0"
 				style="display: none; visibility: hidden"
-			></iframe
-		></noscript>
+			></iframe>
+		</noscript>
 		<!-- End Google Tag Manager (noscript) -->
 	</body>
 </html>

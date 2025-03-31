@@ -107,11 +107,17 @@
                     </a>
                 </li>
                 <li>
+                  <a href="enrollmentschedule.php" class="dropdown-toggle no-arrow">
+                      <span class="micon bi bi-calendar-check"></span> 
+                      <span class="mtext">Enrollment</span>
+                  </a>
+              </li>
+                <!-- <li>
                   <a href="enrollment.php" class="dropdown-toggle no-arrow">
                       <span class="micon bi bi-card-list"></span> 
                       <span class="mtext">Enrollment</span>
                   </a>
-              </li>
+              </li> -->
               <?php
                         $current_page = basename($_SERVER['PHP_SELF']);
                         $is_students_page = strpos($current_page, 'students') !== false;
@@ -161,12 +167,7 @@
                       <span class="mtext">Room</span>
                   </a>
               </li>
-              <li>
-                  <a href="enrollmentschedule.php" class="dropdown-toggle no-arrow">
-                      <span class="micon bi bi-calendar-check"></span> 
-                      <span class="mtext">Schedule of Enrollment</span>
-                  </a>
-              </li>
+             
               <li>
                     <a href="form137.php" class="dropdown-toggle no-arrow">
                         <span class="micon bi bi-file-earmark-text"></span>

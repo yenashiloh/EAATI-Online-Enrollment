@@ -150,6 +150,7 @@ if(!isset($accounting_id)){
 									<tr>
 										<th>No.</th>
 										<th>Grade Level</th>
+										<th>Miscellaneous Fee</th>
 										<th>Upon Enrollment</th>
 										<th>Total Tuition Fee</th>
 										<th>Partial Upon</th>
@@ -166,10 +167,11 @@ if(!isset($accounting_id)){
 											while($row = mysqli_fetch_array($result)){
 												echo "<tr>";
 												echo "<td>" . $counter++ . "</td>";
-												echo "<td>" .$row['gradelevel_name']. "</td>";
-												echo "<td>" . $row['upon_enrollment'] . "</td>";
-												echo "<td>" . $row['total_whole_year'] . "</td>";
-												echo "<td>" . $row['partial_upon'] . "</td>";
+												echo "<td>" . $row['gradelevel_name'] . "</td>";
+												echo "<td>" . number_format($row['miscellaneous_fee'], 2) . "</td>";
+												echo "<td>" . number_format($row['upon_enrollment'], 2) . "</td>";
+												echo "<td>" . number_format($row['total_whole_year'], 2) . "</td>";
+												echo "<td>" . number_format($row['partial_upon'], 2) . "</td>";
 												echo "<td>";
 												echo '<div class="dropdown">';
 												echo '<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">';
@@ -180,8 +182,8 @@ if(!isset($accounting_id)){
 												echo '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#deleteModal'.$row['payment_id'].'"><i class="dw dw-delete-3"></i> Delete</a>';
 												echo '</div>';
 												echo '</div>';
-												echo '</td>';
-												echo '</tr>';
+												echo "</td>";
+												echo "</tr>";
 												
 												// Delete Modal
 												echo '<div class="modal fade" id="deleteModal'.$row['payment_id'].'" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel'.$row['payment_id'].'" aria-hidden="true">';
@@ -210,6 +212,7 @@ if(!isset($accounting_id)){
 										echo '<tr><td colspan="5" class="text-center">Oops! Something went wrong. Please try again later.</td></tr>';
 									}
 									mysqli_close($link);
+									
 									?>
 								</tbody>
 							</table>

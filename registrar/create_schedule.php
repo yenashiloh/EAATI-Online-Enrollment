@@ -13,7 +13,8 @@ if (!isset($registrar_id)) {
         $grade_level = $_POST['grade_level'];
         $section_id = $_POST['section'];
         $subject_id = $_POST['subject_name'];
-        
+    
+        // Fetch the subject name
         $subject_query = $conn->prepare("SELECT subject_name FROM subjects WHERE subject_id = :subject_id");
         $subject_query->bindParam(':subject_id', $subject_id, PDO::PARAM_INT);
         $subject_query->execute();
@@ -25,12 +26,14 @@ if (!isset($registrar_id)) {
         $end_time = $_POST['end_time'];
         $days = $_POST['days']; 
     
-        $sql = "INSERT INTO schedules (grade_level, section_id, subject_name, subject_id, teacher_id, room_id, start_time, end_time, day) 
-                VALUES (:grade_level, :section_id, :subject_name, :subject_id, :teacher_id, :room_id, :start_time, :end_time, :day)";
-        $query = $conn->prepare($sql);
-    
         $success = true;
+    
         foreach ($days as $day) {
+            $sql = "INSERT INTO schedules (grade_level, section_id, subject_name, subject_id, teacher_id, room_id, start_time, end_time, day) 
+                    VALUES (:grade_level, :section_id, :subject_name, :subject_id, :teacher_id, :room_id, :start_time, :end_time, :day)";
+            $query = $conn->prepare($sql);
+            
+            // Bind parameters
             $query->bindParam(':grade_level', $grade_level, PDO::PARAM_STR);
             $query->bindParam(':section_id', $section_id, PDO::PARAM_INT);
             $query->bindParam(':subject_name', $subject_name, PDO::PARAM_STR);
@@ -40,7 +43,8 @@ if (!isset($registrar_id)) {
             $query->bindParam(':start_time', $start_time, PDO::PARAM_STR);
             $query->bindParam(':end_time', $end_time, PDO::PARAM_STR);
             $query->bindParam(':day', $day, PDO::PARAM_STR);
-    
+            
+            // Execute query
             if (!$query->execute()) {
                 $success = false;
                 break;
@@ -53,6 +57,7 @@ if (!isset($registrar_id)) {
             $error = "Something went wrong. Please try again";
         }
     }
+    
 ?>
 
 <!DOCTYPE html>
@@ -100,125 +105,137 @@ if (!isset($registrar_id)) {
 						</div>
 					</div>
 		
-              <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
-                  <?php if ($error) { ?>
-                        <div class="alert alert-danger" role="alert">
-                            <?php echo htmlentities($error); ?>
-                        </div>
-                    <?php } elseif ($msg) { ?>
-                        <div class="alert alert-success" role="alert">
-                            <?php echo htmlentities($msg); ?>
-                        </div>
-                    <?php } ?>
+                <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
+                    <?php if ($error) { ?>
+                            <div class="alert alert-danger" role="alert">
+                                <?php echo htmlentities($error); ?>
+                            </div>
+                        <?php } elseif ($msg) { ?>
+                            <div class="alert alert-success" role="alert">
+                                <?php echo htmlentities($msg); ?>
+                            </div>
+                        <?php } ?>
 
-                <form class="row g-3" method="post" name="add_schedule">
-                    
-                    <div class="col-md-12">
-                        <label for="grade_level" class="form-label">Grade Level</label>
-                        <select id="grade_level" class="custom-select col-12 mb-3" name="grade_level" required onchange="loadSections(this.value)">
-                            <option selected value="">Select Grade Level</option>
-                            <?php
-                            $sql = "SELECT * FROM gradelevel ORDER BY gradelevel_name ASC";
-                            $result = $conn->query($sql);
-                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                echo "<option value='" . $row['gradelevel_id'] . "'>" . $row['gradelevel_name'] . "</option>";
-                            }
-                            ?>
-                        </select>
-                        <div id="no-section-message" class="alert alert-warning mt-2" style="display:none;">
-                            No sections available for this grade level.
+                    <form class="row g-3" method="post" name="add_schedule">
+                        
+                        <div class="col-md-12">
+                            <label for="grade_level" class="form-label">Grade Level</label>
+                            <select id="grade_level" class="custom-select col-12 mb-3" name="grade_level" required onchange="loadSections(this.value)">
+                                <option selected value="">Select Grade Level</option>
+                                <?php
+                               $sql = "SELECT * FROM gradelevel ORDER BY CAST(SUBSTRING_INDEX(gradelevel_name, ' ', -1) AS UNSIGNED) ASC";
+                                $result = $conn->query($sql);
+                                while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                    echo "<option value='" . $row['gradelevel_id'] . "'>" . $row['gradelevel_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                            <div id="no-section-message" class="alert alert-warning mt-2" style="display:none;">
+                                No sections available for this grade level.
+                            </div>
                         </div>
-                    </div>
 
+
+                            <div class="col-md-12">
+                                <label for="section" class="form-label">Section</label>
+                                <select id="section" class="custom-select col-12 mb-3" name="section" required>
+                                    <option selected value="">Select Section</option>
+                                <?php
+                                $sql = "SELECT * FROM sections";
+                                $result = $conn->query($sql);
+                                while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                    echo "<option value='" . $row['section_id'] . "'>" . $row['section_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
 
                         <div class="col-md-12">
-                            <label for="section" class="form-label">Section</label>
-                            <select id="section" class="custom-select col-12 mb-3" name="section" required>
-                                <option selected value="">Select Section</option>
+                            <label for="subject_name" class="form-label">Subject</label>
+                            <select id="subject_name" class="custom-select col-12 mb-3" name="subject_name" required>
+                                <option selected>Select Subject</option>
+                                <?php
+                                $sql = "SELECT * FROM subjects";
+                                $result = $conn->query($sql);
+                                while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                    echo "<option value='" . $row['subject_id'] . "'>" . $row['subject_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="teacher" class="form-label">Teacher</label>
+                            <select id="teacher" class="custom-select col-12 mb-3" name="teacher" required>
+                                <option selected>Select Teacher</option>
+                                <?php
+                                $sql = "SELECT * FROM users WHERE role = 'teacher'";
+                                $result = $conn->query($sql);
+                                while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                    echo "<option value='" . $row['id'] . "'>" . ucfirst($row['first_name']) . " " . ucfirst($row['last_name']) . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="room" class="form-label">Room</label>
+                            <select id="room" class="custom-select" name="room" required>
+                                <option selected>Select Room</option>
+                                <?php
+                                $sql = "SELECT * FROM rooms";
+                                $result = $conn->query($sql);
+                                while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                    echo "<option value='" . $row['room_id'] . "'>" . $row['room_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="days" class="form-label mt-3">Select Days</label><br>
                             <?php
-                            $sql = "SELECT * FROM sections";
-                            $result = $conn->query($sql);
-                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                echo "<option value='" . $row['section_id'] . "'>" . $row['section_name'] . "</option>";
+                            $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                            foreach ($days as $day) {
+                                echo '
+                                <div class="form-check form-check-inline ">
+                                    <input type="checkbox"  id="' . strtolower($day) . '" name="days[]" value="' . $day . '" class="form-check-input">
+                                    <label for="' . strtolower($day) . '" class="form-check-label">' . $day . '</label>
+                                </div>';
                             }
                             ?>
-                        </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="start_time" class="form-label mt-3">Start Time</label>
+                            <select class="form-control" id="start_time" name="start_time" required>
+                                <option value="">Select Start Time</option>
+                                <?php
+                                $start = strtotime("07:00 AM");
+                                $end = strtotime("04:00 PM");
+
+                                while ($start <= $end) {
+                                    echo '<option value="' . date("H:i", $start) . '">' . date("h:i A", $start) . '</option>';
+                                    $start = strtotime("+30 minutes", $start);
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="end_time" class="form-label mt-3">End Time</label>
+                            <select class="form-control" id="end_time" name="end_time" required disabled>
+                                <option value="">Select End Time</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-start ml-3 mt-3">
+                        <button type="submit" class="btn btn-primary mr-2" name="add_schedule">Submit</button>
+                        <button type="reset" class="btn btn-secondary">Reset</button>
                     </div>
-
-                    <div class="col-md-12">
-                        <label for="subject_name" class="form-label">Subject</label>
-                        <select id="subject_name" class="custom-select col-12 mb-3" name="subject_name" required>
-                            <option selected>Select Subject</option>
-                            <?php
-                            $sql = "SELECT * FROM subjects";
-                            $result = $conn->query($sql);
-                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                echo "<option value='" . $row['subject_id'] . "'>" . $row['subject_name'] . "</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="col-md-12">
-                        <label for="teacher" class="form-label">Teacher</label>
-                        <select id="teacher" class="custom-select col-12 mb-3" name="teacher" required>
-                            <option selected>Select Teacher</option>
-                            <?php
-                            $sql = "SELECT * FROM users WHERE role = 'teacher'";
-                            $result = $conn->query($sql);
-                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                echo "<option value='" . $row['id'] . "'>" . ucfirst($row['first_name']) . " " . ucfirst($row['last_name']) . "</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="col-md-12">
-                        <label for="room" class="form-label">Room</label>
-                        <select id="room" class="custom-select" name="room" required>
-                            <option selected>Select Room</option>
-                            <?php
-                            $sql = "SELECT * FROM rooms";
-                            $result = $conn->query($sql);
-                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                echo "<option value='" . $row['room_id'] . "'>" . $row['room_name'] . "</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="col-md-12">
-                        <label for="days" class="form-label mt-3">Select Days</label><br>
-                        <?php
-                        $days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-                        foreach ($days as $day) {
-                            echo '
-                            <div class="form-check form-check-inline ">
-                                <input type="checkbox"  id="' . strtolower($day) . '" name="days[]" value="' . $day . '" class="form-check-input">
-                                <label for="' . strtolower($day) . '" class="form-check-label">' . $day . '</label>
-                            </div>';
-                        }
-                        ?>
-                    </div>
-
-                    <div class="col-md-12">
-                        <label for="start_time" class="form-label mt-3">Start Time</label>
-                        <input type="time" class="form-control" id="start_time" name="start_time" required>
-                    </div>
-
-                    <div class="col-md-12">
-                        <label for="end_time" class="form-label  mt-3">End Time</label>
-                        <input type="time" class="form-control" id="end_time" name="end_time" required>
-                    </div>
-
-                    <div class="d-flex justify-content-start ml-3 mt-3">
-                      <button type="submit" class="btn btn-primary mr-2" name="add_schedule">Submit</button>
-                      <button type="reset" class="btn btn-secondary">Reset</button>
-                  </div>
-
-                </form>
+                    </form>
+                </div>
             </div>
-          </div>
         </div>
 
     <script>
@@ -279,7 +296,38 @@ if (!isset($registrar_id)) {
                 alert('Failed to load sections. Please try again.');
             });
     }
-</script>
+
+    /**
+     * Start Time and End Time
+     */
+
+    document.getElementById("start_time").addEventListener("change", function() {
+        let startTime = this.value; // Selected start time
+        let endTimeDropdown = document.getElementById("end_time");
+        
+        endTimeDropdown.innerHTML = '<option value="">Select End Time</option>'; // Reset options
+        endTimeDropdown.disabled = false; // Enable dropdown
+
+        if (startTime) {
+            let startTimeDate = new Date(`1970-01-01T${startTime}`);
+            let endTimeDate = new Date(startTimeDate.getTime() + 30 * 60000); // +30 minutes
+
+            let maxEndTime = new Date("1970-01-01T17:00"); // 5:00 PM
+
+            while (endTimeDate <= maxEndTime) {
+                let formattedTime = endTimeDate.toTimeString().slice(0, 5);
+                let displayTime = endTimeDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                let option = document.createElement("option");
+                option.value = formattedTime;
+                option.textContent = displayTime;
+
+                endTimeDropdown.appendChild(option);
+                endTimeDate = new Date(endTimeDate.getTime() + 30 * 60000); // +30 minutes
+            }
+        }
+    });
+    </script>
 
 </html>
 <?php } ?>

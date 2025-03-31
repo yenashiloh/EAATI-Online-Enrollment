@@ -1,98 +1,80 @@
 <?php
-// Include config.php
-include 'config1.php';
-
-session_start();
-
-$registrar_id = $_SESSION['registrar_id'];
-
-if(!isset($registrar_id)){
-   header('location:login.php');
-   exit; // Add exit to stop further execution
-}
-
-// Check if form is submitted
-if($_SERVER["REQUEST_METHOD"] == "POST"){
-    // Validate form data
-    $enrollmentschedule_id = $_POST['enrollmentschedule_id'];
-    $gradeLevel = $_POST['gradeLevel'];
-    $startDate = $_POST['startDate'];
-    $endDate = $_POST['endDate'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    include_once 'config1.php';
     
-    // Prepare update statement
-    $sql = "UPDATE enrollmentschedule SET gradelevel_id=?, start_date=?, end_date=? WHERE enrollmentschedule_id=?";
+    // Enable error reporting for debugging
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
     
-    if($stmt = mysqli_prepare($link, $sql)){
-        // Bind variables to the prepared statement as parameters
-        mysqli_stmt_bind_param($stmt, "isss", $param_gradeLevel, $param_startDate, $param_endDate, $param_enrollmentschedule_id);
-        
-        // Set parameters
-        $param_gradeLevel = $gradeLevel;
-        $param_startDate = $startDate;
-        $param_endDate = $endDate;
-        $param_enrollmentschedule_id = $enrollmentschedule_id;
-        
-        // Attempt to execute the prepared statement
-        if(mysqli_stmt_execute($stmt)){
-            // Redirect to enrollment schedule management page with success message
-            header("location: enrollmentschedule.php?edited=1");
-            exit();
-        } else{
-            echo "Oops! Something went wrong. Please try again later.";
-        }
+    // Get and validate form data
+    if (!isset($_POST['editGroup']) || !isset($_POST['editStartDate']) || !isset($_POST['editEndDate'])) {
+        echo "Error: Missing required fields";
+        exit;
     }
     
-    // Close statement
-    mysqli_stmt_close($stmt);
-    
-    // Close connection
-    mysqli_close($link);
-} else{
-    // Check existence of enrollmentschedule_id parameter
-    if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
-        // Get URL parameter
-        $enrollmentschedule_id =  trim($_GET["id"]);
+    $editGroup = $_POST['editGroup'];
+    $startDate = $_POST['editStartDate'];
+    $endDate = $_POST['editEndDate'];
+    $status = "For Review";
+
+    // Validate dates
+    if (strtotime($endDate) <= strtotime($startDate)) {
+        echo "Error: End date must be after start date";
+        exit;
+    }
+
+    // Define gradelevel_id mappings
+    $gradeLevels = [
+        "1-3" => [2, 3, 4],  // IDs for Grade 1, 2, 3
+        "4-6" => [7, 8, 9],  // IDs for Grade 4, 5, 6
+        "7-8" => [10, 12],   // IDs for Grade 7, 8
+        "9-10" => [16, 17],  // IDs for Grade 9, 10
+        "11-12" => [18, 19]  // IDs for Grade 11, 12
+    ];
+
+    if (!array_key_exists($editGroup, $gradeLevels)) {
+        echo "Error: Invalid grade group";
+        exit;
+    }
+
+    $gradeLevelIds = implode(',', $gradeLevels[$editGroup]);
+
+    mysqli_begin_transaction($link);
+
+    try {
+        // Use prepared statement
+        $updateSql = "UPDATE enrollmentschedule SET 
+                     start_date = ?, 
+                     end_date = ?,
+                     status = ? 
+                     WHERE FIND_IN_SET(gradelevel_id, ?)";
+
+        $stmt = mysqli_prepare($link, $updateSql);
         
-        // Prepare a select statement
-        $sql = "SELECT * FROM enrollmentschedule WHERE enrollmentschedule_id = ?";
-        if($stmt = mysqli_prepare($link, $sql)){
-            // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "i", $param_enrollmentschedule_id);
-            
-            // Set parameters
-            $param_enrollmentschedule_id = $enrollmentschedule_id;
-            
-            // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
-                $result = mysqli_stmt_get_result($stmt);
-                
-                if(mysqli_num_rows($result) == 1){
-                    // Fetch result row as an associative array. Since the result set contains only one row, we don't need to use while loop
-                    $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-                    
-                    // Retrieve individual field value
-                    $gradeLevel = $row["gradelevel_id"];
-                    $startDate = $row["start_date"];
-                    $endDate = $row["end_date"];
-                } else{
-                    // URL doesn't contain valid enrollmentschedule_id parameter. Redirect to error page
-                    header("location: error.php");
-                    exit();
-                }
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
-            }
+        if ($stmt === false) {
+            throw new Exception("Prepare failed: " . mysqli_error($link));
         }
-        
-        // Close statement
+
+        mysqli_stmt_bind_param($stmt, "ssss", $startDate, $endDate, $status, $gradeLevelIds);
+
+        if (!mysqli_stmt_execute($stmt)) {
+            throw new Exception("Error updating records: " . mysqli_stmt_error($stmt));
+        }
+
+        if (mysqli_stmt_affected_rows($stmt) > 0) {
+            mysqli_commit($link);
+            header("location: enrollmentschedule.php?updated=1");
+            exit;
+        } else {
+            echo "No records updated.";
+        }
+
         mysqli_stmt_close($stmt);
-        
-        // Close connection
-        mysqli_close($link);
-    }  else{
-        // URL doesn't contain enrollmentschedule_id parameter. Redirect to error page
-        header("location: error.php");
-        exit();
+    } catch (Exception $e) {
+        mysqli_rollback($link);
+        echo "Error: " . $e->getMessage();
     }
+    
+    mysqli_close($link);
 }
 ?>

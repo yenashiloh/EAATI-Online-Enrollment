@@ -90,98 +90,109 @@ if(isset($_GET['verified']) && $_GET['verified'] == 1){
                         // Include config file
                         require_once "config1.php";
 
+                        // Fetch grade levels for the dropdown
+                        $gradeLevels = [];
+                        $gradeQuery = "SELECT gradelevel_id, gradelevel_name FROM gradelevel ORDER BY CAST(SUBSTRING_INDEX(gradelevel_name, ' ', -1) AS UNSIGNED) ASC";
+                        $gradeResult = mysqli_query($link, $gradeQuery);
+                        while ($gradeRow = mysqli_fetch_assoc($gradeResult)) {
+                            $gradeLevels[] = $gradeRow;
+                        }
+
                         // Attempt select query execution
-                        $sql = "SELECT * from rooms";
+                        $sql = "SELECT r.room_id, r.room_name, r.room_description, g.gradelevel_name, r.gradelevel_id 
+                                FROM rooms r
+                                LEFT JOIN gradelevel g ON r.gradelevel_id = g.gradelevel_id
+                                ORDER BY CAST(SUBSTRING_INDEX(g.gradelevel_name, ' ', -1) AS UNSIGNED) ASC";
                         if($result = mysqli_query($link, $sql)){
                             if(mysqli_num_rows($result) > 0){
                                 echo '<table class="data-table table stripe hover nowrap">';
-                                    echo "<thead>";
-                                        echo "<tr>";
-                                            echo "<th>#</th>";
-                                            echo "<th>Room Name</th>";
-                                            echo "<th>Room Description</th>";
-                                            echo "<th>Action</th>";
-                                        echo "</tr>";
-                                    echo "</thead>";
-                                    echo "<tbody>";
-                                    while($row = mysqli_fetch_array($result)){
-                                        echo "<tr>";
-                                            echo "<td>" . $row['room_id'] . "</td>";
-                                            echo "<td>" . $row['room_name'] . "</td>";
-                                            echo "<td>" . $row['room_description'] . "</td>";
-                                            echo "<td>";
-                                            
-                                            echo '<a href="#" class="edit-btn" data-toggle="modal" data-target="#editRoomModal'.$row['room_id'].'"><span class="bi bi-pencil-fill"  style="font-size: 18px; "></span></a>';
-                                            
-                                            // Edit Room Modal
-                                            echo '<div class="modal fade" id="editRoomModal'.$row['room_id'].'" tabindex="-1" role="dialog" aria-labelledby="editRoomModalLabel'.$row['room_id'].'" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="editRoomModalLabel'.$row['room_id'].'">Edit Room</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <!-- Form to edit room -->
-                                                            <form method="post" action="edit_room.php">
-                                                                <div class="mb-3">
-                                                                    <label for="editRoomName" class="form-label">Room Name</label>
-                                                                    <input type="text" class="form-control" id="editRoomName" name="editRoomName" value="'.$row['room_name'].'" required>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="editRoomDescription" class="form-label">Room Description</label>
-                                                                    <textarea class="form-control" id="editRoomDescription" name="editRoomDescription" rows="3" required>'.$row['room_description'].'</textarea>
-                                                                </div>
-                                                                <input type="hidden" name="room_id" value="'.$row['room_id'].'">
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>';
-                                            
-                                            echo '<a href="#" data-toggle="modal" data-target="#deleteModal'.$row['room_id'].'" title="Delete Record" data-toggle="tooltip"><span class="bi bi-trash-fill ml-2" style="font-size: 18px; "></span></a>';
+                                echo "<thead><tr><th>#</th><th>Room Name</th><th>Room Description</th><th>Grade Level</th><th>Action</th></tr></thead><tbody>";
+                                
+                                $counter = 1; 
+                                while($row = mysqli_fetch_array($result)){
+                                    echo "<tr><td>{$counter}</td><td>{$row['room_name']}</td><td>{$row['room_description']}</td><td>" . ($row['gradelevel_name'] ?? 'N/A') . "</td><td>";
                                     
-                                            // Delete Modal
-                                            echo '
-                                            <div class="modal fade" id="deleteModal'.$row['room_id'].'" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel'.$row['room_id'].'" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="deleteModalLabel'.$row['room_id'].'">Confirm Delete</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Are you sure you want to delete this room?</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                            <a href="delete_room.php?id='.$row['room_id'].'" class="btn btn-danger">Delete</a>
-                                                        </div>
+                                    // Edit button
+                                    echo '<a href="#" class="edit-btn" data-toggle="modal" data-target="#editRoomModal'.$row['room_id'].'"><span class="bi bi-pencil-fill" style="font-size: 18px;"></span></a>';
+                                    
+                                    // Edit Room Modal
+                                    echo '<div class="modal fade" id="editRoomModal'.$row['room_id'].'" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Edit Room</h5>
+                                                        <button type="button" class="close" data-dismiss="modal">×</button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="post" action="edit_room.php">
+                                                          <div class="mb-3">
+                                                                <label for="editGradeLevel" class="form-label">Grade Level</label>
+                                                                <select class="form-control" name="editGradeLevel" required>';
+                                                                    foreach ($gradeLevels as $grade) {
+                                                                        $selected = ($grade['gradelevel_id'] == $row['gradelevel_id']) ? 'selected' : '';
+                                                                        echo '<option value="'.$grade['gradelevel_id'].'" '.$selected.'>'.$grade['gradelevel_name'].'</option>';
+                                                                    }
+                                                        echo ' </select>
+                                                            </div>
+                                                            
+                                                            <div class="mb-3">
+                                                                <label for="editRoomName" class="form-label">Room Name</label>
+                                                                <input type="text" class="form-control" name="editRoomName" value="'.$row['room_name'].'" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="editRoomDescription" class="form-label">Room Description</label>
+                                                                <textarea class="form-control" name="editRoomDescription" rows="3" required>'.$row['room_description'].'</textarea>
+                                                            </div>
+                                                          
+                                                            <input type="hidden" name="room_id" value="'.$row['room_id'].'">
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                            </div>
+                                                        </form>
                                                     </div>
                                                 </div>
-                                            </div>';
-                                        echo "</td>";
-                                        echo "</tr>";
-                
-                                    }
-                                    echo "</tbody>";                            
-                                echo "</table>";
-                                // Free result set
+                                            </div>
+                                        </div>';
+                                    
+                                    // Delete button
+                                    echo '<a href="#" data-toggle="modal" data-target="#deleteModal'.$row['room_id'].'" title="Delete Record"><span class="bi bi-trash-fill ml-2" style="font-size: 18px;"></span></a>';
+                                    
+                                    // Delete Modal
+                                    echo '<div class="modal fade" id="deleteModal'.$row['room_id'].'" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Confirm Delete</h5>
+                                                        <button type="button" class="close" data-dismiss="modal">×</button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to delete this room?</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <a href="delete_room.php?id='.$row['room_id'].'" class="btn btn-danger">Delete</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>';
+                                    
+                                    echo "</td></tr>";
+                                    $counter++;
+                                }
+                                echo "</tbody></table>";
                                 mysqli_free_result($result);
-                            } else{
+                            } else {
                                 echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
                             }
-                        } else{
+                        } else {
                             echo "Oops! Something went wrong. Please try again later.";
                         }
 
                         // Close connection
                         mysqli_close($link);
                         ?>
+
                         </div>
                     </div>
                 </div>
@@ -198,6 +209,27 @@ if(isset($_GET['verified']) && $_GET['verified'] == 1){
                         <div class="modal-body">
                             <!-- Form to add subject -->
                             <form method="post" action="add_room.php">
+                            <?php
+                            include 'config.php';
+
+                                $sql = "SELECT gradelevel_id, gradelevel_name 
+                                FROM gradelevel 
+                                ORDER BY CAST(SUBSTRING_INDEX(gradelevel_name, ' ', -1) AS UNSIGNED) ASC";
+                                $stmt = $conn->prepare($sql);
+                                $stmt->execute();
+                                $gradelevels = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                            ?>
+                                <div class="mb-3">
+                                    <label for="gradeLevelName" class="form-label">Grade Level Name</label>
+                                    <select class="form-control" id="gradeLevelName" name="gradeLevelID" required>
+                                        <option value="">Select Grade Level</option>
+                                        <?php foreach ($gradelevels as $grade) : ?>
+                                            <option value="<?= $grade['gradelevel_id']; ?>">
+                                                <?= htmlspecialchars($grade['gradelevel_name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
                                 <div class="mb-3">
                                     <label for="roomName" class="form-label">Room Name</label>
                                     <input type="text" class="form-control" id="roomName" name="roomName" required>
@@ -216,10 +248,8 @@ if(isset($_GET['verified']) && $_GET['verified'] == 1){
                 </div>
             </div>
 
-
 		<?php
             include 'footer.php';
         ?>
-		<!-- End Google Tag Manager (noscript) -->
 	</body>
 </html>
