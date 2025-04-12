@@ -23,6 +23,21 @@ if ($row) {
     $grade_level_id = $row['grade_level_id'];
 }
 
+$grade_number = null;
+if ($grade_level_id) {
+    $sql = "SELECT gradelevel_name FROM gradelevel WHERE gradelevel_id = :grade_level_id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':grade_level_id', $grade_level_id);
+    $stmt->execute();
+    $grade_row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($grade_row) {
+        preg_match('/(\d+)/', $grade_row['gradelevel_name'], $matches);
+        if (isset($matches[1])) {
+            $grade_number = (int)$matches[1];
+        }
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -146,7 +161,7 @@ if ($row) {
                     <h6 class="text-center mb-4">INSTALLMENT/MONTHLY BASIS</h6>
 
                 <div class="row">
-                    <?php if ($grade_level_id == 1): ?>
+                    <?php if ($grade_number == 1): ?>
                         <!-- Grade 1 -->
                         <div class="container">
                             <div class="row d-flex justify-content-center align-items-center">
@@ -200,7 +215,7 @@ if ($row) {
                             </div>
                         </div>
                         </div>
-                    <?php elseif ($grade_level_id == 2): ?>
+                    <?php elseif ($grade_number == 2): ?>
                         <!-- Grade 2 -->
                         <div class="container">
                             <div class="row d-flex justify-content-center align-items-center">
@@ -254,7 +269,7 @@ if ($row) {
                             </div>
                         </div>
                     </div>
-                    <?php elseif ($grade_level_id == 3): ?>
+                    <?php elseif ($grade_number == 3): ?>
                         <!-- Grade 3 -->
                         <div class="container">
                             <div class="row d-flex justify-content-center align-items-center">
@@ -309,7 +324,7 @@ if ($row) {
                             </div>
                         </div>
 
-                    <?php elseif ($grade_level_id == 4): ?>
+                    <?php elseif ($grade_number == 4): ?>
                         <!-- Grade 4 -->
                         <div class="container">
                             <div class="row d-flex justify-content-center align-items-center">
@@ -363,7 +378,7 @@ if ($row) {
                             </div>
                         </div>
                     </div>
-                    <?php elseif ($grade_level_id == 5): ?>
+                    <?php elseif ($grade_number == 5): ?>
                         <!-- Grade 5 -->
                         <div class="container">
                             <div class="row d-flex justify-content-center align-items-center">
@@ -418,7 +433,7 @@ if ($row) {
                         </div>
                     </div>
 
-                    <?php elseif ($grade_level_id == 6): ?>
+                    <?php elseif ($grade_number == 6): ?>
                         <!-- Grade 6 -->
                        <div class="container">
                             <div class="row d-flex justify-content-center align-items-center">
@@ -472,13 +487,13 @@ if ($row) {
                             </div>
                         </div>
                     </div>
-                    <?php elseif ($grade_level_id >= 7 && $grade_level_id <= 10): ?>
-                        <!-- Grade 7-9 -->
+                    <?php elseif ($grade_number >= 7 && $grade_number <= 10): ?>
+                        <!-- Grade 7-10 -->
                         <div class="container">
                             <div class="row d-flex justify-content-center align-items-center">
                                 <div class="col-md-8 mb-4">
                                     <div class="card shadow-sm mx-auto">
-                                    <div class="card-header text-center text-uppercase"><?php echo "Grade " . $grade_level_id; ?></div>
+                                    <div class="card-header text-center text-uppercase"><?php echo "Grade " . $grade_number; ?></div>
 
                                     <div class="card-body">
                                         <table class="table">

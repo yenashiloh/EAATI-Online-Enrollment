@@ -9,16 +9,21 @@ if (!isset($_SESSION['accounting_id'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['student_id']) && isset($_POST['reference_number']) && 
-        isset($_POST['payment_amount']) && isset($_POST['payment_date']) && 
-        isset($_POST['payment_method']) && isset($_POST['balance'])) {
-        
+    if (
+        isset($_POST['student_id']) && isset($_POST['reference_number']) &&
+        isset($_POST['payment_amount']) && isset($_POST['payment_method']) &&
+        isset($_POST['balance'])
+    ) {
+
         $student_id = intval($_POST['student_id']);
         $reference_number = $_POST['reference_number'];
-        $payment_method = $_POST['payment_method']; 
+        $payment_method = $_POST['payment_method'];
         $payment_amount = floatval($_POST['payment_amount']);
-        $payment_date = $_POST['payment_date'];
         $balance = floatval($_POST['balance']);
+
+        // Set Philippine time zone and get current date
+        date_default_timezone_set('Asia/Manila');
+        $payment_date = date('Y-m-d'); // Current date in YYYY-MM-DD format
 
         $sql_get_user_id = "SELECT userId FROM student WHERE student_id = ?";
         if ($stmt_get_user_id = mysqli_prepare($link, $sql_get_user_id)) {
@@ -31,9 +36,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($userId) {
                 $sql = "INSERT INTO transactions (user_id, reference_number, payment_method, payment_amount, payment_date, balance, created_at, status) 
                         VALUES (?, ?, ?, ?, ?, ?, NOW(), 2)";
-                
+
                 if ($stmt = mysqli_prepare($link, $sql)) {
-                    mysqli_stmt_bind_param($stmt, "isssdd", $userId, $reference_number, $payment_method, $payment_date, $payment_amount, $balance);
+                    mysqli_stmt_bind_param($stmt, "issdsd", $userId, $reference_number, $payment_method, $payment_amount, $payment_date, $balance);
 
                     if (mysqli_stmt_execute($stmt)) {
                         header("Location: transact.php?success=1");
@@ -57,4 +62,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Error: Form fields are not set properly.";
     }
 }
-?>

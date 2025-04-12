@@ -1,5 +1,4 @@
 <?php
-
 include 'config.php';
 
 session_start();
@@ -10,6 +9,9 @@ if(!isset($teacher_id)){
    header('location:../login.php');
    exit;
 }
+
+// Get section_id from URL parameter
+$section_id = isset($_GET['section_id']) ? $_GET['section_id'] : 0;
 
 ?>
 
@@ -29,16 +31,6 @@ if(!isset($teacher_id)){
     <?php
         include 'header.php';
         include 'sidebar.php';
-
-        // Fetch user details for editing
-        if(isset($_GET['id'])) {
-            $id = $_GET['id'];
-            $sql = "SELECT * FROM schedules WHERE id = :id";
-            $query = $conn->prepare($sql);
-            $query->bindParam(':id', $id, PDO::PARAM_INT);
-            $query->execute();
-            $student = $query->fetch(PDO::FETCH_ASSOC);
-        }
     ?>
 
         <div class="mobile-menu-overlay"></div>
@@ -70,7 +62,7 @@ if(!isset($teacher_id)){
 
                     <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
                         <div class="pd-20">
-                            <h4 class="h4 mb-1">Encoded Grades List</h4>
+                            <h4 class="h4 mb-1">Enrolled Students List</h4>
                         </div>
 
                         <?php
@@ -82,7 +74,16 @@ if(!isset($teacher_id)){
                             <?php
                             require_once "config1.php";
 
-                            $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id WHERE student.isVerified = 2";
+                            // Modified query to filter by section_id from the URL parameter
+                            $sql = "SELECT student.*, student.name, users.email, student.dob 
+                                    FROM student 
+                                    INNER JOIN users ON student.userId = users.id 
+                                    INNER JOIN encodedstudentsubjects ON encodedstudentsubjects.student_id = student.student_id
+                                    INNER JOIN schedules ON encodedstudentsubjects.schedule_id = schedules.id
+                                    WHERE schedules.section_id = $section_id
+                                    GROUP BY student.student_id
+                                    ORDER BY student.name ASC";
+                            
                             if ($result = mysqli_query($link, $sql)) {
                                 if (mysqli_num_rows($result) > 0) {
                                     echo '<table class="data-table table stripe hover nowrap">';
@@ -105,7 +106,7 @@ if(!isset($teacher_id)){
                                         echo "<td>" . $row['dob'] . "</td>";
                                         echo "<td>" . $row['email'] . "</td>";
                                         echo "<td>";
-                                        echo '<a href="view_card.php?id=' . $row['student_id'] . '&section_id=' . $_GET['section_id'] . '" class="btno" title="View Students" data-bs-toggle="tooltip" data-bs-placement="top">
+                                        echo '<a href="view_card.php?id=' . $row['student_id'] . '&section_id=' . $section_id . '" class="btno" title="View Student Details" data-bs-toggle="tooltip" data-bs-placement="top">
                                         <span class="bi bi-eye-fill" style="font-size:20px;"></span>
                                       </a>';
                                         echo '  ';
@@ -119,10 +120,10 @@ if(!isset($teacher_id)){
                                     echo "</table>";
                                     mysqli_free_result($result);
                                 } else {
-                                    echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
+                                    echo '<div class="alert alert-danger"><em>No students enrolled in this section.</em></div>';
                                 }
                             } else {
-                                echo "Oops! Something went wrong. Please try again later.";
+                                echo '<div class="alert alert-danger"><em>Oops! Something went wrong. Error: ' . mysqli_error($link) . '</em></div>';
                             }
                             mysqli_close($link);
                             ?>

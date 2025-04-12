@@ -5,7 +5,7 @@
 
 		<div class="left-side-bar">
 			<div class="brand-logo">
-                <a href="student_dashboard.php" class="d-flex align-items-center text-decoration-none">
+                <a href="accounting_dashboard.php" class="d-flex align-items-center text-decoration-none">
                     <img src="../asset/img/logo.png" alt="" class="dark-logo" style="width: 60px; height: auto; margin-right: 10px;" />
                     <span class="font-weight-bold text-dark" style="font-size: 20px;">EAATI</span>
                 </a>

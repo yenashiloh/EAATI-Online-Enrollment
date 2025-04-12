@@ -270,7 +270,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <h5 class="modal-title" id="addSubjectModalLabel">Add Subject</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
                                 <?php 
                                 if(isset($error)){
                                     echo '<div class="alert alert-danger">' . htmlspecialchars($error) . '</div>';

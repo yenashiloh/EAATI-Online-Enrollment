@@ -18,7 +18,7 @@ if(!isset($registrar_id)){
 	<head>
 		<!-- Basic Page Info -->
 		<meta charset="utf-8" />
-		<title>	Form 138</title>
+		<title>	Form 137</title>
 
        <?php
          include 'link.php';
@@ -75,7 +75,7 @@ if(!isset($registrar_id)){
                             <?php
                             require_once "config1.php";
 
-                            $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id WHERE student.isVerified = 2";
+                            $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id WHERE student.isVerified = 1";
                             if ($result = mysqli_query($link, $sql)) {
                                 if (mysqli_num_rows($result) > 0) {
                                     echo '<table class="data-table table stripe hover nowrap">';
