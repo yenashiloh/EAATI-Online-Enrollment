@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 31, 2025 at 11:03 PM
+-- Generation Time: Apr 30, 2025 at 02:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -72,6 +72,15 @@ CREATE TABLE `encodedgrades` (
   `status` varchar(50) NOT NULL DEFAULT 'For Review'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `encodedgrades`
+--
+
+INSERT INTO `encodedgrades` (`encodedgrades_id`, `userId`, `student_id`, `schedule_id`, `quarter1`, `quarter2`, `quarter3`, `quarter4`, `status`) VALUES
+(9, 73, 3, 5, 90.00, 99.00, 98.00, 95.00, 'For Review'),
+(10, 72, 2, 5, 98.00, 99.00, 95.00, 94.00, 'For Review'),
+(11, 74, 4, 6, 97.00, 94.00, 92.00, 90.00, 'Approved');
+
 -- --------------------------------------------------------
 
 --
@@ -90,7 +99,10 @@ CREATE TABLE `encodedstudentsubjects` (
 
 INSERT INTO `encodedstudentsubjects` (`encoded_id`, `student_id`, `schedule_id`) VALUES
 (1, 1, 4),
-(2, 2, 5);
+(2, 2, 5),
+(3, 3, 5),
+(4, 4, 6),
+(5, 5, 7);
 
 -- --------------------------------------------------------
 
@@ -111,14 +123,14 @@ CREATE TABLE `enrollmentschedule` (
 --
 
 INSERT INTO `enrollmentschedule` (`enrollmentschedule_id`, `gradelevel_id`, `start_date`, `end_date`, `status`) VALUES
-(4, 7, '2025-03-10', '2025-04-01', 'Approved'),
-(5, 8, '2025-03-10', '2025-04-01', 'Approved'),
-(6, 9, '2025-03-10', '2025-04-01', 'Approved'),
 (7, 16, '2025-03-03', '2025-03-19', 'Approved'),
 (8, 17, '2025-03-03', '2025-03-19', 'Approved'),
-(14, 2, '2025-03-11', '2025-04-05', 'For Review'),
-(15, 3, '2025-03-11', '2025-04-05', 'For Review'),
-(16, 4, '2025-03-11', '2025-04-05', 'For Review');
+(14, 2, '2025-03-11', '2025-04-05', 'Approved'),
+(15, 3, '2025-03-11', '2025-04-05', 'Approved'),
+(16, 4, '2025-03-11', '2025-04-05', 'Approved'),
+(22, 7, '2025-04-03', '2025-04-30', 'Approved'),
+(23, 8, '2025-04-03', '2025-04-30', 'Approved'),
+(24, 9, '2025-04-03', '2025-04-30', 'Approved');
 
 -- --------------------------------------------------------
 
@@ -144,7 +156,10 @@ CREATE TABLE `father_information` (
 
 INSERT INTO `father_information` (`father_id`, `student_id`, `userId`, `father_name`, `telephone_father`, `houseNo_father`, `street_father`, `barangay_father`, `municipality_father`) VALUES
 (21, 1, 71, 'Mario F Eugenio', '09102258953', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City'),
-(22, 2, 72, 'Mario F Eugenio', '09102258953', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City');
+(22, 2, 72, 'Mario F Eugenio', '09102258953', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City'),
+(23, 3, 73, 'Mario F. Eugenio', '953659', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City'),
+(24, 4, 74, 'Mario F Eugenio', '09102258953', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City'),
+(25, 5, 75, 'Mario F Eugenio', '09102258953', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City');
 
 -- --------------------------------------------------------
 
@@ -185,7 +200,7 @@ INSERT INTO `gradelevel` (`gradelevel_id`, `gradelevel_name`, `gradelevel_descri
 (10, 'Grade 7', 'Grade 7'),
 (12, 'Grade 8', 'Grade 8'),
 (16, 'Grade 9', 'Grade 9'),
-(17, 'Grade 10', 'Grade 10');
+(19, 'Grade 10', 'Grade 10 Description');
 
 -- --------------------------------------------------------
 
@@ -211,7 +226,10 @@ CREATE TABLE `mother_information` (
 
 INSERT INTO `mother_information` (`mother_id`, `student_id`, `userId`, `mother_name`, `telephone_mother`, `houseNo_mother`, `street_mother`, `barangay_mother`, `municipality_mother`) VALUES
 (19, 1, 71, 'Gina B Eugenio', '09102258953', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City'),
-(20, 2, 72, 'Gina B Eugenio', '09102258953', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City');
+(20, 2, 72, 'Gina B Eugenio', '09102258953', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City'),
+(21, 3, 73, 'Gina B. Eugenio', '665943', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City'),
+(22, 4, 74, 'Gina B Eugenio', '09102258953', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City'),
+(23, 5, 75, 'Gina B Eugenio', '09102258953', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City');
 
 -- --------------------------------------------------------
 
@@ -222,15 +240,10 @@ INSERT INTO `mother_information` (`mother_id`, `student_id`, `userId`, `mother_n
 CREATE TABLE `payments` (
   `payment_id` int(11) NOT NULL,
   `grade_level` varchar(50) DEFAULT NULL,
-  `tuition_june_to_march` decimal(10,2) DEFAULT NULL,
-  `partial_upon` decimal(10,2) DEFAULT NULL,
+  `registration_fee` decimal(10,2) DEFAULT NULL,
+  `tuition_fee` decimal(10,2) DEFAULT NULL,
   `total_whole_year` decimal(10,2) DEFAULT NULL,
-  `pe_uniform` decimal(10,2) DEFAULT NULL,
-  `books` decimal(10,2) DEFAULT NULL,
-  `school_uniform` decimal(10,2) DEFAULT NULL,
   `upon_enrollment` decimal(10,2) DEFAULT NULL,
-  `upon_enrollment_divided` decimal(10,2) DEFAULT NULL,
-  `partial_upon_divided` decimal(10,2) DEFAULT NULL,
   `miscellaneous_fee` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -238,11 +251,9 @@ CREATE TABLE `payments` (
 -- Dumping data for table `payments`
 --
 
-INSERT INTO `payments` (`payment_id`, `grade_level`, `tuition_june_to_march`, `partial_upon`, `total_whole_year`, `pe_uniform`, `books`, `school_uniform`, `upon_enrollment`, `upon_enrollment_divided`, `partial_upon_divided`, `miscellaneous_fee`) VALUES
-(2, '2', NULL, 200.00, 6000.00, NULL, NULL, NULL, 1000.00, NULL, NULL, 500.00),
-(3, '3', NULL, NULL, 6500.00, NULL, NULL, NULL, 1000.00, NULL, NULL, 500.00),
-(4, '4', NULL, NULL, 7000.00, NULL, NULL, NULL, 1000.00, NULL, NULL, 500.00),
-(5, '9', NULL, 0.00, 5000.00, NULL, NULL, NULL, 2000.00, NULL, NULL, 600.00);
+INSERT INTO `payments` (`payment_id`, `grade_level`, `registration_fee`, `tuition_fee`, `total_whole_year`, `upon_enrollment`, `miscellaneous_fee`) VALUES
+(1, '2', 2000.00, 8925.00, 25775.00, NULL, 1628.00),
+(3, '9', 2000.00, 10290.00, 27140.00, NULL, 7350.00);
 
 -- --------------------------------------------------------
 
@@ -265,7 +276,9 @@ INSERT INTO `rooms` (`room_id`, `gradelevel_id`, `room_name`, `room_description`
 (2, 8, '102', 'Room 1021'),
 (4, 3, '105', 'Room 105'),
 (5, 10, '106', 'Room 106'),
-(6, 2, '805', 'Example only');
+(6, 2, '805', 'Example only'),
+(7, 4, '202', 'Description'),
+(8, 9, '203', 'Example Description');
 
 -- --------------------------------------------------------
 
@@ -292,7 +305,9 @@ CREATE TABLE `schedules` (
 
 INSERT INTO `schedules` (`id`, `grade_level`, `subject_name`, `teacher_id`, `start_time`, `end_time`, `section_id`, `room_id`, `subject_id`, `day`) VALUES
 (3, 4, 'Science', 15, '08:00:00', '10:00:00', 2, 2, 1, 'Monday'),
-(5, 7, 'Science', 15, '09:30:00', '11:00:00', 4, 4, 1, 'Wednesday');
+(5, 7, 'Science', 15, '09:30:00', '11:00:00', 4, 4, 1, 'Wednesday'),
+(6, 8, 'Science', 15, '08:00:00', '11:30:00', 8, 2, 1, 'Tuesday'),
+(7, 9, 'Araling Panlipunan', 26, '08:30:00', '10:00:00', 7, 5, 4, 'Monday');
 
 -- --------------------------------------------------------
 
@@ -319,7 +334,8 @@ INSERT INTO `sections` (`section_id`, `gradelevel_id`, `section_name`, `section_
 (4, 7, 'Section 1', 'Section 1 Description', 50),
 (6, 8, 'Section 1', 'Section 1 Description', 50),
 (7, 9, 'Section 1', 'Section 1 Description', 35),
-(8, 10, 'Section 1', 'Section 1 Description', 45);
+(8, 10, 'Section 1', 'Section 1 Description', 45),
+(10, 12, 'Section 1', 'Section Description', 20);
 
 -- --------------------------------------------------------
 
@@ -357,7 +373,10 @@ CREATE TABLE `student` (
 
 INSERT INTO `student` (`student_id`, `userId`, `grade_level_id`, `name`, `dob`, `pob`, `email`, `age`, `gender`, `student_house_number`, `student_street`, `student_barangay`, `student_municipality`, `guardian`, `previous_school`, `school_address`, `isVerified`, `grade_level`, `requirements`, `image_path`, `isPaidUpon`) VALUES
 (1, 71, 9, 'Shiloh Eugenio', '2006-01-01', 'Fugiat dolores ipsa', 'shiloheugenio21@gmail.com', 19, 'Male', '145', 'Pinagsama Taguig City', 'Rizal', 'Taguig City', 'Arriane Camille Pamintuan', 'Fort Bonifacio High School', 'Id voluptatem Volup', NULL, NULL, '[\"..\\/uploads\\/Template_Application-for-Graduation_WEDNESDAY.pdf\"]', 'uploads/images/unnamed.jpg', 0),
-(2, 72, 7, 'Shiloh Eugenio', '2004-03-03', 'Fugiat dolores ipsa', 'seugenio.k11833184@umak.edu.ph', 21, 'Male', '145', 'Pinagsama Taguig City', 'Rizal', 'Taguig City', 'Arriane Camille Pamintuan', 'Fort Bonifacio High School', 'Id voluptatem Volup', 1, NULL, '[\"..\\/uploads\\/Emmanuel E_RESUME.pdf\"]', 'uploads/images/unnamed.jpg', 0);
+(2, 72, 7, 'Jhoanna Robles', '2004-03-03', 'Fugiat dolores ipsa', 'seugenio.k11833184@umak.edu.ph', 21, 'Male', '145', 'Pinagsama Taguig City', 'Rizal', 'Taguig City', 'Arriane Camille Pamintuan', 'Fort Bonifacio High School', 'Id voluptatem Volup', 1, NULL, '[\"..\\/uploads\\/Emmanuel E_RESUME.pdf\"]', 'uploads/images/unnamed.jpg', 0),
+(3, 73, 7, 'Arrianne  Camille', '2003-06-10', 'Makati City', 'yenaaacuteee@gmail.com', 21, 'Female', '1223', 'Blueboz St. Brgy. Pinagsama', 'Rizal', 'Taguig City', 'Arriane Camille Pamintuan', 'Fort Bonifacio High School', 'Id voluptatem Volup', 1, NULL, '[\"..\\/uploads\\/Untitled-document.pdf\"]', 'uploads/images/24cb3cce-bcf2-414a-9964-9f96ce1980c1.jpg', 0),
+(4, 74, 2, 'Aaron Doe', '2009-03-05', 'Fugiat dolores ipsa', 'iveforever6@gmail.com', 16, 'Male', '145', 'Pinagsama Taguig City', 'Rizal', 'Taguig City', 'Arriane Camille Pamintuan', 'Fort Bonifacio High School', 'Id voluptatem Volup', 1, NULL, '[\"..\\/uploads\\/Untitled-document.pdf\"]', 'uploads/images/24cb3cce-bcf2-414a-9964-9f96ce1980c1.jpg', 0),
+(5, 75, 9, 'Ed Penalber', '2008-02-28', 'Fugiat dolores ipsa', 'iveforever6@gmail.com', 17, 'Male', '145', 'Pinagsama Taguig City', 'Rizal', 'Taguig City', 'Arriane Camille Pamintuan', 'Fort Bonifacio High School', 'Id voluptatem Volup', 1, NULL, '[\"..\\/uploads\\/EUGENIO_RECEIPT.pdf\"]', 'uploads/images/24cb3cce-bcf2-414a-9964-9f96ce1980c1.jpg', 0);
 
 -- --------------------------------------------------------
 
@@ -379,7 +398,9 @@ CREATE TABLE `subjects` (
 
 INSERT INTO `subjects` (`subject_id`, `subject_name`, `subject_description`, `grade_level_id`, `teacher_id`) VALUES
 (1, 'Science', 'Science Description', 4, 15),
-(2, 'English', 'English Description', 4, 15);
+(2, 'English', 'English Description', 4, 15),
+(3, 'English', 'Example Description', 3, 15),
+(4, 'Araling Panlipunan', 'Subject Descriptiom', 9, 26);
 
 -- --------------------------------------------------------
 
@@ -391,7 +412,7 @@ CREATE TABLE `transactions` (
   `transaction_id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
   `payment_amount` decimal(10,2) DEFAULT NULL,
-  `payment_method` varchar(20) DEFAULT NULL,
+  `payment_method` varchar(255) DEFAULT NULL,
   `gcash_number` varchar(20) DEFAULT NULL,
   `reference_number` varchar(20) DEFAULT NULL,
   `screenshot_path` varchar(255) DEFAULT NULL,
@@ -408,7 +429,10 @@ CREATE TABLE `transactions` (
 --
 
 INSERT INTO `transactions` (`transaction_id`, `user_id`, `payment_amount`, `payment_method`, `gcash_number`, `reference_number`, `screenshot_path`, `payment_type`, `installment_type`, `balance`, `created_at`, `status`, `payment_date`) VALUES
-(2, 72, 2025.00, 'Cash', NULL, '2215439328', NULL, NULL, NULL, 0.00, '2025-03-31 11:29:47', 2, '0000-00-00');
+(1, 71, 5428.00, 'Installment (20% DP)', NULL, '1875344191', NULL, NULL, NULL, 21712.00, '2025-04-30 06:14:15', 2, '2025-04-30'),
+(2, 71, 10290.00, 'Installment (20% DP)', NULL, '7411292207', NULL, NULL, NULL, 11422.00, '2025-04-30 06:14:56', 2, '2025-04-30'),
+(3, 71, 10290.00, 'Installment (30% DP)', NULL, '8189449982', NULL, NULL, NULL, 1132.00, '2025-04-30 06:15:51', 2, '2025-04-30'),
+(4, 71, 1132.00, 'Installment (30% DP)', NULL, '5953977331', NULL, NULL, NULL, 0.00, '2025-04-30 06:28:01', 2, '2025-04-30');
 
 -- --------------------------------------------------------
 
@@ -446,7 +470,10 @@ INSERT INTO `users` (`id`, `username`, `password`, `role`, `first_name`, `last_n
 (27, 'louise', '$2y$10$aQVhXYY9PwLEiBEPxto3luB4lP.UafdroDhDn2ly3yHEHRM/YdyDC', 'student', 'lou', 'pon', '099999', 'knize.gaming@gmail.com', NULL, 1, NULL),
 (29, '098765432123', '$2y$10$YKJ9./xIL4O26.G1aF9afexuWx10u3XbB.Xd4faBixLKKpgvt/dUK', 'parent', 'louise ruzzele', 'ponciano', '09917139528', 'louiseruzzelep@gmail.com', NULL, 1, NULL),
 (71, 'shiloheugenio', '$2y$10$Y56wls/wZhNtjnTr9ikAyubMusF9klcdyJGVGjzoPPeZ8pUPHzoJm', 'student', 'Shiloh', 'Eugenio', '09102258953', 'shiloheugenio21@gmail.com', NULL, 1, NULL),
-(72, 'shiii', '$2y$10$VSKtsgFkEMVbRj4lyW3HEet7TBOox9Ql3fwrzrC9e34VlwWbEPaT.', 'student', 'Shiloh', 'Eugenio', '09102258953', 'seugenio.k11833184@umak.edu.ph', NULL, 1, NULL);
+(72, 'shiii', '$2y$10$VSKtsgFkEMVbRj4lyW3HEet7TBOox9Ql3fwrzrC9e34VlwWbEPaT.', 'student', 'Jhoanna', 'Robles', '09102258953', 'seugenio.k11833184@umak.edu.ph', NULL, 1, NULL),
+(73, 'arrianecamille21', '$2y$10$jwzL4PPjFMfsxjj2Qj2/1.sbx.pv1CES9/4cKiXdEbM4XSii/Ihti', 'student', 'Arrianne ', 'Camille', '09631158796', 'yenaaacuteee@gmail.com', NULL, 1, NULL),
+(74, 'shieugenio', '$2y$10$qMtFfk38BMgtw5SUeb/J3.S129cRJoUcmDjIPKL0haT0TxdMmr/0a', 'student', 'Aaron', 'Doe', '09168759399', 'example-email@gmail.com', 'bd0652805d9888363f75bf6bac68d221f416f1512ed6bff0867d641e8a4f5c95', 0, '2025-04-12 22:08:55'),
+(75, 'edpenalber', '$2y$10$xcRx9sJCGGVxQrXB9h7yEuevLKN/B7EVP660eLZTWnb2qzj0607Xa', 'student', 'Ed', 'Penalber', '09457878924', 'iveforever6@gmail.com', NULL, 1, NULL);
 
 --
 -- Indexes for dumped tables
@@ -583,25 +610,25 @@ ALTER TABLE `approvalschedule`
 -- AUTO_INCREMENT for table `encodedgrades`
 --
 ALTER TABLE `encodedgrades`
-  MODIFY `encodedgrades_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `encodedgrades_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `encodedstudentsubjects`
 --
 ALTER TABLE `encodedstudentsubjects`
-  MODIFY `encoded_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `encoded_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `enrollmentschedule`
 --
 ALTER TABLE `enrollmentschedule`
-  MODIFY `enrollmentschedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `enrollmentschedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `father_information`
 --
 ALTER TABLE `father_information`
-  MODIFY `father_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `father_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `generatedcor`
@@ -613,37 +640,37 @@ ALTER TABLE `generatedcor`
 -- AUTO_INCREMENT for table `gradelevel`
 --
 ALTER TABLE `gradelevel`
-  MODIFY `gradelevel_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `gradelevel_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `mother_information`
 --
 ALTER TABLE `mother_information`
-  MODIFY `mother_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `mother_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `schedules`
 --
 ALTER TABLE `schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `sections`
 --
 ALTER TABLE `sections`
-  MODIFY `section_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `section_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `student`
@@ -655,19 +682,19 @@ ALTER TABLE `student`
 -- AUTO_INCREMENT for table `subjects`
 --
 ALTER TABLE `subjects`
-  MODIFY `subject_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `subject_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- Constraints for dumped tables
