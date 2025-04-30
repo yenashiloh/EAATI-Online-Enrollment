@@ -119,9 +119,10 @@ if (!isset($accounting_id)) {
                                 <tr>
                                     <th>No.</th>
                                     <th>Grade Level</th>
-                                    <th>Upon Enrollment</th>
+                                    <th>Registration Fee</th>
+                                    <th>Tuition Fee</th>
                                     <th>Miscellaneous Fee</th>
-                                    <th>Total Tuition Fee</th>
+                                    <th>Total Fee</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -136,7 +137,8 @@ if (!isset($accounting_id)) {
 											echo "<tr>";
 											echo "<td>" . $counter++ . "</td>";
 											echo "<td>" . $row['gradelevel_name'] . "</td>";
-											echo "<td>" . number_format($row['upon_enrollment'], 2) . "</td>";
+											echo "<td>" . number_format($row['registration_fee'], 2) . "</td>";
+                                            echo "<td>" . number_format($row['tuition_fee'], 2) . "</td>";
 											echo "<td>" . number_format($row['miscellaneous_fee'], 2) . "</td>";
 											echo "<td>" . number_format($row['total_whole_year'], 2) . "</td>";
 											echo "<td>";

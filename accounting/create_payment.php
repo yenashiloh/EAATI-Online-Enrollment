@@ -11,18 +11,10 @@ if (!isset($accounting_id)) {
     if (isset($_POST['add_payment'])) {
         // Database connection assumed to be established in config.php
         $grade_level = $_POST['grade_level'];
-        $upon_enrollment = $_POST['upon_enrollment'];
-        $tuition_june_to_march = $_POST['tuition_june_to_march'];
-        $partial_upon = $_POST['partial_upon'];
-        $total_whole_year = $_POST['total_whole_year'];
-        $pe_uniform = $_POST['pe_uniform'];
-        $books = $_POST['books'];
-        $school_uniform = $_POST['school_uniform'];
-        $miscellaneous_fee = $_POST['miscellaneous_fee'];
-
-        // Divided values
-        $upon_enrollment_divided = $_POST['upon_enrollment_divided'];
-        $partial_upon_divided = $_POST['partial_upon_divided'];
+        $upon_enrollment = $_POST['upon_enrollment']; // Registration Fee
+        $tuition_fee = $_POST['tuition_fee']; // Tuition Fee
+        $miscellaneous_fee = $_POST['miscellaneous_fee']; // Miscellaneous Fee
+        $total_whole_year = $_POST['total_whole_year']; // Total Fee
 
         // Check if grade level already exists
         $checkSql = "SELECT * FROM payments WHERE grade_level = :grade_level";
@@ -34,22 +26,14 @@ if (!isset($accounting_id)) {
             $error = "This grade level already has a payment record.";
         } else {
             // Proceed with insertion
-            $sql = "INSERT INTO payments (grade_level, upon_enrollment, tuition_june_to_march, partial_upon, total_whole_year, pe_uniform, books, school_uniform, miscellaneous_fee,
-            upon_enrollment_divided, partial_upon_divided) 
-            VALUES (:grade_level, :upon_enrollment, :tuition_june_to_march, :partial_upon, :total_whole_year, :pe_uniform, :books, :school_uniform, :miscellaneous_fee,
-            :upon_enrollment_divided, :partial_upon_divided)";
+            $sql = "INSERT INTO payments (grade_level, registration_fee, tuition_fee, miscellaneous_fee, total_whole_year) 
+            VALUES (:grade_level, :registration_fee, :tuition_fee, :miscellaneous_fee, :total_whole_year)";
             $query = $conn->prepare($sql);
             $query->bindParam(':grade_level', $grade_level, PDO::PARAM_STR);
-            $query->bindParam(':upon_enrollment', $upon_enrollment, PDO::PARAM_STR);
-            $query->bindParam(':tuition_june_to_march', $tuition_june_to_march, PDO::PARAM_STR);
-            $query->bindParam(':partial_upon', $partial_upon, PDO::PARAM_STR);
-            $query->bindParam(':total_whole_year', $total_whole_year, PDO::PARAM_STR);
-            $query->bindParam(':pe_uniform', $pe_uniform, PDO::PARAM_STR);
-            $query->bindParam(':books', $books, PDO::PARAM_STR);
-            $query->bindParam(':school_uniform', $school_uniform, PDO::PARAM_STR);
+            $query->bindParam(':registration_fee', $upon_enrollment, PDO::PARAM_STR);
+            $query->bindParam(':tuition_fee', $tuition_fee, PDO::PARAM_STR);
             $query->bindParam(':miscellaneous_fee', $miscellaneous_fee, PDO::PARAM_STR);
-            $query->bindParam(':upon_enrollment_divided', $upon_enrollment_divided, PDO::PARAM_STR);
-            $query->bindParam(':partial_upon_divided', $partial_upon_divided, PDO::PARAM_STR);
+            $query->bindParam(':total_whole_year', $total_whole_year, PDO::PARAM_STR);
 
             if ($query->execute()) {
                 $msg = "Payment Added Successfully!";
@@ -144,21 +128,27 @@ if (!isset($accounting_id)) {
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="upon_enrollment" class="form-label">Upon Enrollment</label>
-                            <input type="text" class="form-control" id="upon_enrollment" readonly>
+                            <label for="upon_enrollment" class="form-label">Registration Fee</label>
+                            <input type="text" class="form-control" id="upon_enrollment">
                             <input type="hidden" name="upon_enrollment" id="upon_enrollment_hidden">
                         </div>
 
                         <div class="col-md-6 mb-3">
+                            <label for="tuition_fee" class="form-label">Tuition Fee (10 Months)</label>
+                            <input type="text" class="form-control" id="tuition_fee">
+                            <input type="hidden" name="tuition_fee" id="tuition_fee_hidden">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
                             <label for="miscellaneous_fee" class="form-label">Miscellaneous Fee</label>
-                            <input type="text" class="form-control" id="miscellaneous_fee" readonly>
+                            <input type="text" class="form-control" id="miscellaneous_fee">
                             <input type="hidden" name="miscellaneous_fee" id="miscellaneous_fee_hidden">
                         </div>
 
                         <!-- Total Tuition Fee  -->
                         <div class="col-6 mb-3">
-                            <label for="total_whole_year" class="form-label">Total Tuition Fee</label>
-                            <input type="text" class="form-control" id="total_whole_year" readonly>
+                            <label for="total_whole_year" class="form-label">Total Fee</label>
+                            <input type="text" class="form-control" id="total_whole_year">
                             <input type="hidden" name="total_whole_year" id="total_whole_year_hidden">
                         </div>
 
@@ -190,79 +180,143 @@ if (!isset($accounting_id)) {
     ?>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get the grade level select element
-            const gradeLevelSelect = document.getElementById('grade_level');
+    document.addEventListener('DOMContentLoaded', function() {
+    // Grade level fee data
+    const gradeLevelFees = {
+        'Grade 1': {
+            registrationFee: 2000,
+            tuitionFee: 8925,
+            miscellaneousFee: 1628,
+            totalFee: 25775
+        },
+        'Grade 2': {
+            registrationFee: 2000,
+            tuitionFee: 9450,
+            miscellaneousFee: 1680,
+            totalFee: 26300
+        },
+        'Grade 3': {
+            registrationFee: 2000,
+            tuitionFee: 9975,
+            miscellaneousFee: 1733,
+            totalFee: 26300
+        },
+        'Grade 4': {
+            registrationFee: 2000,
+            tuitionFee: 10290,
+            miscellaneousFee: 1764,
+            totalFee: 27140
+        },
+        'Grade 5': {
+            registrationFee: 2000,
+            tuitionFee: 10290,
+            miscellaneousFee: 7350,
+            totalFee: 27140
+        },
+        'Grade 6': {
+            registrationFee: 2000,
+            tuitionFee: 10290,
+            miscellaneousFee: 7350,
+            totalFee: 27140
+        },
+        'Grade 7': {
+            registrationFee: 2000,
+            tuitionFee: 1180,
+            miscellaneousFee: 5000,
+            totalFee: 27000
+        },
+        'Grade 8': {
+            registrationFee: 2000,
+            tuitionFee: 1180,
+            miscellaneousFee: 5000,
+            totalFee: 27000
+        },
+        'Grade 9': {
+            registrationFee: 2000,
+            tuitionFee: 1180,
+            miscellaneousFee: 5000,
+            totalFee: 27000
+        },
+        'Grade 10': {
+            registrationFee: 2000,
+            tuitionFee: 1180,
+            miscellaneousFee: 5000,
+            totalFee: 27000
+        }
+    };
 
-            // Define the tuition fees for each grade level name instead of ID
-            const tuitionFees = {
-                'Grade 1': 8925,
-                'Grade 2': 9450,
-                'Grade 3': 9975,
-                'Grade 4': 10290,
-                'Grade 5': 10290,
-                'Grade 6': 10290,
-                'Grade 7': 10620,
-                'Grade 8': 10620,
-                'Grade 9': 10620,
-                'Grade 10': 10620
-            };
+    // Get form elements
+    const gradeLevelSelect = document.getElementById('grade_level');
+    const registrationFeeInput = document.getElementById('upon_enrollment');
+    const registrationFeeHidden = document.getElementById('upon_enrollment_hidden');
+    const tuitionFeeInput = document.getElementById('tuition_fee');
+    const tuitionFeeHidden = document.getElementById('tuition_fee_hidden');
+    const miscellaneousFeeInput = document.getElementById('miscellaneous_fee');
+    const miscellaneousFeeHidden = document.getElementById('miscellaneous_fee_hidden');
+    const totalFeeInput = document.getElementById('total_whole_year');
+    const totalFeeHidden = document.getElementById('total_whole_year_hidden');
 
-            // Function to format number with commas
-            function formatNumber(num) {
-                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            }
+    // Function to update hidden fields when visible fields change
+    function updateHiddenField(visibleField, hiddenField) {
+        hiddenField.value = visibleField.value;
+    }
 
-            // Add event listener to the grade level select
-            gradeLevelSelect.addEventListener('change', function() {
-                // Get the selected option's text (grade level name) instead of value (ID)
-                const selectedGradeName = this.options[this.selectedIndex].text;
+    // Add event listeners to input fields for manual changes
+    registrationFeeInput.addEventListener('input', function() {
+        updateHiddenField(registrationFeeInput, registrationFeeHidden);
+    });
 
-                // Get the input fields
-                const uponEnrollmentField = document.getElementById('upon_enrollment');
-                const uponEnrollmentHidden = document.getElementById('upon_enrollment_hidden');
-                const miscellaneousField = document.getElementById('miscellaneous_fee');
-                const miscellaneousHidden = document.getElementById('miscellaneous_fee_hidden');
-                const totalTuitionField = document.getElementById('total_whole_year');
-                const totalTuitionHidden = document.getElementById('total_whole_year_hidden');
+    tuitionFeeInput.addEventListener('input', function() {
+        updateHiddenField(tuitionFeeInput, tuitionFeeHidden);
+    });
 
-                // If a valid grade level is selected
-                if (selectedGradeName && tuitionFees[selectedGradeName]) {
-                    // Set fixed "Upon Enrollment" fee (2000)
-                    const enrollmentFee = 2000;
+    miscellaneousFeeInput.addEventListener('input', function() {
+        updateHiddenField(miscellaneousFeeInput, miscellaneousFeeHidden);
+    });
 
-                    // Get tuition fee for the selected grade
-                    const tuitionFee = tuitionFees[selectedGradeName];
+    totalFeeInput.addEventListener('input', function() {
+        updateHiddenField(totalFeeInput, totalFeeHidden);
+    });
 
-                    // Calculate miscellaneous fee (10% of tuition fee)
-                    const miscFee = Math.floor(tuitionFee * 0.1);
+    // Function to populate form fields based on selected grade level
+    gradeLevelSelect.addEventListener('change', function() {
+        const selectedOption = gradeLevelSelect.options[gradeLevelSelect.selectedIndex];
+        const selectedGradeName = selectedOption.text;
+        
+        if (gradeLevelFees[selectedGradeName]) {
+            const fees = gradeLevelFees[selectedGradeName];
+            
+            // Update visible and hidden fields
+            registrationFeeInput.value = fees.registrationFee;
+            registrationFeeHidden.value = fees.registrationFee;
+            
+            tuitionFeeInput.value = fees.tuitionFee;
+            tuitionFeeHidden.value = fees.tuitionFee;
+            
+            miscellaneousFeeInput.value = fees.miscellaneousFee;
+            miscellaneousFeeHidden.value = fees.miscellaneousFee;
+            
+            totalFeeInput.value = fees.totalFee;
+            totalFeeHidden.value = fees.totalFee;
+        } else {
+            // Clear fields if no matching grade level
+            registrationFeeInput.value = '';
+            registrationFeeHidden.value = '';
+            tuitionFeeInput.value = '';
+            tuitionFeeHidden.value = '';
+            miscellaneousFeeInput.value = '';
+            miscellaneousFeeHidden.value = '';
+            totalFeeInput.value = '';
+            totalFeeHidden.value = '';
+        }
+    });
 
-                    // Set the formatted values for display
-                    uponEnrollmentField.value = formatNumber(enrollmentFee);
-                    miscellaneousField.value = formatNumber(miscFee);
-                    totalTuitionField.value = formatNumber(tuitionFee);
-
-                    // Set the hidden values for form submission
-                    uponEnrollmentHidden.value = enrollmentFee;
-                    miscellaneousHidden.value = miscFee;
-                    totalTuitionHidden.value = tuitionFee;
-                } else {
-                    // Clear fields if no valid grade level is selected
-                    uponEnrollmentField.value = '';
-                    miscellaneousField.value = '';
-                    totalTuitionField.value = '';
-                    uponEnrollmentHidden.value = '';
-                    miscellaneousHidden.value = '';
-                    totalTuitionHidden.value = '';
-                }
-            });
-
-            // Form validation function
-            window.valid = function() {
-                // You can add validation logic here
-                return true;
-            };
-        });
+    // Initialize hidden fields with visible field values on page load
+    if (registrationFeeInput.value) updateHiddenField(registrationFeeInput, registrationFeeHidden);
+    if (tuitionFeeInput.value) updateHiddenField(tuitionFeeInput, tuitionFeeHidden);
+    if (miscellaneousFeeInput.value) updateHiddenField(miscellaneousFeeInput, miscellaneousFeeHidden);
+    if (totalFeeInput.value) updateHiddenField(totalFeeInput, totalFeeHidden);
+});
     </script>
 </body>
 

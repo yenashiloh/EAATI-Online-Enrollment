@@ -159,12 +159,12 @@ if (!isset($accounting_id)) {
                             echo "<thead>";
                             echo "<tr>";
                             echo "<th>No.</th>";
+                            echo "<th>Payment Date</th>";
                             echo "<th>Student Name</th>";
                             echo "<th>Reference No.</th>";
                             echo "<th>Payment Mode</th>";
                             echo "<th>Payment Amount</th>";
                             echo "<th>Balance</th>";
-                            echo "<th>Payment Date</th>";
                             echo "<th>Print</th>";
                             echo "</tr>";
                             echo "</thead>";
@@ -174,6 +174,7 @@ if (!isset($accounting_id)) {
                             while ($row = mysqli_fetch_array($result)) {
                                 echo "<tr>";
                                 echo "<td>" . $count . "</td>"; // Display counter
+                                echo "<td>" . date("F j, Y", strtotime($row["created_at"])) . "</td>";
                                 echo "<td>" . (isset($row['name']) ? $row['name'] : 'N/A') . "</td>";
                                 echo "<td>" . htmlspecialchars($row['reference_number']) . "</td>";
                                 echo "<td>" . htmlspecialchars($row['payment_method']);
@@ -183,9 +184,7 @@ if (!isset($accounting_id)) {
                                 echo "</td>";
                                 echo "<td>" . '₱' . number_format($row["payment_amount"], 2) . "</td>";
                                 echo "<td>" . '₱' . number_format($row["balance"], 2) . "</td>";
-                                echo "<td>" . date("F j, Y", strtotime($row["created_at"])) . "</td>";
                                 echo "</td>";
-
                                 echo "<td>";
                                 // Use reference_number as a fallback if ID column not found or not available
                                 if (isset($row[$id_column])) {
@@ -221,7 +220,7 @@ if (!isset($accounting_id)) {
         </div>
     </div>
 
-    <!-- Add Transaction Modal -->
+  <!-- Add Transaction Modal -->
     <div class="modal fade" id="addTransactionModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -252,20 +251,6 @@ if (!isset($accounting_id)) {
                         </div>
 
                         <div class="mb-3">
-                            <label for="totalTuition" class="form-label">Total Tuition Fee</label>
-                            <input type="text" class="form-control" id="totalTuition" name="total_tuition" readonly>
-                            <input type="hidden" id="totalTuitionHidden" name="total_tuition_hidden">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="referenceNumber" class="form-label">Receipt Number</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="referenceNumber" name="reference_number" required>
-                                <button type="button" class="btn btn-secondary" id="generateReferenceNumber">Generate</button>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
                             <label for="paymentMethod" class="form-label">Payment Mode</label>
                             <select class="custom-select col-12" id="paymentMethod" name="payment_method">
                                 <option value="Cash Basis">Plan A - Cash Basis (Full Payment)</option>
@@ -281,10 +266,19 @@ if (!isset($accounting_id)) {
                         </div>
 
                         <div class="mb-3">
+                            <label for="totalTuition" class="form-label">Total Fee</label>
+                            <input type="text" class="form-control" id="totalTuition" name="total_whole_year" readonly>
+                            <input type="hidden" id="totalTuitionHidden" name="total_whole_year_hidden">
+                        </div>
+
+                        <div class="mb-3">
                             <label for="balance" class="form-label">Balance</label>
                             <input type="text" class="form-control" id="balance" name="balance" readonly>
                             <input type="hidden" id="balanceHidden" name="balance_hidden">
                         </div>
+
+                        <!-- Hidden field for reference number -->
+                        <input type="hidden" name="reference_number" value="">
 
                         <div class="modal-footer px-0 pb-0">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -341,139 +335,163 @@ if (!isset($accounting_id)) {
         });
     </script>
     <script>
-        $(document).ready(function() {
-            // Generate reference number functionality
-            $('#generateReferenceNumber').click(function() {
-                // Generate a random reference number with 10 digits
-                var referenceNumber = '';
-                for (var i = 0; i < 10; i++) {
-                    referenceNumber += Math.floor(Math.random() * 10);
-                }
-                $('#referenceNumber').val(referenceNumber);
-            });
-
-            // Handle grade level change
-            $('#gradeLevel').change(function() {
-                var gradeId = $(this).val();
-                if (gradeId) {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'fetch_students.php',
-                        data: {
-                            grade_level_id: gradeId
-                        },
-                        success: function(html) {
-                            $('#studentName').html(html);
-                            // Clear fields when grade level changes
-                            clearFields();
-                        }
-                    });
-                } else {
-                    $('#studentName').html('<option value="">Select Student</option>');
-                    clearFields();
-                }
-            });
-
-            // Map grade IDs to their corresponding grade level names
-            const gradeIdToName = {
-                '2': 'Grade 1',
-                '3': 'Grade 2',
-                '4': 'Grade 3',
-                '7': 'Grade 4',
-                '8': 'Grade 5',
-                '9': 'Grade 6',
-                '10': 'Grade 7',
-                '12': 'Grade 8',
-                '16': 'Grade 9',
-                '17': 'Grade 10'
-            };
-
-            // Define the tuition fees for each grade level name
-            const tuitionFees = {
-                'Grade 1': 8925,
-                'Grade 2': 9450,
-                'Grade 3': 9975,
-                'Grade 4': 10290,
-                'Grade 5': 10290,
-                'Grade 6': 10290,
-                'Grade 7': 10620,
-                'Grade 8': 10620,
-                'Grade 9': 10620,
-                'Grade 10': 10620
-            };
-
-            // Calculate payment details based on selected student and payment method
-            function calculatePayment() {
-                // Get selected student option
-                const selectedOption = $('#studentName option:selected');
-
-                if (selectedOption.val() === '') {
-                    clearFields();
-                    return;
-                }
-
-                // Get grade level ID from the selected student option
-                const gradeId = selectedOption.attr('data-grade');
-
-                // Get the grade name from the ID using the mapping
-                const gradeName = gradeIdToName[gradeId];
-
-                // Get tuition amount based on grade level name
-                const tuitionAmount = tuitionFees[gradeName] || 0;
-
-                // Set total tuition field
-                $('#totalTuition').val(tuitionAmount.toFixed(2));
-                $('#totalTuitionHidden').val(tuitionAmount.toFixed(2));
-
-                // Get selected payment method
-                const paymentMethod = $('#paymentMethod').val();
-
-                let paymentAmount = 0;
-                let balance = 0;
-
-                // Calculate based on payment method
-                if (paymentMethod === 'Cash Basis') {
-                    // Plan A - Full payment
-                    paymentAmount = tuitionAmount;
-                    balance = 0;
-                } else if (paymentMethod === 'Installment (20% DP)') {
-                    // Plan B - 20% down payment
-                    paymentAmount = tuitionAmount * 0.2;
-                    balance = tuitionAmount - paymentAmount;
-                } else if (paymentMethod === 'Installment (30% DP)') {
-                    // Plan C - 30% down payment
-                    paymentAmount = tuitionAmount * 0.3;
-                    balance = tuitionAmount - paymentAmount;
-                }
-
-                // Update fields with calculated values
-                $('#paymentAmount').val(paymentAmount.toFixed(2));
-                $('#paymentAmountHidden').val(paymentAmount.toFixed(2));
-                $('#balance').val(balance.toFixed(2));
-                $('#balanceHidden').val(balance.toFixed(2));
-            }
-
-            // Function to clear all calculation fields
-            function clearFields() {
-                $('#totalTuition').val("0.00");
-                $('#totalTuitionHidden').val("0.00");
-                $('#paymentAmount').val("0.00");
-                $('#paymentAmountHidden').val("0.00");
-                $('#balance').val("0.00");
-                $('#balanceHidden').val("0.00");
-            }
-
-            // Add event listeners
-            $('#studentName').change(calculatePayment);
-            $('#paymentMethod').change(calculatePayment);
-
-            // Initial calculation if student is already selected
-            if ($('#studentName').val()) {
-                calculatePayment();
+    $(document).ready(function() {
+        // Handle grade level change
+        $('#gradeLevel').change(function() {
+            var gradeId = $(this).val();
+            if (gradeId) {
+                $.ajax({
+                    type: 'POST',
+                    url: 'fetch_students.php',
+                    data: {
+                        grade_level_id: gradeId
+                    },
+                    success: function(html) {
+                        $('#studentName').html(html);
+                        // Clear fields when grade level changes
+                        clearFields();
+                    }
+                });
             } else {
+                $('#studentName').html('<option value="">Select Student</option>');
                 clearFields();
             }
         });
+
+        // Calculate payment details based on selected student and payment method
+        function calculatePayment() {
+            // Get selected student option
+            const selectedOption = $('#studentName option:selected');
+
+            if (selectedOption.val() === '') {
+                clearFields();
+                return;
+            }
+
+            // Get grade level ID from the selected student option
+            const gradeId = selectedOption.attr('data-grade');
+            const studentId = selectedOption.val();
+
+            // Fetch tuition fee data and payment history from the server
+            $.ajax({
+                type: 'POST',
+                url: 'fetch_payment_data.php',
+                data: {
+                    grade_level_id: gradeId,
+                    student_id: studentId
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.error) {
+                        // Display error message if no payment data found
+                        alert('No payment data found for this grade level. Please set up the payment information first.');
+                        clearFields();
+                    } else {
+                        // Set total tuition field
+                        const tuitionAmount = parseFloat(response.total_whole_year);
+                        $('#totalTuition').val(tuitionAmount.toFixed(2));
+                        $('#totalTuitionHidden').val(tuitionAmount.toFixed(2));
+                        
+                        // Get total of previous payments
+                        const totalPreviousPayments = parseFloat(response.total_payments) || 0;
+                        
+                        // Calculate remaining balance before this payment
+                        const remainingBalance = tuitionAmount - totalPreviousPayments;
+                        
+                        // Get selected payment method
+                        const paymentMethod = $('#paymentMethod').val();
+                        
+                        let paymentAmount = 0;
+                        
+                        // Calculate based on payment method
+                        if (paymentMethod === 'Cash Basis') {
+                            // Plan A - Full payment (remaining balance)
+                            paymentAmount = remainingBalance;
+                        } else if (paymentMethod === 'Installment (20% DP)') {
+                            // Plan B - 20% down payment
+                            const requiredDownPayment = tuitionAmount * 0.2;
+                            
+                            if (totalPreviousPayments >= requiredDownPayment) {
+                                // If previous payments already cover the down payment,
+                                // suggest the monthly installment amount or remaining balance
+                                // whichever is smaller
+                                const monthlyInstallment = parseFloat(response.tuition_fee);
+                                paymentAmount = Math.min(monthlyInstallment, remainingBalance);
+                            } else {
+                                // If down payment not yet completed
+                                // Pay either the remaining down payment or the remaining balance
+                                // whichever is smaller
+                                const remainingDownPayment = requiredDownPayment - totalPreviousPayments;
+                                paymentAmount = Math.min(remainingDownPayment, remainingBalance);
+                            }
+                        } else if (paymentMethod === 'Installment (30% DP)') {
+                            // Plan C - 30% down payment
+                            const requiredDownPayment = tuitionAmount * 0.3;
+                            
+                            if (totalPreviousPayments >= requiredDownPayment) {
+                                // If previous payments already cover the down payment,
+                                // suggest the monthly installment amount or remaining balance
+                                // whichever is smaller
+                                const monthlyInstallment = parseFloat(response.tuition_fee);
+                                paymentAmount = Math.min(monthlyInstallment, remainingBalance);
+                            } else {
+                                // If down payment not yet completed
+                                // Pay either the remaining down payment or the remaining balance
+                                // whichever is smaller
+                                const remainingDownPayment = requiredDownPayment - totalPreviousPayments;
+                                paymentAmount = Math.min(remainingDownPayment, remainingBalance);
+                            }
+                        }
+                        
+                        // Ensure payment amount is not negative and doesn't exceed remaining balance
+                        paymentAmount = Math.max(0, Math.min(paymentAmount, remainingBalance));
+                        
+                        // Calculate balance after this payment
+                        const balance = remainingBalance - paymentAmount;
+                        
+                        // Update fields with calculated values
+                        $('#paymentAmount').val(paymentAmount.toFixed(2));
+                        $('#paymentAmountHidden').val(paymentAmount.toFixed(2));
+                        $('#balance').val(balance.toFixed(2));
+                        $('#balanceHidden').val(balance.toFixed(2));
+                        
+                        // Generate a random reference number for the transaction
+                        $('input[name="reference_number"]').val(generateReferenceNumber());
+                    }
+                },
+                error: function() {
+                    alert('Error fetching payment data. Please try again.');
+                    clearFields();
+                }
+            });
+        }
+        
+        // Generate a random 10-digit reference number
+        function generateReferenceNumber() {
+            return Math.floor(1000000000 + Math.random() * 9000000000);
+        }
+
+        // Function to clear all calculation fields
+        function clearFields() {
+            $('#totalTuition').val("0.00");
+            $('#totalTuitionHidden').val("0.00");
+            $('#paymentAmount').val("0.00");
+            $('#paymentAmountHidden').val("0.00");
+            $('#balance').val("0.00");
+            $('#balanceHidden').val("0.00");
+        }
+
+        // Add event listeners
+        $('#studentName').change(calculatePayment);
+        $('#paymentMethod').change(calculatePayment);
+
+        // Initial calculation if student is already selected
+        if ($('#studentName').val()) {
+            calculatePayment();
+        } else {
+            clearFields();
+        }
+    });
     </script>
 </body>
 
