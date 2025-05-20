@@ -260,59 +260,54 @@ include 'header.php';
                 <div class="pd-20 bg-white border-radius-4 box-shadow mb-30 text-left">
                     <div class="pd-20 d-flex justify-content-between align-items-center">
                         <h4 class="h4 mb-0">Students List</h4>
-                        <a href="students.php" class="btn btn-primary">View All</a>
+                        <!-- <a href="students.php" class="btn btn-primary">View All</a> -->
                     </div>
                         <div class="pb-20">
                         <?php
+                        // Include config file
                         require_once "config1.php";
-                        $sql = "SELECT * FROM student INNER JOIN users ON student.userId = users.id";
+
+                        // Query to get students grouped by grade level
+                        $sql = "SELECT 
+                                gradelevel.gradelevel_id,
+                                gradelevel.gradelevel_name,
+                                sections.section_id,
+                                sections.section_name,
+                                COUNT(DISTINCT student.student_id) AS student_count,
+                                GROUP_CONCAT(DISTINCT student.name SEPARATOR ', ') AS student_names
+                                FROM gradelevel
+                                LEFT JOIN sections ON sections.gradelevel_id = gradelevel.gradelevel_id
+                                LEFT JOIN schedules ON schedules.section_id = sections.section_id
+                                LEFT JOIN encodedstudentsubjects ON encodedstudentsubjects.schedule_id = schedules.id
+                                LEFT JOIN student ON student.student_id = encodedstudentsubjects.student_id
+                                GROUP BY gradelevel.gradelevel_id, gradelevel.gradelevel_name, sections.section_id, sections.section_name
+                                ORDER BY CAST(REPLACE(gradelevel.gradelevel_name, 'Grade ', '') AS UNSIGNED) ASC, sections.section_name ASC";
+
                         if ($result = mysqli_query($link, $sql)) {
                             if (mysqli_num_rows($result) > 0) {
                                 echo '<table class="data-table table stripe hover nowrap">';
                                 echo "<thead>";
                                 echo "<tr>";
-                                echo "<th>No.</th>"; 
-                                echo "<th>Name</th>";
-                                echo "<th>Date of Birth</th>";
-                                echo "<th>Email</th>";
-                                echo "<th>Status</th>";
+                                echo "<th>No.</th>";
+                                echo "<th>Grade Level</th>";
+                                echo "<th>Section</th>";
+                                echo "<th>Enrolled Students</th>";
                                 echo "<th>Action</th>";
                                 echo "</tr>";
                                 echo "</thead>";
                                 echo "<tbody>";
 
-                                $no = 1; 
+                                $no = 1;
                                 while ($row = mysqli_fetch_array($result)) {
                                     echo "<tr>";
                                     echo "<td>" . $no++ . "</td>";
-                                    echo "<td>" . $row['name'] . "</td>";
-                                    echo "<td>" . $row['dob'] . "</td>";
-                                    echo "<td>" . $row['email'] . "</td>";
-                                    echo "<td>" . ($row['isVerified'] == 1 ? 'Verified' : 'Not Verified') . "</td>";
-
+                                    echo "<td>" . $row['gradelevel_name'] . "</td>";
+                                    echo "<td>" . $row['section_name'] . "</td>";
+                                    echo "<td>" . $row['student_count'] . "</td>";
                                     echo "<td>";
-                                    echo '<a href="view_record.php?id=' . $row['student_id'] . '" title="View Student" data-toggle="tooltip">
-                                            <span class="bi bi-eye-fill" style="font-size: 20px;"></span>
+                                    echo '<a href="view-students-dashboard.php?section_id=' . $row['section_id'] . '&grade_level_id=' . $row['gradelevel_id'] . '" class="btn btn-primary btn-sm" title="View Students">
+                                            <span class="bi bi-eye-fill"></span> View Students
                                         </a>';
-                                    // Delete Confirmation Modal
-                                    echo '
-                                    <div class="modal fade" id="Medium-modal' . $row['id'] . '" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel' . $row['id'] . '" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Confirm Delete</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    Are you sure you want to delete this record?
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                    <a href="delete.php?id=' . $row['id'] . '" class="btn btn-primary">Delete</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>';
                                     echo "</td>";
                                     echo "</tr>";
                                 }
@@ -323,8 +318,10 @@ include 'header.php';
                                 echo '<div class="alert alert-danger"><em>No records were found.</em></div>';
                             }
                         } else {
-                            echo "Oops! Something went wrong. Please try again later.";
+                            echo '<div class="alert alert-danger"><em>Oops! Something went wrong. Please try again later.</em></div>';
                         }
+
+                        // Close connection
                         mysqli_close($link);
                         ?>
                     </div>

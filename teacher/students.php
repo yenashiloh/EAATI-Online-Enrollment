@@ -157,7 +157,7 @@ if (!isset($teacher_id)) {
 								WHERE schedules.teacher_id = '$teacher_id'
 								GROUP BY sections.section_id, sections.section_name, sections.section_description, 
 										 sections.sectionCapacity, gradelevel.gradelevel_id, gradelevel.gradelevel_name
-								ORDER BY gradelevel.gradelevel_name ASC, sections.section_name ASC";
+								ORDER BY CAST(REPLACE(gradelevel.gradelevel_name, 'Grade ', '') AS UNSIGNED) ASC, sections.section_name ASC";
 
 								if ($result = mysqli_query($link, $sql)) {
 									if (mysqli_num_rows($result) > 0) {
