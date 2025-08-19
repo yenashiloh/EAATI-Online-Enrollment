@@ -276,24 +276,7 @@
     <li>User activity logging and audit trails</li>
 </ul>
 
-<h2>🎯 <strong>FUTURE ENHANCEMENTS</strong></h2>
-<br>
-
-<ul>
-    <li>Mobile application development for iOS and Android</li>
-    <li>SMS notification system integration</li>
-    <li>Online payment gateway implementation</li>
-    <li>Advanced analytics dashboard with AI insights</li>
-    <li>Parent portal with student progress monitoring</li>
-    <li>Integration with learning management systems</li>
-    <li>Automated report scheduling and distribution</li>
-</ul>
-
 <h2>📄 <strong>LICENSE</strong></h2>
 <br>
 
-<p>This project is licensed under the MIT License - see the <a href="LICENSE.md">LICENSE</a> file for details.</p>
-<br>
-    <p><strong>© 2024 Eastern University Academy of Taguig Inc. All rights reserved.</strong></p>
-    <p><em>Empowering Education Through Technology</em></p>
-</div>
+<p>This project is licensed under the MIT License - see the <a href="https://github.com/yenashiloh/EAATI-Online-Enrollment/blob/main/LICENSE/LICENSE.md">LICENSE</a> file for details.</p>
