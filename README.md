@@ -7,10 +7,10 @@
 <p>This comprehensive web-based online enrollment system was developed to modernize EAATI's enrollment and student management processes, providing a centralized platform for students to complete their enrollment while enabling administrators, registrars, and accounting staff to efficiently manage student records, academic schedules, payments, and overall institutional operations.</p>
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x400/0066cc/ffffff?text=EUAT+Dashboard+Overview" alt="Dashboard Overview" width="800">
+  <img src="https://github.com/yenashiloh/EAATI-Online-Enrollment/blob/main/asset/Screenshot%202025-08-19%20153547.png" alt="Dashboard Overview" width="800">
   <img src="https://via.placeholder.com/800x400/28a745/ffffff?text=Student+Enrollment+Portal" alt="Student Enrollment" width="800">
   <img src="https://via.placeholder.com/800x400/dc3545/ffffff?text=Registrar+Management+System" alt="Registrar System" width="800">
-  <img src="https://via.placeholder.com/800x400/ffc107/000000?text=Accounting+Payment+Module" alt="Accounting Module" width="800">
+  <img src="https://github.com/yenashiloh/EAATI-Online-Enrollment/blob/main/asset/Screenshot%202025-08-19%20153633.png" alt="Transactions" width="800">
 
   <br><br>
 </div>
@@ -18,30 +18,19 @@
 <h2>🎓 <strong>PROJECT OVERVIEW</strong></h2>
 <br>
 
-<p><strong>EUAT Online Enrollment System</strong> is a comprehensive web application built with HTML, CSS, Bootstrap, JavaScript, and MySQL that enables students to complete their enrollment process online while providing administrators with powerful tools to manage all aspects of student registration, academic scheduling, and institutional operations. The system streamlines enrollment procedures, enhances student record management, and improves overall efficiency in educational administration.</p>
+<p><strong>EATTI Online Enrollment System</strong> is a comprehensive web application built with HTML, CSS, Bootstrap, JavaScript, and MySQL that enables students to complete their enrollment process online while providing administrators with powerful tools to manage all aspects of student registration, academic scheduling, and institutional operations. The system streamlines enrollment procedures, enhances student record management, and improves overall efficiency in educational administration.</p>
 
 <h2>🎯 <strong>PROJECT OBJECTIVES</strong></h2>
 <br>
 
 <ul>
-    <li>Modernize EUAT's enrollment and student management processes</li>
+    <li>Modernize EATTI's enrollment and student management processes</li>
     <li>Provide accessible online enrollment for all students</li>
     <li>Streamline academic scheduling and classroom management</li>
     <li>Enhance transparency in enrollment and payment processes</li>
     <li>Maintain comprehensive student records and academic documentation</li>
     <li>Improve efficiency in administrative operations and reporting</li>
     <li>Facilitate better communication between students, faculty, and administration</li>
-</ul>
-
-<h2>📚 <strong>EUAT EDUCATIONAL SERVICES</strong></h2>
-<br>
-
-<p>As reflected in the system interface, EUAT provides comprehensive educational services including:</p>
-<ul>
-    <li><strong>Academic Excellence</strong> - Quality education programs across multiple grade levels</li>
-    <li><strong>Student Support Services</strong> - Comprehensive academic and personal guidance</li>
-    <li><strong>Modern Facilities</strong> - Well-equipped classrooms and learning environments</li>
-    <li><strong>Administrative Efficiency</strong> - Streamlined processes for enrollment and student services</li>
 </ul>
 
 <h2>✨ <strong>KEY FEATURES</strong></h2>
@@ -227,7 +216,7 @@
 <h2>🎓 <strong>AVAILABLE GRADE LEVELS</strong></h2>
 <br>
 
-<p>Based on the comprehensive system capabilities, EUAT accommodates various educational levels:</p>
+<p>Based on the comprehensive system capabilities, EATTI accommodates various educational levels:</p>
 <ul>
     <li><strong>Elementary Education</strong>
         <ul>
