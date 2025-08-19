@@ -8,8 +8,8 @@
 
 <div align="center">
   <img src="https://github.com/yenashiloh/EAATI-Online-Enrollment/blob/main/asset/Screenshot%202025-08-19%20153547.png" alt="Dashboard Overview" width="800">
-  <img src="https://via.placeholder.com/800x400/28a745/ffffff?text=Student+Enrollment+Portal" alt="Student Enrollment" width="800">
-  <img src="https://via.placeholder.com/800x400/dc3545/ffffff?text=Registrar+Management+System" alt="Registrar System" width="800">
+  <img src="https://github.com/yenashiloh/EAATI-Online-Enrollment/blob/main/asset/Screenshot%202025-08-19%20153609.png" alt="Enrollment" width="800">
+  <img src="https://github.com/yenashiloh/EAATI-Online-Enrollment/blob/main/asset/Screenshot%202025-08-19%20153617.png" alt="Student Enrollment" width="800">
   <img src="https://github.com/yenashiloh/EAATI-Online-Enrollment/blob/main/asset/Screenshot%202025-08-19%20153633.png" alt="Transactions" width="800">
 
   <br><br>
